@@ -49,11 +49,11 @@ class GLWindow : public std::enable_shared_from_this<GLWindow>
         virtual void setInputMode(Window::Input::Mode::Target target, Window::Input::Mode::Value value) = 0;
 
         // Get title of managed window
-        virtual std::string getTitle();
-        // Set title of managed window
-        virtual void setTitle(std::string title) = 0;
+        std::string getTitle();
+        // Get title of managed window
+        void setTitle(std::string title);
         // Get aspect ratio of framebuffer displayed in managed window
-        virtual float getAspectRatio() = 0;
+        float getAspectRatio();
 
         // Get cursor position in managed window
         virtual void getCursorPos(double* x, double* y) = 0;
