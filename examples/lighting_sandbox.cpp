@@ -79,6 +79,9 @@ void LightingSandbox::run(GLWindowPtr window)
     
     // CUBE
     std::shared_ptr<SceneObject> cubeObj = generateSceneMesh(scene, std::make_shared<CubeGenerator>(), Material(), lightingShader);
+    std::shared_ptr<PointLight> light = std::make_shared<PointLight>(lightBaseRange);
+    cubeObj->addComponent<LightComponent>(light);
+    cubeObj->setPosition(glm::vec3(-3.f, 3.f, 0.f));
     scene->registerObject(cubeObj);
     std::shared_ptr<PointLight> light = std::make_shared<PointLight>(lightBaseRange);
     cubeObj->addComponent<LightComponent>(light);
