@@ -84,11 +84,12 @@ class Scene : public InputProcessor, public std::enable_shared_from_this<Scene>
         void removeObject(unsigned int id);
         // Move the object with provided ID (as well as all of its children) in the tree so that its new parent is the object of second provided ID
         void moveObject(unsigned int id, unsigned int newParentId);
-        
-        // Update all transforms marked for update in DFS order
-        void updateAllTransforms();
-        // Get the world transform of the object with provided ID
-        Transform getWorldTransform(unsigned int id);
+        // Get the world model matrix of the object with provided ID
+        glm::mat4 getWorldModelMatrix(unsigned int id);
+        // Get the world position of the object with provided ID
+        glm::vec3 getWorldPosition(unsigned int id);
+        // Get the world rotation of the object with provided ID
+        glm::quat getWorldRotation(unsigned int id);
 
         // Get weak pointers to all enabled scene objects
         std::vector<SceneObjectPtr> getAllObjects(bool mustBeEnabled = true);
@@ -138,8 +139,9 @@ std::vector<SceneObjectPtr> Scene::getObjectsWithComponent(bool mustBeEnabled)
     std::vector<SceneObjectPtr> result;
 
     // Tells whether an object whose weak pointer is provided should be added to the result vector
-    std::function<bool(SceneObjectPtr)> componentChecker = [this, mustBeEnabled](SceneObjectPtr obj)
+    std::function<bool(SceneObjectWPtr)> componentChecker = [this, mustBeEnabled](SceneObjectWPtr wObj)
     {
+        SceneObjectPtr obj = obj.lock();
         // Skip if the object is not enabled or if any of its parents is not enabled
         if (mustBeEnabled && !obj->enabled) return false;
         if (mustBeEnabled && hasDisabledParent(obj->id)) return false;

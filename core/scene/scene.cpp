@@ -267,9 +267,29 @@ std::vector<SceneObjectPtr> Scene::getAllObjects(bool mustBeEnabled)
 
     for (auto it = _objectMetadata.begin(); it != _objectMetadata.end(); it++)
     {
-        SceneObjectMetadata meta = it->second;
-        ObjectTree::NodePtr node = _objects[meta.objectNodeId];
-        if (!mustBeEnabled || node->value->enabled) result.push_back(node->value);
+        std::string s = "Scene: no SceneObject with ID " + std::to_string(id) + ", cannot compute world position.";
+        throw std::runtime_error(s.c_str());
+    }
+
+    // Update transform if required
+    processOutdatedTransformsFromNode(id);
+
+    // Retrieve matrix graph node ID
+    std::pair<unsigned int, unsigned int> pair = it->second;
+    // Retrieve matrix, return it translation component (which is what a null homogenous vector multiplied by the whole model matrix would be equal to)
+    glm::mat4 model = _modelMatrices[pair.second].lock()->value;
+    return glm::vec3(model[3]);
+}
+
+std::vector<SceneObjectWPtr> Scene::getAllObjects()
+{
+    std::vector<SceneObjectWPtr> result;
+
+    for (auto it = _objectIdsToNodeIds.begin(); it != _objectIdsToNodeIds.end(); it++)
+    {
+        std::pair<unsigned int, unsigned int> pair = it->second;
+        ObjTree::NodePtr node = _graph[pair.first].lock();
+        result.push_back(node->value);
     }
 
     return result;
@@ -452,16 +472,16 @@ void Scene::worldTransformCascadeUpdate(unsigned int id)
     TransformTree::NodePtr transformNode = _transforms[meta.transformNodeId];
     TransformTree::NodePtr parentTransformNode = transformNode->getParent().lock();
 
-    if (parentTransformNode != nullptr)
-    {
-        // Apply the parent world transform to the object transform, and save it to the object world transform node
-        Transform newTransform = parentTransformNode->value.applyTo((Transform)objectNode->value->transform);
-        transformNode->value = newTransform;
-    }
-    else
-    {
-        transformNode->value = (Transform)objectNode->value->transform;
-    }
+    glm::mat4 localTransform = objNode->value->getModelMatrix();
+    // The default world transform is a neutral transform (in case the parent matrix node is null)
+    glm::mat4 worldTransform = glm::mat4(1.f);
+    // Otherwise it is the parent transform
+    if (parentMatNode.get() != nullptr) worldTransform = parentMatNode->value;
+
+    // Compute the new world transform
+    matNode->value = worldTransform * localTransform;
+    // If the transform modified flag was raised, it is now no longer relevant
+    objNode->value->resetTransformModifiedFlag();
 
     // Reset the update marker
     _updateMarkers[meta.updateNodeId]->value = false;
