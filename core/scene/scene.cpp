@@ -472,7 +472,7 @@ void Scene::worldTransformCascadeUpdate(unsigned int id)
     TransformTree::NodePtr transformNode = _transforms[meta.transformNodeId];
     TransformTree::NodePtr parentTransformNode = transformNode->getParent().lock();
 
-    glm::mat4 localTransform = objNode->value->getModelMatrix();
+    glm::mat4 localTransform = objNode->value->transform.getModelMatrix();
     // The default world transform is a neutral transform (in case the parent matrix node is null)
     glm::mat4 worldTransform = glm::mat4(1.f);
     // Otherwise it is the parent transform

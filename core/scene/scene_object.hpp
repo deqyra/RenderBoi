@@ -9,7 +9,7 @@
 #include <string>
 #include <exception>
 
-#include "../object_transform.hpp"
+#include "../transform.hpp"
 
 #include "component.hpp"
 #include "component_type.hpp"
@@ -72,7 +72,7 @@ class SceneObject : public std::enable_shared_from_this<SceneObject>
         // Whether this object is enabled in the scene
         bool enabled;
         // The 3D transform of this object
-        ObjectTransform transform;
+        Transform transform;
 };
 
 template<class T, class... ArgTypes>

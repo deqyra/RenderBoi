@@ -3,38 +3,65 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/component_wise.hpp>
 #include <glm/gtx/quaternion.hpp>
 
 Transform::Transform() :
     _position(glm::vec3(0.f)),
-    _rotation(glm::quat(1.f, glm::vec3(0.f))),
+    _orientation(glm::quat(1.f, glm::vec3(0.f))),
     _scale(glm::vec3(1.f)),
-    _left(glm::vec3(1.f, 0.f, 0.f)),
-    _up(glm::vec3(0.f, 1.f, 0.f)),
-    _forward(glm::vec3(0.f, 0.f, 1.f)),
-    _localVectorsOutdated(false),
     _modelMatrix(glm::mat4(1.f)),
+    _transformModifiedFlag(false),
     _matrixOutdated(false)
 {
 
 }
 
-Transform::Transform(glm::vec3 position, glm::quat rotation, glm::vec3 scale) :
+Transform::Transform(glm::vec3 position, glm::quat orientation, glm::vec3 scale) :
     _position(position),
-    _rotation(rotation),
+    _orientation(orientation),
     _scale(scale),
-    _left(glm::vec3(1.f, 0.f, 0.f)),
-    _up(glm::vec3(0.f, 1.f, 0.f)),
-    _forward(glm::vec3(0.f, 0.f, 1.f)),
-    _localVectorsOutdated(true),
     _modelMatrix(glm::mat4(1.f)),
+    _transformModifiedFlag(false),
     _matrixOutdated(true)
 {
-
+    // Generate model matrix according to parameters
+    updateMatrix();
 }
 
-glm::vec3 Transform::getPosition() const
+Transform::Transform(const Transform& other) :
+    _position(other._position),
+    _orientation(other._orientation),
+    _scale(other._scale),
+    _modelMatrix(other._modelMatrix),
+    _transformModifiedFlag(other._transformModifiedFlag),
+    _matrixOutdated(other._matrixOutdated)
+{
+    if (_matrixOutdated)
+    {
+        // Generate model matrix according to parameters
+        updateMatrix();
+    }
+}
+
+Transform& Transform::operator=(const Transform& other)
+{
+    _position = other._position;
+    _orientation = other._orientation;
+    _scale = other._scale;
+    _modelMatrix = other._modelMatrix;
+    _transformModifiedFlag = other._transformModifiedFlag;
+    _matrixOutdated = other._matrixOutdated;
+    if (_matrixOutdated)
+    {
+        // Generate model matrix according to parameters
+        updateMatrix();
+    }
+
+    return *this;
+}
+
+
+glm::vec3 Transform::getPosition()
 {
     return _position;
 }
@@ -44,17 +71,19 @@ void Transform::setPosition(glm::vec3 position)
     _position = position;
 
     // Update flags
+    _transformModifiedFlag = true;
     _matrixOutdated = true;
 }
 
-glm::vec3 Transform::translateBy(glm::vec3 other)
+glm::vec3 Transform::translate(glm::vec3 translation)
 {
     // Translate the current position
     glm::vec4 position4 = glm::vec4(_position, 1.f);
-    glm::vec4 translated = glm::translate(glm::mat4(1.f), other) * position4;
+    glm::vec4 translated = glm::translate(glm::mat4(1.f), translation) * position4;
     _position = glm::vec3(translated);
 
     // Update flags
+    _transformModifiedFlag = true;
     _matrixOutdated = true;
     return _position;
 }
@@ -70,106 +99,81 @@ void Transform::orbit(float radAngle, glm::vec3 axis, glm::vec3 center, bool sel
     // Update rotation if needed
     if (selfRotate)
     {
-        rotateBy(-radAngle, axis);
+        rotate(-radAngle, axis);
     }
 
     // Update flags
+    _transformModifiedFlag = true;
     _matrixOutdated = true;
 }
 
-glm::quat Transform::getRotation() const
+glm::quat Transform::getOrientation()
 {
-    return _rotation;
+    return _orientation;
 }
 
-void Transform::setRotation(glm::quat orientation)
+void Transform::setOrientation(glm::quat orientation)
 {
-    _rotation = orientation;
-    _rotation = glm::normalize(_rotation);
+    _orientation = orientation;
+    _orientation = glm::normalize(_orientation);
 
     // Update flags
+    _transformModifiedFlag = true;
     _matrixOutdated = true;
 }
 
-glm::quat Transform::rotateBy(glm::quat other)
+glm::quat Transform::rotate(glm::quat rotation)
 {
     // Rotate the object
-    _rotation = other * _rotation;
-    _rotation = glm::normalize(_rotation);
+    _orientation = rotation * _orientation;
+    _orientation = glm::normalize(_orientation);
 
     // Update flags
     _matrixOutdated = true;
-    _localVectorsOutdated = true;
-    return _rotation;
+    _transformModifiedFlag = true;
+    return _orientation;
 }
 
-glm::quat Transform::rotateBy(float radAngle, glm::vec3 axis, bool localAxis)
+glm::quat Transform::rotate(float radAngle, glm::vec3 axis, bool localAxis)
 {
     if (!localAxis)
     {
-        axis = _rotation * axis * glm::conjugate(_rotation);
+        axis = glm::inverse(_orientation) * axis;
     }
 
     // Rotate the object
-    _rotation = glm::rotate(_rotation, radAngle, axis);
-    _rotation = glm::normalize(_rotation);
+    _orientation = glm::rotate(_orientation, radAngle, axis);
+    _orientation = glm::normalize(_orientation);
 
     // Update flags
+    _transformModifiedFlag = true;
     _matrixOutdated = true;
-    _localVectorsOutdated = true;
-    return _rotation;
+    return _orientation;
 }
 
-glm::quat Transform::lookAt(glm::vec3 target, glm::vec3 yConstraint, bool localTarget)
+glm::quat Transform::lookAt(glm::vec3 target)
 {
-    // Local vectors are going to be needed so update them
-    if (_localVectorsOutdated) updateLocalVectors();
+    // FIXME
 
-    // Find new direction to look towards
     glm::vec3 direction = glm::normalize(target - _position);
-    // If the target coordinates are given local to the position, the target is also the direction to look towards
-    if (localTarget) direction = glm::normalize(target);
+    glm::vec3 axis = glm::cross(Z, direction);
+    axis = glm::normalize(axis);
+    /*
+    _orientation = glm::quat(direction);
+    _orientation = glm::normalize(_orientation);
+    */
 
-    // Find axis of rotation 
-    glm::vec3 axis = glm::normalize(glm::cross(_forward, direction));
-
-    // Find the angle by which to rotate around the found axis
-    float dot = glm::dot(_forward, direction);
+    float dot = glm::dot(Z, direction);
     float angle = glm::acos(dot);
 
-    rotateBy(angle, axis);
-    updateLocalVectors();
+    _orientation = glm::normalize(glm::quat(axis * angle));
 
-    // Check whether the Y constraint is not null and solvable
-    if ((yConstraint != glm::vec3(0.f)) && (glm::normalize(yConstraint) != -_forward))
-    {
-        // The aim is to rotate around the new forward vector
-        // so that the new up vector is coplanar with both the 
-        // new forward vector and the Y constraint.
-        // This means the cross products between those must be equal.
-
-        // Find the desired left direction 
-        glm::vec3 desiredLeft = glm::normalize(glm::cross(yConstraint, _forward));
-
-        // Find the angle between the actual left and the desired left directions
-        dot = glm::dot(_left, desiredLeft);
-        angle = glm::acos(dot);
-
-        // The rotation axis is either _forward or -_forward,
-        // this is a safe way to find out which
-        axis = glm::normalize(glm::cross(_left, desiredLeft));
-
-        // Rotate around the found axis 
-        rotateBy(angle, axis);
-        _localVectorsOutdated = true;
-    }
-
-    // Update flags
+    _transformModifiedFlag = true;
     _matrixOutdated = true;
-    return _rotation;
+    return _orientation;
 }
 
-glm::vec3 Transform::getScale() const
+glm::vec3 Transform::getScale()
 {
     return _scale;
 }
@@ -179,10 +183,11 @@ void Transform::setScale(glm::vec3 scale)
     _scale = scale;
 
     // Update flags
+    _transformModifiedFlag = true;
     _matrixOutdated = true;
 }
 
-glm::vec3 Transform::scaleBy(glm::vec3 scaling)
+glm::vec3 Transform::scale(glm::vec3 scaling)
 {
     // Scale the object
     _scale[0] *= scaling[0];
@@ -190,42 +195,12 @@ glm::vec3 Transform::scaleBy(glm::vec3 scaling)
     _scale[2] *= scaling[2];
 
     // Update flags
+    _transformModifiedFlag = true;
     _matrixOutdated = true;
     return _scale;
 }
 
-glm::vec3 Transform::left() const
-{
-    if (_localVectorsOutdated)
-    {
-        updateLocalVectors();
-    }
-
-    return _left;
-}
-
-glm::vec3 Transform::up() const
-{
-    if (_localVectorsOutdated)
-    {
-        updateLocalVectors();
-    }
-
-    return _up;
-}
-
-glm::vec3 Transform::forward() const
-{
-    if (_localVectorsOutdated)
-    {
-        updateLocalVectors();
-    }
-
-    return _forward;
-}
-
-
-glm::mat4 Transform::getModelMatrix() const
+glm::mat4 Transform::getModelMatrix()
 {
     if (_matrixOutdated)
     {
@@ -235,54 +210,26 @@ glm::mat4 Transform::getModelMatrix() const
     return _modelMatrix;
 }
 
-Transform Transform::applyTo(const Transform& other) const
-{
-    // Compute new transform position:
-    // other position scaled and rotated + this position
-    glm::vec3 newPosition = glm::vec3(
-        other._position[0] * _scale[0],
-        other._position[1] * _scale[1],
-        other._position[2] * _scale[2]
-    );
-    newPosition = _rotation * newPosition * glm::conjugate(_rotation);
-    newPosition += _position;
-
-    // Combine rotations
-    glm::quat newRotation = other._rotation * _rotation;
-    newRotation = glm::normalize(newRotation);
-
-    // Multiply scales
-    glm::vec3 newScale = glm::vec3(
-        _scale[0] * other._scale[0],
-        _scale[1] * other._scale[1],
-        _scale[2] * other._scale[2]
-    );
-
-    return Transform(newPosition, newRotation, newScale);
-}
-
-void Transform::updateLocalVectors() const
-{
-    // Transform world basis vectors according to rotation
-    _forward = glm::normalize(_rotation * Z * glm::conjugate(_rotation));
-    _up      = glm::normalize(_rotation * Y * glm::conjugate(_rotation));
-    _left    = glm::normalize(_rotation * X * glm::conjugate(_rotation));
-
-    _localVectorsOutdated = false;
-}
-
-void Transform::updateMatrix() const
+void Transform::updateMatrix()
 {
     // Generate 4x4 matrix from quaternion
-    _modelMatrix = glm::toMat4(glm::inverse(_rotation));
-
+    _modelMatrix = glm::toMat4(glm::inverse(_orientation));
     // Scale things up
     _modelMatrix[0][0] *= _scale[0];
     _modelMatrix[1][1] *= _scale[1];
     _modelMatrix[2][2] *= _scale[2];
-
     // Include translation to current position
     _modelMatrix[3] = glm::vec4(_position, 1.f);
 
     _matrixOutdated = false;
+}
+
+bool Transform::transformModifiedFlagState()
+{
+    return _transformModifiedFlag;
+}
+
+void Transform::resetTransformModifiedFlag()
+{
+    _transformModifiedFlag = false;
 }
