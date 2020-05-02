@@ -395,44 +395,26 @@ void Scene::objectTransformModified(const unsigned int& id)
     auto it = _objectMetadata.find(id);
     if (it == _objectMetadata.end())
     {
-        std::string s = "Scene: the object transform callback was called with non-existing ID " + std::to_string(id) + "!";
-        throw std::runtime_error(s.c_str());
-    }
-
-    markForUpdate(id);
-}
-
-void Scene::markForUpdate(unsigned int id)
-{
-    auto it = _objectMetadata.find(id);
-    // Retrieve object metadata
-    SceneObjectMetadata meta = it->second;
-    BoolTree::NodePtr updateNode = _updateMarkers[meta.updateNodeId];
-    // Set the marker to true
-    updateNode->value = true;
-    _transformsUpToDate = false;
-}
-
-void Scene::worldTransformDFSUpdate(unsigned int startingId)
-{
-    SceneObjectMetadata meta = _objectMetadata[startingId];
-
-    if (_updateMarkers[meta.updateNodeId]->value)
-    {
-        // If the current object is marked for update, update all transforms downwards
-        worldTransformCascadeUpdate(startingId);
-    }
-    else
-    {
-        // Otherwise, run the DFS routine on each of its children
-        ObjectTree::NodePtr object = _objects[meta.objectNodeId];
-        std::vector<ObjectTree::NodeWPtr> children = object->getChildren();
-
-        for (auto it = children.begin(); it != children.end(); it++)
+        SceneObjectPtr obj = parentIt->lock()->value;
+        // Use the flag to check on the modified state of the object transform
+        if (obj->transform.transformModifiedFlagState())
         {
-            SceneObjectPtr child = it->lock()->value;
-            worldTransformDFSUpdate(child->id);
+            obj->transform.resetTransformModifiedFlag();
+            uppermostOutdatedId = obj->id;
+            outdated = true;
         }
+    }
+
+    // Recalculate the furthest parent's model matrix (which will cascade to all of its children as well)
+    if (outdated)
+    {
+        recalculateModelMatrix(uppermostOutdatedId);
+    }
+    // If no parent was updated just update the node transform if appropriate
+    else if (objNode->value->transform.transformModifiedFlagState())
+    {
+        objNode->value->transform.resetTransformModifiedFlag();
+        recalculateModelMatrix(id);
     }
 }
 
@@ -481,7 +463,7 @@ void Scene::worldTransformCascadeUpdate(unsigned int id)
     // Compute the new world transform
     matNode->value = worldTransform * localTransform;
     // If the transform modified flag was raised, it is now no longer relevant
-    objNode->value->resetTransformModifiedFlag();
+    objNode->value->transform.resetTransformModifiedFlag();
 
     // Reset the update marker
     _updateMarkers[meta.updateNodeId]->value = false;
