@@ -12,7 +12,7 @@ GLFW3Window::GLFW3Window(GLFWwindow* window, std::string title) :
     GLWindow(title),
     _w(window)
 {
-    glfwGetFramebufferSize(_w, &_width, &_height);
+
 }
 
 GLFW3Window::~GLFW3Window()
@@ -57,9 +57,4 @@ void GLFW3Window::getCursorPos(double* x, double* y)
 {
     glfwGetCursorPos(_w, x, y);
 }
-}
-
-float GLFW3Window::getAspectRatio()
-{
-    return (float)_width / (float)_height;
 }

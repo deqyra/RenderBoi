@@ -86,7 +86,7 @@ GLWindowPtr makeGLFWWindow(std::string title, int width, int height, int glVersi
     // Instead, use the user pointer of the GLFWwindow object, which can be set to point to any user-defined window class
 
     GLWindowPtr glWindow = std::make_shared<GLFW3Window>(window, title); // Initialize a GLWindow instance with a GLFWwindow object
-    glfwSetWindowUserPointer(window, glWindow.get());                    // Set the user pointer of the GLFWwindow to the newly created GLWindow instance
+    glfwSetWindowUserPointer(window, glWindow.get());                   // Set the user pointer of the GLFWwindow to the newly created GLWindow instance
 
     // Then, a function can retrieve the GLWindow instance from the GLFWwindow object and call the appropriate callback on the GLWindow instance
     // Bind all relevant callbacks to such functions

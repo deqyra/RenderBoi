@@ -56,19 +56,4 @@ std::string GLWindow::getTitle()
 {
     return _title;
 }
-
-void GLWindow::setTitle(std::string title)
-{
-    _title = title;
-    glfwSetWindowTitle(_w, _title.c_str());
-}
-
-float GLWindow::getAspectRatio()
-{
-    return (float)_width / (float)_height;
-}
-
-void GLWindow::getCursorPos(double* x, double* y)
-{
-    glfwGetCursorPos(_w, x, y);
 }
