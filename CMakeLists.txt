@@ -45,13 +45,17 @@
     set( COPY_DLLS_TARGET_NAME "copy_dlls" )
 
 # Project library dependency names
+    set( GLFW3_LIB "glfw" )
+    set( ASSIMP_LIB "assimp" )
     if( WIN32 )
-        set( GLFW3_LIB "glfw3.lib" )
-        set( ASSIMP_LIB "assimp.lib" )
-    else(  )
-        set( GLFW3_LIB "glfw" )
-        set( ASSIMP_LIB "assimp" )
+        set( GLFW3_LIB "${GLFW3_LIB}.lib" )
+        set( ASSIMP_LIB "${ASSIMP_LIB}.lib" )
     endif(  )
+
+# GL loader information
+    set(LOADER_FILES "glad/gl.c" "include/glad/gl.h")
+    set(GL_CONTEXT_VERSION_MAJOR "4")
+    set(GL_CONTEXT_VERSION_MINOR "2")
 
 # Copy assets folder
     add_custom_target( ${COPY_ASSETS_TARGET_NAME} )

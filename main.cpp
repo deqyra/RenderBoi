@@ -35,9 +35,13 @@ int main(int argc, char** argv)
     std::cout << PROJECT_NAME << " v" << PROJECT_VERSION << '\n';
     std::cout << COPYLEFT_NOTICE << std::endl;
 
-	glfwInit();
+	glfwSetErrorCallback(glfwErrorCallback);
+
+	if (!glfwInit())
+		return EXIT_FAILURE;
+
 	// Init window, GL context and GL pointers
-	GLWindowPtr window = makeGLFWWindow("RenderBoi", 1280, 720, 4, 6, Window::OpenGLProfile::Core, true);
+	GLWindowPtr window = makeGLFWWindow("RenderBoi", 1280, 720, GL_CONTEXT_VERSION_MAJOR, GL_CONTEXT_VERSION_MINOR, Window::OpenGLProfile::Core, true);
 
 	if (!glfwInit())
 		return EXIT_FAILURE;
