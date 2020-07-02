@@ -38,6 +38,9 @@ class GLFW3Window : public GLWindow
         // Get cursor position in GLFW window
         void getCursorPos(double* x, double* y);
 
+        // Get aspect ratio of GLFW window
+        virtual float getAspectRatio();
+
     private:
         // The GLFW window being managed
         GLFWwindow* _w;
