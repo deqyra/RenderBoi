@@ -41,12 +41,6 @@ int main(int argc, char** argv)
 		return EXIT_FAILURE;
 
 	// Init window, GL context and GL pointers
-	GLWindowPtr window = makeGLFWWindow("RenderBoi", 1280, 720, GL_CONTEXT_VERSION_MAJOR, GL_CONTEXT_VERSION_MINOR, Window::OpenGLProfile::Core, true);
-
-	if (!glfwInit())
-		return EXIT_FAILURE;
-
-	// Init window, GL context and GL pointers
 	GLWindowPtr window;
 	try
 	{
