@@ -9,7 +9,7 @@
 #include <string>
 #include <exception>
 
-#include "../transform.hpp"
+#include "../object_transform.hpp"
 
 #include "component.hpp"
 #include "component_type.hpp"
@@ -43,7 +43,7 @@ class SceneObject : public std::enable_shared_from_this<SceneObject>
         SceneObject();
 
         // Get the world position of the object in the scene (use transform.getPosition() for local position)
-        Transform getWorldTransform();
+        glm::vec3 getWorldPosition();
         // Get the parent scene of this object
         SceneWPtr getScene();
         // Set the parent scene of this object
@@ -72,7 +72,7 @@ class SceneObject : public std::enable_shared_from_this<SceneObject>
         // Whether this object is enabled in the scene
         bool enabled;
         // The 3D transform of this object
-        Transform transform;
+        ObjectTransform transform;
 };
 
 template<class T, class... ArgTypes>

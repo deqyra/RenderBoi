@@ -14,7 +14,6 @@
 
 class SceneObject;
 using SceneObjectPtr = std::shared_ptr<SceneObject>;
-using SceneObjectWPtr = std::weak_ptr<SceneObject>;
 
 // An object that has 3D-space properties : position, orientation and scale
 class ObjectTransform : public Transform
@@ -31,11 +30,14 @@ class ObjectTransform : public Transform
         void notifyChange();
 
     public:
-        ObjectTransform(unsigned int objectId);
-        ObjectTransform(unsigned int objectId, glm::vec3 position, glm::quat orientation, glm::vec3 scale);
+        ObjectTransform(SceneObjectPtr sceneObj);
+        ObjectTransform(SceneObjectPtr sceneObj, glm::vec3 position, glm::quat orientation, glm::vec3 scale);
         ObjectTransform(const ObjectTransform& other) = delete;
         ObjectTransform& operator=(const ObjectTransform& other);
         ObjectTransform& operator=(const Transform& other);
+        operator Transform();
+
+        const SceneObjectPtr sceneObject;
 
         // Get the position of the object - no need to overload, here for convenience
         // glm::vec3 getPosition();
@@ -71,8 +73,6 @@ class ObjectTransform : public Transform
 
         // Retrieve the TransformNotifier attached to this
         TransformNotifier& getNotifier();
-
-        const unsigned int objectId;
 };
 
 #endif//CORE__OBJECT_TRANSFORM_HPP

@@ -1,4 +1,4 @@
-#include "object_transform.hpp"
+#include "transform.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -7,22 +7,22 @@
 
 #include "scene/scene_object.hpp"
 
-ObjectTransform::ObjectTransform(unsigned int objectId) :
+ObjectTransform::ObjectTransform(SceneObjectPtr sceneObj) :
     Transform(glm::vec3(0.f),
               glm::quat(1.f, glm::vec3(0.f)),
               glm::vec3(1.f)),
     _transformNotifier(),
-    objectId(objectId)
+    sceneObject(sceneObj)
 {
 
 }
 
-ObjectTransform::ObjectTransform(unsigned int objectId, glm::vec3 position, glm::quat orientation, glm::vec3 scale) :
+ObjectTransform::ObjectTransform(SceneObjectPtr sceneObj, glm::vec3 position, glm::quat orientation, glm::vec3 scale) :
     Transform(position,
               orientation,
               scale),
     _transformNotifier(),
-    objectId(objectId)
+    sceneObject(sceneObj)
 {
 
 }
@@ -58,6 +58,11 @@ ObjectTransform& ObjectTransform::operator=(const Transform& other)
     notifyChange();
     
     return *this;
+}
+
+ObjectTransform::operator Transform()
+{
+    return Transform(_position, _rotation, _scale);
 }
 
 /* 
@@ -123,7 +128,7 @@ glm::quat ObjectTransform::rotateBy(float radAngle, glm::vec3 axis, bool localAx
     return newRotation;
 }
 
-glm::quat ObjectTransform::lookAt(glm::vec3 target, glm::vec3 yConstraint, bool localTarget)
+glm::quat ObjectTransform::lookAt(glm::vec3 target, glm::vec3 yConstraint, bool localTarget = false)
 {
     glm::quat newRotation = Transform::lookAt(target, yConstraint, localTarget);
     // Notify transform change
@@ -149,15 +154,10 @@ void ObjectTransform::setScale(glm::vec3 scale)
 
 glm::vec3 ObjectTransform::scaleBy(glm::vec3 scaling)
 {
-    glm::vec3 newScale = Transform::scaleBy(scaling);
+    glm::vec3 newScale = Transform::scaleBy(scaling),
     // Notify transform change
     notifyChange();
     return newScale;
-}
-
-void ObjectTransform::applyTo(ObjectTransform& other)
-{
-    other = this->Transform::applyTo((Transform) other);
 }
 
 ObjectTransform::TransformNotifier& ObjectTransform::getNotifier()
@@ -167,5 +167,5 @@ ObjectTransform::TransformNotifier& ObjectTransform::getNotifier()
 
 void ObjectTransform::notifyChange()
 {
-    _transformNotifier.notify(objectId);
+    _transformNotifier.notify(sceneObject->id);
 }

@@ -9,9 +9,9 @@ unsigned int SceneObject::_count = 0;
 SceneObject::SceneObject() :
     id(_count++),
     enabled(true),
-    _scene(std::shared_ptr<Scene>(nullptr)),
+    _scene(scene),
     _components(),
-    transform(id)
+    transform(this->shared_from_this())
 {
 
 }
