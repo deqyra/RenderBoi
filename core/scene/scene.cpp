@@ -38,8 +38,7 @@ unsigned int Scene::init()
     BoolTree::NodePtr updateRootNode = _updateMarkers.getRoot();
 
     // Reset the object graph root node pointer to a scene object initialized with a pointer to this Scene.
-    objectRootNode->value.reset(new SceneObject());
-    objectRootNode->value->setScene(this->weak_from_this());
+    objectRootNode->value.reset(new SceneObject(this->shared_from_this()));
 
     // Set and map metadata
     SceneObjectMetadata meta = {
@@ -47,7 +46,7 @@ unsigned int Scene::init()
         objectRootNode->id,         // ID of the graph node containing the object
         transformRootNode->id,      // ID of the graph node containing the world matrix of the object
         updateRootNode->id,         // ID of the graph node containing the update flag of the object
-        MaxUInt                     // ID of the subscription to the transform notifier of the object
+        -1                          // ID of the subscription to the transform notifier of the object
     };
     _objectMetadata[meta.id] = meta;
     
@@ -80,7 +79,7 @@ SceneObjectWPtr Scene::newObject()
 SceneObjectWPtr Scene::newObject(unsigned int parentId)
 {
     // Create the new object, initialized with a pointer to this Scene
-    SceneObjectPtr obj = std::make_shared<SceneObject>();
+    SceneObjectPtr obj = std::make_shared<SceneObject>(this->shared_from_this());
 
     registerObject(obj, parentId);
 
@@ -132,11 +131,7 @@ void Scene::registerObject(SceneObjectPtr object, unsigned int parentId)
     unsigned int updateNodeId = _updateMarkers.addNode(false, parentMeta.updateNodeId);
 
     // Hook up the notification receiver of the scene with the notifier of the object transform
-    std::function<void(const unsigned int&)> callback = [this](const unsigned int& id)
-    {
-        this->objectTransformModified(id);
-    };
-    unsigned int transformSubscriberId = object->transform.getNotifier().addSubscriber(callback);
+    unsigned int transformSubscriberId = object->transform.getNotifier().addSubscriber(std::bind(&Scene::objectTransformModified, this, std::placeholders::_1));
 
     // Create metadata
     SceneObjectMetadata meta = {
@@ -221,7 +216,7 @@ void Scene::updateAllTransforms()
     for(auto it = childNodes.begin(); it != childNodes.end(); it++)
     {
         SceneObjectPtr object = it->lock()->value;
-        worldTransformDFSUpdate(object->id);
+        updateWorldTransformDFS(object->id);
     }
 
     _transformsUpToDate = false;
@@ -243,16 +238,16 @@ Transform Scene::getWorldTransform(unsigned int id)
         unsigned int outdated = findFurthestOutdatedParent(id);
 
         // If no outdated parent was found, -1 was returned
-        if (outdated == MaxUInt)
+        if (outdated == -1)
         {
             SceneObjectMetadata meta = it->second;
             // If the update marker of the considered object is set, update its transform along with all of its children's
-            if (_updateMarkers[meta.updateNodeId]) worldTransformCascadeUpdate(id);
+            if (_updateMarkers[meta.updateNodeId]) cascadeWorldTransformUpdate(id);
 
             // If it isn't set, the transform of that is up to date and no action is required
         }
         // If an outdated parent was found, update its transform along with all of its children's
-        else worldTransformCascadeUpdate(outdated);
+        else cascadeWorldTransformUpdate(outdated);
     }
 
     // Retrieve matrix graph node ID and return matrix
@@ -267,29 +262,9 @@ std::vector<SceneObjectPtr> Scene::getAllObjects(bool mustBeEnabled)
 
     for (auto it = _objectMetadata.begin(); it != _objectMetadata.end(); it++)
     {
-        std::string s = "Scene: no SceneObject with ID " + std::to_string(id) + ", cannot compute world position.";
-        throw std::runtime_error(s.c_str());
-    }
-
-    // Update transform if required
-    processOutdatedTransformsFromNode(id);
-
-    // Retrieve matrix graph node ID
-    std::pair<unsigned int, unsigned int> pair = it->second;
-    // Retrieve matrix, return it translation component (which is what a null homogenous vector multiplied by the whole model matrix would be equal to)
-    glm::mat4 model = _modelMatrices[pair.second].lock()->value;
-    return glm::vec3(model[3]);
-}
-
-std::vector<SceneObjectWPtr> Scene::getAllObjects()
-{
-    std::vector<SceneObjectWPtr> result;
-
-    for (auto it = _objectIdsToNodeIds.begin(); it != _objectIdsToNodeIds.end(); it++)
-    {
-        std::pair<unsigned int, unsigned int> pair = it->second;
-        ObjTree::NodePtr node = _graph[pair.first].lock();
-        result.push_back(node->value);
+        SceneObjectMetadata meta = it->second;
+        ObjectTree::NodePtr node = _objects[meta.objectNodeId];
+        if (!mustBeEnabled || node->value->enabled) result.push_back(node->value);
     }
 
     return result;
@@ -395,26 +370,44 @@ void Scene::objectTransformModified(const unsigned int& id)
     auto it = _objectMetadata.find(id);
     if (it == _objectMetadata.end())
     {
-        SceneObjectPtr obj = parentIt->lock()->value;
-        // Use the flag to check on the modified state of the object transform
-        if (obj->transform.transformModifiedFlagState())
-        {
-            obj->transform.resetTransformModifiedFlag();
-            uppermostOutdatedId = obj->id;
-            outdated = true;
-        }
+        std::string s = "Scene: the object transform callback was called with non-existing ID " + std::to_string(id) + "!";
+        throw std::runtime_error(s.c_str());
     }
 
-    // Recalculate the furthest parent's model matrix (which will cascade to all of its children as well)
-    if (outdated)
+    markForUpdate(id);
+}
+
+void Scene::markForUpdate(unsigned int id)
+{
+    auto it = _objectMetadata.find(id);
+    // Retrieve object metadata
+    SceneObjectMetadata meta = it->second;
+    BoolTree::NodePtr updateNode = _updateMarkers[meta.updateNodeId];
+    // Set the marker to true
+    updateNode->value = true;
+    _transformsUpToDate = false;
+}
+
+void Scene::updateWorldTransformDFS(unsigned int startingId)
+{
+    SceneObjectMetadata meta = _objectMetadata[startingId];
+
+    if (_updateMarkers[meta.updateNodeId]->value)
     {
-        recalculateModelMatrix(uppermostOutdatedId);
+        // If the current object is marked for update, update all transforms downwards
+        cascadeWorldTransformUpdate(startingId);
     }
-    // If no parent was updated just update the node transform if appropriate
-    else if (objNode->value->transform.transformModifiedFlagState())
+    else
     {
-        objNode->value->transform.resetTransformModifiedFlag();
-        recalculateModelMatrix(id);
+        // Otherwise, run the DFS routine on each of its children
+        ObjectTree::NodePtr object = _objects[meta.objectNodeId];
+        std::vector<ObjectTree::NodeWPtr> children = object->getChildren();
+
+        for (auto it = children.begin(); it != children.end(); it++)
+        {
+            SceneObjectPtr child = it->lock()->value;
+            updateWorldTransformDFS(child->id);
+        }
     }
 }
 
@@ -427,7 +420,7 @@ unsigned int Scene::findFurthestOutdatedParent(unsigned int id)
     std::vector<ObjectTree::NodeWPtr> parentChain = objectNode->getParentChain();
 
     // Keep track of the furthest parent in the chain whose transform was outdated
-    unsigned int furthestOutdatedId = MaxUInt;
+    unsigned int furthestOutdatedId = -1;
     for (auto parentIt = parentChain.begin(); parentIt != parentChain.end(); parentIt++)
     {
         unsigned int id = parentIt->lock()->value->id;
@@ -443,7 +436,7 @@ unsigned int Scene::findFurthestOutdatedParent(unsigned int id)
     return furthestOutdatedId;
 }
 
-void Scene::worldTransformCascadeUpdate(unsigned int id)
+void Scene::cascadeWorldTransformUpdate(unsigned int id)
 {
     auto it = _objectMetadata.find(id);
     // Retrieve node metadata
@@ -454,16 +447,16 @@ void Scene::worldTransformCascadeUpdate(unsigned int id)
     TransformTree::NodePtr transformNode = _transforms[meta.transformNodeId];
     TransformTree::NodePtr parentTransformNode = transformNode->getParent().lock();
 
-    glm::mat4 localTransform = objNode->value->transform.getModelMatrix();
-    // The default world transform is a neutral transform (in case the parent matrix node is null)
-    glm::mat4 worldTransform = glm::mat4(1.f);
-    // Otherwise it is the parent transform
-    if (parentMatNode.get() != nullptr) worldTransform = parentMatNode->value;
-
-    // Compute the new world transform
-    matNode->value = worldTransform * localTransform;
-    // If the transform modified flag was raised, it is now no longer relevant
-    objNode->value->transform.resetTransformModifiedFlag();
+    if (parentTransformNode != nullptr)
+    {
+        // Apply the parent world transform to the object transform, and save it to the object world transform node
+        Transform newTransform = parentTransformNode->value.applyTo((Transform)objectNode->value->transform);
+        transformNode->value = newTransform;
+    }
+    else
+    {
+        transformNode->value = (Transform)objectNode->value->transform;
+    }
 
     // Reset the update marker
     _updateMarkers[meta.updateNodeId]->value = false;
@@ -473,7 +466,7 @@ void Scene::worldTransformCascadeUpdate(unsigned int id)
     for (auto childIt = children.begin(); childIt != children.end(); childIt++)
     {
         ObjectTree::NodePtr child = childIt->lock();
-        worldTransformCascadeUpdate(child->id);
+        cascadeWorldTransformUpdate(child->id);
     }
 }
 
