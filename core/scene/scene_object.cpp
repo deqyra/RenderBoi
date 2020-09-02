@@ -11,9 +11,14 @@ SceneObject::SceneObject() :
     enabled(true),
     _scene(scene),
     _components(),
-    transform(this->shared_from_this())
+    transform(std::shared_ptr<SceneObject>(nullptr))
 {
 
+}
+
+void SceneObject::init()
+{
+    transform._sceneObject = weak_from_this();
 }
 
 Transform SceneObject::getWorldTransform()
