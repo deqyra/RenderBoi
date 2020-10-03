@@ -11,14 +11,14 @@ SceneObject::SceneObject() :
     enabled(true),
     _scene(scene),
     _components(),
-    transform(std::shared_ptr<SceneObject>(nullptr))
+    transform()
 {
 
 }
 
 void SceneObject::init()
 {
-    transform._sceneObject = weak_from_this();
+    transform.setSceneObject(shared_from_this());
 }
 
 Transform SceneObject::getWorldTransform()
@@ -32,9 +32,9 @@ SceneWPtr SceneObject::getScene()
     return _scene;
 }
 
-void SceneObject::setScene(SceneWPtr scene)
+void SceneObject::setScene(ScenePtr wScene)
 {
-    _scene = scene;
+    _scene = wScene;
 }
 
 SceneObjectPtr SceneObject::clone()

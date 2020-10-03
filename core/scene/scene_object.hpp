@@ -41,6 +41,8 @@ class SceneObject : public std::enable_shared_from_this<SceneObject>
 
     public:
         SceneObject();
+        // To be called before any other operation is performed on the scene object
+        void init();
 
         // To be called before anything else of a scene object. Set a reference to itself within its transform.
         void init();
@@ -50,7 +52,7 @@ class SceneObject : public std::enable_shared_from_this<SceneObject>
         // Get the parent scene of this object
         SceneWPtr getScene();
         // Set the parent scene of this object
-        void setScene(SceneWPtr scene);
+        void setScene(ScenePtr wScene);
 
         // Get a pointer to a new SceneObject instance cloned from this. All components are cloned as well. The cloned SceneObject 
         SceneObjectPtr clone();
