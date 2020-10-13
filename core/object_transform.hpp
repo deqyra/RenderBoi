@@ -127,7 +127,7 @@ class ObjectTransform : public Transform
         glm::vec3 scaleBy(glm::vec3 scaling);
 
         // Apply this transform to another one
-        void applyTo(ObjectTransform& other);
+        void applyOver(ObjectTransform& other);
 
         // Retrieve the TransformNotifier attached to this
         TransformNotifier& getNotifier();
