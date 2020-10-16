@@ -105,7 +105,7 @@ class ObjectTransform : public Transform
 
         /// @brief Set the position of the object.
         ///
-        /// @tparam Ref Litteral describing the frame of reference in which the
+        /// @tparam Ref Literal describing the frame of reference in which the
         /// arguments are provided to the function.
         ///
         /// @param position The new position the object should have.
@@ -116,7 +116,7 @@ class ObjectTransform : public Transform
 
         /// @brief Translate the position of the object by a 3D vector.
         ///
-        /// @tparam Ref Litteral describing the frame of reference in which the
+        /// @tparam Ref Literal describing the frame of reference in which the
         /// arguments are provided to the function.
         ///
         /// @param translation Vector by which the object should be translated.
@@ -127,7 +127,7 @@ class ObjectTransform : public Transform
 
         /// @brief Orbit the object around an axis and center.
         ///
-        /// @tparam Ref Litteral describing the frame of reference in which the
+        /// @tparam Ref Literal describing the frame of reference in which the
         /// arguments are provided to the function.
         ///
         /// @param radAngle Angle by which the object should orbit.
@@ -139,7 +139,7 @@ class ObjectTransform : public Transform
 
         /// @brief Set the rotation of the object.
         ///
-        /// @tparam Ref Litteral describing the frame of reference in which the
+        /// @tparam Ref Literal describing the frame of reference in which the
         /// arguments are provided to the function.
         ///
         /// @param rotation The new rotation the object should have.
@@ -157,7 +157,7 @@ class ObjectTransform : public Transform
 
         /// @brief Rotate the object around an axis.
         ///
-        /// @tparam Ref Litteral describing the frame of reference in which the
+        /// @tparam Ref Literal describing the frame of reference in which the
         /// arguments are provided to the function.
         ///
         /// @param radAngle Angle by which the object should rotate.
@@ -170,7 +170,7 @@ class ObjectTransform : public Transform
         /// @brief Rotate the object so that its front (local Z axis) is 
         /// directed towards the target position.
         ///
-        /// @tparam Ref Litteral describing the frame of reference in which the
+        /// @tparam Ref Literal describing the frame of reference in which the
         /// arguments are provided to the function.
         ///
         /// @param target Position the object should be looking towards.
@@ -184,7 +184,7 @@ class ObjectTransform : public Transform
 
         /// @brief Set the scale of the object.
         ///
-        /// @tparam Ref Litteral describing the frame of reference in which the
+        /// @tparam Ref Literal describing the frame of reference in which the
         /// arguments are provided to the function.
         ///
         /// @param scale The new scale the object should have.
