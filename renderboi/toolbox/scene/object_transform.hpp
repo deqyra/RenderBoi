@@ -54,6 +54,9 @@
  * More details in object_transform.cpp.
  */
 
+namespace Renderboi
+{
+
 class SceneObject;
 using SceneObjectPtr = std::shared_ptr<SceneObject>;
 
@@ -62,7 +65,7 @@ using SceneObjectPtr = std::shared_ptr<SceneObject>;
 class ObjectTransform : public Transform
 {
 public:
-    using TransformNotifier = Notifier<const unsigned int>;
+    using TransformNotifier = CppTools::Notifier<const unsigned int>;
 
 protected:
     /// @brief Will notify subscribers that the transform has been modified.
@@ -232,5 +235,7 @@ public:
     /// @return The resulting transform.
     Transform compoundFrom(const ObjectTransform& other) const;
 };
+
+}//namespace Renderboi
 
 #endif//RENDERBOI__TOOLBOX__OBJECT_TRANSFORM_HPP
