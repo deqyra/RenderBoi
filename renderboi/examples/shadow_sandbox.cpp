@@ -277,7 +277,6 @@ void ShadowSandbox::run(const GLWindowPtr window)
 
     splitter->detachAllInputProcessors();
     Factory::DestroyScene(scene);
-    scene.reset();
 
     window->exitEventPollingLoop();
 }
