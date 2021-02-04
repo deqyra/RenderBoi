@@ -21,7 +21,6 @@ class GLWindow : public std::enable_shared_from_this<GLWindow>
 public:
     /// @param title Title of the window.
     GLWindow(std::string title);
-    
     virtual ~GLWindow();
 
     /// @brief Callback for a framebuffer resize event.
