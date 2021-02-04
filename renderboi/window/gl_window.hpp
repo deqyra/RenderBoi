@@ -127,6 +127,14 @@ public:
     /// @param y [Output parameter] The Y coordinate of the cursor.
     virtual void getCursorPos(double& x, double& y) const = 0;
 
+    /// @brief Make the GL context current for the calling thread. May be called
+    /// from any thread.
+    virtual void makeContextCurrent() = 0;
+
+    /// @brief Make the GL context non- current for the calling thread. May be 
+    /// called from any thread.
+    virtual void releaseContext() = 0;
+
     /// @brief Repeatedly poll and forward input events. May be called only from
     /// the main thread. Call exitEvenPollingLoop() from another thread to yield.
     virtual void startEventPollingLoop();
@@ -135,10 +143,11 @@ public:
     /// May be called from any thread.
     virtual void exitEventPollingLoop();
 
-    /// @brief Get the entity to manager gamepads.
+    /// @brief Get a pointer to the entity which manages gamepads. May be called
+    /// from any thread.
     ///
     /// @return A pointer to the gamepad manager.
-    virtual GamepadManagerPtr getGamepadManager(); 
+    virtual GamepadManagerPtr getGamepadManager();
 
 protected:
     /// @brief Default input processor of all windows.
