@@ -8,6 +8,7 @@
 
 namespace Renderboi::Window::GLFW3Adapter
 {
+
     namespace EnumMaps
     {
         const std::unordered_map<unsigned int, Window::OpenGLProfile>& GlProfileEnums()
@@ -800,4 +801,5 @@ namespace Renderboi::Window::GLFW3Adapter
     {
         return ValueMaps::GlProfileValues().at(literal);
     }
+
 }//namespace Renderboi::Window::GLFW3Adapter
