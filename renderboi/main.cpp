@@ -108,8 +108,8 @@ int main(int argc, char** argv)
 		true,								// visible
 		false,								// maximized
 		false,								// alwaysOnTop
-		false,								// focused
-		false,								// focusOnShow
+		true,								// focused
+		true,								// focusOnShow
 		true,								// scaleToMonitor
 		true								// debug
 	};
