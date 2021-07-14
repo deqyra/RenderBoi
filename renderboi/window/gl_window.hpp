@@ -30,9 +30,6 @@ public:
     GLWindow(std::string title);
     virtual ~GLWindow();
 
-    /// @brief Entity which utilizes the context painted by the window.
-    GLContextClientPtr glContextClient;
-
     /// @brief Callback for a framebuffer resize event.
     ///
     /// @param width New width (in pixels) of the framebuffer.
@@ -107,6 +104,11 @@ public:
     /// @return The title of the window.
     virtual std::string getTitle() const;
 
+    /// @brief Get a pointer to the GL context client on which the window runs.
+    ///
+    /// @return A pointer to the GL context client on which the window runs.
+    virtual GLContextClientPtr getGlContextClient() const;
+
     /// @brief Set the title of the window. May only be called from the main
     /// thread.
     ///
@@ -120,6 +122,12 @@ public:
     /// input mode should be set.
     /// @param value Literal describing which input to set the target to.
     virtual void setInputMode(const Window::Input::Mode::Target target, const Window::Input::Mode::Value value) = 0;
+
+private:
+    std::atomic_bool _stopPollingFlag = false;
+
+public:
+    void startEventPollingLoop();
 
     /// @brief Hide the window. May be called only from the main thread.
     virtual void hide() = 0;
@@ -248,7 +256,7 @@ public:
 
     /// @brief Make the GL context current for the calling thread. May be called
     /// from any thread.
-    virtual void makeContextCurrent() = 0;
+    virtual void makeContextCurrent(GLContextClientPtr context) = 0;
 
     /// @brief Make the GL context non-current for the calling thread. May be 
     /// called from any thread.
@@ -282,6 +290,9 @@ protected:
     /// @brief Entity to manage gamepads. Must be initialized at construction
     /// by inheriting classes.
     GamepadManagerPtr _gamepadManager;
+
+    /// @brief Entity which utilizes the context painted by the window.
+    GLContextClientPtr _glContextClient;
 };
 
 using GLWindowPtr = std::shared_ptr<GLWindow>;
