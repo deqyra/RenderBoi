@@ -68,7 +68,7 @@ public:
     {
         _sandbox->setUp();
 
-		std::thread th(&rb::GLSandbox::run, _sandbox);
+		std::thread th(&GLSandbox::run, _sandbox);
 		_window->startPollingLoop();
 
 		th.join();
