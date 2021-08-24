@@ -112,4 +112,14 @@ void SpotLight::setRange(const float range)
     attenuationFromRange(range, constant, linear, quadratic);
 }
 
+glm::mat4 SpotLight::_computeProjectionMatrix() const
+{
+    return glm::mat4();
+}
+
+glm::mat4 SpotLight::_computeViewMatrix() const
+{
+    return glm::mat4();
+}
+
 }//namespace Renderboi

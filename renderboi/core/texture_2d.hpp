@@ -21,7 +21,7 @@ private:
 
     /// @brief Structure mapping how many Texture2D instances are handling 
     /// a texture resource on the GPU.
-    static std::unordered_map<unsigned int, unsigned int> _locationRefCounts;
+    static std::unordered_map<unsigned int, unsigned int> _LocationRefCounts;
 
     /// @brief The location of the texture resource on the GPU.
     unsigned int _location;

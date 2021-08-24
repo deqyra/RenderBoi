@@ -18,7 +18,7 @@
 namespace Renderboi
 {
 
-/// @brief Manager for a UBO resource on the GPU, meants for vertex 
+/// @brief Manager for a UBO resource on the GPU, meant for vertex 
 /// transformation matrices.
 class MatrixUBO
 {

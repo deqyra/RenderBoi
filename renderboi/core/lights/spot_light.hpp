@@ -185,6 +185,18 @@ public:
     ///
     /// @return A raw pointer to the light instance cloned from this one.
     SpotLight* clone() const override;
+
+    //////////////////////////////////////////////////////////////
+    ///                                                        ///
+    /// Methods inherited from ParentDependentVPMatrixProvider ///
+    ///                                                        ///
+    //////////////////////////////////////////////////////////////
+
+    /// @brief Compute the actual projection matrix using light perspective parameters.
+    virtual glm::mat4 _computeProjectionMatrix() const override;
+
+    /// @brief Compute the actual view matrix using light rotation parameters.
+    virtual glm::mat4 _computeViewMatrix() const override;
 };
 
 }//namespace Renderboi

@@ -18,7 +18,7 @@ namespace Renderboi
 using ReLoc = ResourceLocator;
 using ReType = ResourceType;
 
-std::unordered_map<unsigned int, unsigned int> Texture2D::_locationRefCounts = std::unordered_map<unsigned int, unsigned int>();
+std::unordered_map<unsigned int, unsigned int> Texture2D::_LocationRefCounts = std::unordered_map<unsigned int, unsigned int>();
 std::unordered_map<std::string , unsigned int> Texture2D::_pathsToIds  = std::unordered_map<std::string, unsigned int>();
 
 Texture2D::Texture2D(const std::string& filename, const PixelSpace space) :
@@ -30,7 +30,7 @@ Texture2D::Texture2D(const std::string& filename, const PixelSpace space) :
     {
         // Just copy the location and increase the refcount
         _location = it->second;
-        _locationRefCounts[_location]++;
+        _LocationRefCounts[_location]++;
     }
     // If the image is not being handled by a Texture2D instance...
     else
@@ -39,7 +39,7 @@ Texture2D::Texture2D(const std::string& filename, const PixelSpace space) :
         _location = _LoadTextureFromFile(ReLoc::locate(ReType::Texture, filename), space);
         // Map the new texture location to image filename and set a refcount
         _pathsToIds[filename] = _location;
-        _locationRefCounts[_location] = 1;
+        _LocationRefCounts[_location] = 1;
     }
 }
 
@@ -48,7 +48,7 @@ Texture2D::Texture2D(const Texture2D& other) :
     _path(other._path)
 {
     // The same texture is being handled by one more resource: increase the refcount
-    _locationRefCounts[_location]++;
+    _LocationRefCounts[_location]++;
 }
 
 Texture2D& Texture2D::operator=(const Texture2D& other)
@@ -59,7 +59,7 @@ Texture2D& Texture2D::operator=(const Texture2D& other)
     // Copy the filename, location, and increase the ref count
     _location = other._location;
     _path = other._path;
-    _locationRefCounts[_location]++;
+    _LocationRefCounts[_location]++;
 
     return *this;
 }
@@ -73,7 +73,7 @@ Texture2D::~Texture2D()
 void Texture2D::_cleanup()
 {
     // Decrease the ref count
-    unsigned int count = --_locationRefCounts[_location];
+    unsigned int count = --_LocationRefCounts[_location];
     // If the resource is not used anymore...
     if (!count)
     {

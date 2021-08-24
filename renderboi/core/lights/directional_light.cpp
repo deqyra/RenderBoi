@@ -29,4 +29,14 @@ DirectionalLight* DirectionalLight::clone() const
     return new DirectionalLight(direction, ambient, diffuse, specular);
 }
 
+glm::mat4 DirectionalLight::_computeProjectionMatrix() const
+{
+    return glm::mat4();
+}
+
+glm::mat4 DirectionalLight::_computeViewMatrix() const
+{
+    return glm::mat4();
+}
+
 }//namespace Renderboi
