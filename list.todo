@@ -44,6 +44,7 @@ RenderBoi:
             ☐ Lighting artifacts on weird angles on surfaces and through them
         Texture:
             ☐ Check texture generation success and display error info
+            ☐ Handle texture wrapping and filtering options
         Transform:
             ✔ Change SceneObject inheritance from PositionedObject into a compoud Transform object @done(20-07-02 17:00)
             ✔ Viable alternative to the ugly `transformModified` flag fix (observer pattern) @done(20-09-02 15:12)
