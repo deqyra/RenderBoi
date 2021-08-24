@@ -35,11 +35,10 @@ void CameraComponent::setCamera(const CameraPtr camera)
 
 glm::mat4 CameraComponent::getViewMatrix() const
 {
-    std::shared_ptr<SceneObject> sceneObject = _sceneObject;
-    Transform worldTransform = sceneObject->getWorldTransform();
+    Transform worldTransform = _sceneObject->getWorldTransform();
 
     // Update camera and compute view matrix
-    _camera->setParentTransform(worldTransform);
+    _camera->setParentWorldTransform(worldTransform);
     return _camera->getViewMatrix();
 }
 

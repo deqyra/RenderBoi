@@ -186,6 +186,24 @@ set(RB_CORE_SOURCE_FILES
     pixel_space.hpp
     transform.cpp
     transform.hpp
+    texture_2d.cpp
+    texture_2d.hpp
+    vertex.hpp
+    implementation/parent_dependent_vp_matrix_provider.hpp
+    implementation/parent_dependent_vp_matrix_provider.cpp
+    interfaces/basis_provider.hpp
+    interfaces/vp_matrix_provider.hpp
+    lights/directional_light.cpp
+    lights/directional_light.hpp
+    lights/light.cpp
+    lights/light.hpp
+    lights/light_type.hpp
+    lights/point_light.cpp
+    lights/point_light.hpp
+    lights/spot_light.cpp
+    lights/spot_light.hpp 
+    lights/tools.cpp
+    lights/tools.hpp 
     shader/shader.cpp
     shader/shader.hpp
     shader/shader_builder.cpp
@@ -198,20 +216,6 @@ set(RB_CORE_SOURCE_FILES
     shader/shader_program.hpp
     shader/shader_stage.cpp
     shader/shader_stage.hpp
-    texture_2d.cpp
-    texture_2d.hpp
-    vertex.hpp
-    lights/directional_light.cpp
-    lights/directional_light.hpp
-    lights/light.cpp
-    lights/light.hpp
-    lights/light_type.hpp
-    lights/point_light.cpp
-    lights/point_light.hpp
-    lights/spot_light.cpp
-    lights/spot_light.hpp 
-    lights/tools.cpp
-    lights/tools.hpp 
     ubo/light_ubo.cpp
     ubo/light_ubo.hpp 
     ubo/matrix_ubo.cpp

@@ -50,4 +50,14 @@ PointLight* PointLight::clone() const
                           constant, linear, quadratic);
 }
 
+glm::mat4 PointLight::_computeProjectionMatrix() const
+{
+    return glm::mat4();
+}
+
+glm::mat4 PointLight::_computeViewMatrix() const
+{
+    return glm::mat4();
+}
+
 }//namespace Renderboi

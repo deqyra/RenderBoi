@@ -24,6 +24,7 @@ RenderBoi:
             ✔ Simplify view matrix retrieval functions @done(20-10-20 14:28)
             ✔ Set the projection matrix in terms of parameters rather than a full matrix @done(20-10-26 16:56)
             ✔ Clean up smart updates depending on parameter values @done(20-10-26 16:56)
+            ✔ Smart update for VP matrix @done(21-07-20 21:06)
         Mesh:
             ☐ Handle several types of draw methods per single mesh
             ✔ Use glMultiDrawElements, adapt mesh generators @done(20-11-05 08:59)
@@ -40,6 +41,7 @@ RenderBoi:
             ✔ Fix attenuation @done(20-11-05 07:27)
             ✔ Fix Blinn-Phong @done(20-11-05 07:27)
             ✔ Fix gamma correction @done(20-11-05 07:27)
+            ☐ Lighting artifacts on weird angles on surfaces and through them
         Texture:
             ☐ Check texture generation success and display error info
         Transform:

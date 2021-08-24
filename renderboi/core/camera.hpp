@@ -6,13 +6,14 @@
 #include <glm/gtx/quaternion.hpp>
 
 #include "interfaces/basis_provider.hpp"
+#include "implementation/parent_dependent_vp_matrix_provider.hpp"
 #include "transform.hpp"
 
 namespace Renderboi
 {
 
 /// @brief A camera managing its own orientation and providing view and projection matrices.
-class Camera : public BasisProvider
+class Camera : public BasisProvider, public ParentDependentVPMatrixProvider
 {
 private:
     /// @brief Direction the camera is facing.
@@ -24,8 +25,9 @@ private:
     /// @brief Upward direction of the camera.
     mutable glm::vec3 _up;
 
-    /// @brief Upwards direction of the object the camera is attached to.
-    Transform _parentTransform;
+    /// @brief Whether or not local vectors need recalculating in order to 
+    /// reflect new parameters.
+    mutable bool _vectorsOutdated;
 
     /// @brief Yaw (rotation around Y) of the camera in degrees.
     float _yaw;
@@ -51,20 +53,8 @@ private:
     /// elements will not be rendered.
     float _farDistance;
 
-    /// @brief Projection matrix of the camera. Provides perspective and 
-    /// lens effect.
-    mutable glm::mat4 _projectionMatrix;
-
-    /// @brief Whether or not the projection matrix needs recalculating in 
-    /// order to reflect new parameters.
-    mutable bool _projectionMatrixOutdated;
-
-    /// @brief Recalculate vectors based on yaw, pitch and parent rotation.
+    /// @brief Recalculate local vectors so they match camera rotation parameters.
     void _updateVectors() const;
-
-    /// @brief Recalculate the projection matrix based on the registered 
-    /// parameters.
-    void _updateProjectionMatrix() const;
 
 public:
     struct CameraParameters
@@ -112,29 +102,6 @@ public:
     /// @param scrollOffset How much the camera was zoomed in or out.
     void processZoom(const float scrollOffset);
 
-    /// @brief Get the world transform of the parent of the camera.
-    ///
-    /// @return The world transform of the parent of the camera.
-    Transform getParentTransform() const;
-
-    /// @brief Update the registered world transform of the parent of the camera.
-    ///
-    /// @param transform New world transform of the parent of the camera.
-    void setParentTransform(const Transform& parentTransform);
-
-    /// @brief Get the view matrix of the camera from its view point.
-    ///
-    /// @return The view matrix of the camera.
-    glm::mat4 getViewMatrix() const;
-    
-    /// @brief Transform vector coordinates from world space to view space 
-    /// from the camera view point.
-    ///
-    /// @param worldPosition Coordinates to transform into view space.
-    ///
-    /// @return The transformed coordinates.
-    glm::vec3 worldPositionToViewSpace(const glm::vec3& worldPosition);
-
     /// @brief Get the vertical field of view of the camera.
     ///
     /// @return The angle of the vertical field of view of the camera.
@@ -175,18 +142,6 @@ public:
     ///
     /// @param farDistance The new distance to the far plane of the camera.
     void setFarDistance(const float farDistance);
-    
-    /// @brief Get the projection matrix of the camera.
-    ///
-    /// @return The projection matrix of the camera.
-    glm::mat4 getProjectionMatrix() const;
-    
-    /// @brief Get the view-projection matrix of the camera.
-    ///
-    /// @param viewPoint Position of the camera in world coordinates.
-    ///
-    /// @return The view-projection matrix of the camera.
-    glm::mat4 getViewProjectionMatrix() const;
 
     /////////////////////////////////////////////
     ///                                       ///
@@ -208,6 +163,19 @@ public:
     ///
     /// @return The upwards direction of the camera.
     glm::vec3 up() const override;
+
+protected:
+    ///////////////////////////////////////////////////////////////
+    ///                                                         ///
+    /// Methods overridden from ParentDependentVPMatrixProvider ///
+    ///                                                         ///
+    ///////////////////////////////////////////////////////////////
+
+    /// @brief Compute the actual projection matrix using camera lens parameters.
+    virtual glm::mat4 _computeProjectionMatrix() const override;
+
+    /// @brief Compute the actual view matrix using camera rotation parameters.
+    virtual glm::mat4 _computeViewMatrix() const override;
 };
 
 using CameraPtr = std::shared_ptr<Camera>;
