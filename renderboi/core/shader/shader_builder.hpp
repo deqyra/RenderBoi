@@ -138,9 +138,8 @@ private:
     /// linking failed (error displayed in std::cerr).
     static unsigned int _MakeShaderProgram(const std::vector<unsigned int>& locations);
 
-    /// @brief Process #include directives in shader source code. Generates
-    /// named strings corresponding to the found #include directives and 
-    /// sends them to OpenGL.
+    /// @brief Process #include directives in shader source code by replacing
+    /// them with the text contained in the designated files.
     ///
     /// @param text Source code to process.
     ///
@@ -164,7 +163,7 @@ private:
     ///
     /// @param text Source code to process.
     ///
-    /// @return An array filled with incldue arguments paired with the starting
+    /// @return An array filled with include arguments paired with the starting
     /// position and size of the directive they are part of.
     ///
     /// @exception If an #include directive is found to be badly formatted,

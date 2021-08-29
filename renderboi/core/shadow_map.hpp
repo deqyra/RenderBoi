@@ -21,6 +21,6 @@ private:
     void _GenerateShadowMap();
 };
 
-}
+}//namespace Renderboi
 
 #endif//RENDERBOI__CORE__SHADOW_MAP_HPP
