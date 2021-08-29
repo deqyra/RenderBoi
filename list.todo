@@ -107,6 +107,7 @@ RenderBoi:
             ☐ Transform direction of lights according to the world transform of their object
             ✔ Skip the normal restoration where applicable @done(20-10-24 17:47)
             ✔ Render meshes using a transform, not a matrix @done(20-10-24 17:47)
+            ☐ Occlude objects not in camera FOV
         Scripts:
             ✔ Separate FPSCameraScript into MouseCameraScript and KeyboardMovementScript @done(20-10-20 14:06)
             ✔ Give a camera reference to the KeyboardMovementScript for it to use a proper front vector @done(20-10-20 18:30)

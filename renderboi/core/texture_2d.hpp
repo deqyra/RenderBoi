@@ -48,7 +48,7 @@ public:
     static constexpr unsigned int MaxTextureUnit = GL_TEXTURE31;
     
     /// @brief Amount of texture units that can be handled by the GPU.
-    static constexpr unsigned int MaxTextureUnitCount = MaxTextureUnit - GL_TEXTURE0 + 1;
+    static constexpr unsigned int MaxTextureUnitIndex = MaxTextureUnit - GL_TEXTURE0;
 
     /// @param filename Local path to an image file out of which the texture
     /// should be generated.
@@ -75,9 +75,9 @@ public:
     /// @param unit 0-based index of the unit to which the texture should
     /// be bound.
     ///
-    /// @exception If [unit] is too big and ends up targeting a unit past
-    /// Texture2D::MaxTextureUnit, the function will throw an 
-    /// IndexOutOfBoundsError.
+    /// @exception If [unit] is bigger than MaxTextureUnitIndex and thus ends up
+    /// targeting a unit past Texture2D::MaxTextureUnit, the function will throw 
+    /// an IndexOutOfBoundsError.
     void bind(unsigned int unit) const;
 };
 

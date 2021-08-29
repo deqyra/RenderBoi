@@ -239,7 +239,6 @@ Shader ShaderBuilder::BuildShaderStageFromText(
 	return Shader(location, stage, supportedFeatures);
 }
 
-// There must be `count` arguments after `count`, all of type `unsigned int`.
 unsigned int
 ShaderBuilder::_MakeShaderProgram(const std::vector<unsigned int>& locations)
 {
@@ -261,6 +260,8 @@ ShaderBuilder::_MakeShaderProgram(const std::vector<unsigned int>& locations)
     {
 		glGetProgramInfoLog(program, INFO_BUFFER_SIZE, NULL, info);
 		std::cerr << "Shader linking failed:\n" << info << std::endl;
+        
+        glDeleteProgram(program);
 		return 0;
 	}
 
