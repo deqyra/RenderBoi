@@ -64,7 +64,7 @@ class Factory
         template<MeshType T>
         static SceneObjectPtr MakeSceneObjectWithMesh(
             typename TypeToGenMapping<T>::GenType::Parameters parameters,
-            Material mat = Material(),
+            Material mat = Material(Materials::Default),
             ShaderProgram shader = ShaderBuilder::MinimalShaderProgram()
         );
 

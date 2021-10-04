@@ -19,7 +19,7 @@ class GLFW3Window : public GLWindow
 {
 private:
     using GLFW3WindowFactory = WindowFactory<WindowBackend::GLFW3>;
-    friend class GLFW3WindowFactory;
+    friend GLFW3WindowFactory;
 
     /// @brief Pointer to the managed GLFW window.
     GLFWwindow* _w;
@@ -202,7 +202,7 @@ public:
     /// context must be current on the calling thread.
     ///
     /// @param extName String containing the name of the extension to query.
-    bool extensionSupported(std::string extName);
+    bool extensionSupported(std::string extName) override;
 };
 
 using GLFW3WindowPtr = std::shared_ptr<GLFW3Window>;

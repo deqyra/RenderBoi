@@ -4,7 +4,7 @@
 #                                                                             #
 ###############################################################################
 
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.0)
 
 if(${CMAKE_VERSION} VERSION_LESS 3.12)
     cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
@@ -49,13 +49,13 @@ endif()
 set(CMAKE_CXX_STANDARD 20)
 
 if (NOT ${BUILD_RELEASE})
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        # using Clang
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    if ($<COMPILER_CXX_ID:Clang> MATCHES "Clang")
+        add_definitions(-D_SILENCE_CLANG_CONCEPTS_MESSAGE)
+    elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -g -O0")
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+    elseif (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
         # using Intel C++
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
         set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /Od")
     endif()
 endif()

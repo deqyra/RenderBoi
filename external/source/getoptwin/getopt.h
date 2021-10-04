@@ -45,13 +45,10 @@ EXPRESSLY ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 	#if defined(EXPORTS_GETOPT) && defined(STATIC_GETOPT)
 		#error "The preprocessor definitions of EXPORTS_GETOPT and STATIC_GETOPT can only be used individually"
 	#elif defined(STATIC_GETOPT)
-		#pragma message("Warning static builds of getopt violate the Lesser GNU Public License")
 		#define _GETOPT_API
 	#elif defined(EXPORTS_GETOPT)
-		#pragma message("Exporting getopt library")
 		#define _GETOPT_API __declspec(dllexport)
 	#else
-		#pragma message("Importing getopt library")
 		#define _GETOPT_API __declspec(dllimport)
 	#endif
 
