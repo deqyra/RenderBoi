@@ -3,12 +3,30 @@
 
 #include <string>
 
+#include <cpptools/utility/bitwise_enum_ops.hpp>
+
 #include <renderboi/core/mesh.hpp>
 #include <renderboi/core/material.hpp>
 #include <renderboi/core/shader/shader_program.hpp>
+#include <type_traits>
 
 #include "../component.hpp"
 #include "../component_type.hpp"
+
+namespace Renderboi
+{
+
+enum class MeshRenderTags : char
+{
+    None            = 0x00,
+    Outline         = 0x01,
+    CastShadows     = 0x02,
+};
+
+}// namespace Renderboi
+
+template<>
+struct cpptools::enable_bitwise_enum<Renderboi::MeshRenderTags> : public std::true_type { };
 
 namespace Renderboi
 {
@@ -28,6 +46,10 @@ class MeshComponent : public Component
         
         /// @brief Shader program to render the mesh with.
         ShaderProgram _shader;
+
+        /// @brief Tags describing how the mesh should behave with certain 
+        /// render features.
+        MeshRenderTags _tags;
 
     public:
         /// @param sceneObject Pointer to the scene object which will be parent
@@ -100,6 +122,32 @@ class MeshComponent : public Component
         ///
         /// @param shader The new shader to be used by the component.
         void setShader(const ShaderProgram shader);
+
+        /// @brief Get the render tags associated with the mesh.
+        ///
+        /// @return The render tags associated with the mesh.
+        MeshRenderTags getRenderTags();
+
+        /// @brief Set the render tags for the mesh.
+        ///
+        /// @param tag Render tags to set on the mesh.
+        void setRenderTags(const MeshRenderTags& tags);
+
+        /// @brief Tells whether or not the mesh has a certain render tag.
+        ///
+        /// @return Whether or not the mesh has a certain render tag.
+        bool hasRenderTags(const MeshRenderTags& tags);
+
+        /// @brief Add tags for rendering the mesh.
+        /// 
+        /// @param tag Bitfield describing which render tags to add to the mesh.
+        void addRenderTags(const MeshRenderTags& tags);
+
+        /// @brief Remove tags for rendering the mesh.
+        /// 
+        /// @param tag Bitfield describing which render tags to remove from the
+        /// mesh.
+        void removeRenderTags(const MeshRenderTags& tags);
 
         /////////////////////////////////////////
         ///                                   ///

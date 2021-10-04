@@ -1,5 +1,7 @@
 #include "mesh_component.hpp"
 
+#include <cpptools/utility/bitwise_enum_ops.hpp>
+
 #include <renderboi/core/materials.hpp>
 #include <renderboi/core/shader/shader_builder.hpp>
 
@@ -79,6 +81,34 @@ ShaderProgram MeshComponent::getShader() const
 void MeshComponent::setShader(const ShaderProgram shader)
 {
     _shader = shader;
+}
+
+MeshRenderTags MeshComponent::getRenderTags()
+{
+    return _tags;
+}
+
+void MeshComponent::setRenderTags(const MeshRenderTags& tags)
+{
+    _tags = tags;
+}
+
+bool MeshComponent::hasRenderTags(const MeshRenderTags& tags)
+{
+    using namespace cpptools::bitwise_enum_ops;
+    return (_tags & tags) == tags;
+}
+
+void MeshComponent::addRenderTags(const MeshRenderTags& tags)
+{
+    using namespace cpptools::bitwise_enum_ops;
+    _tags |= tags;
+}
+
+void MeshComponent::removeRenderTags(const MeshRenderTags& tags)
+{
+    using namespace cpptools::bitwise_enum_ops;
+    _tags &= ~tags;
 }
 
 MeshComponent* MeshComponent::clone(const SceneObjectPtr newParent) const

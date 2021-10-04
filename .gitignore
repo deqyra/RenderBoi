@@ -1,7 +1,10 @@
+.cache
+.clangd
 .vs
 .vscode
 bin
 build
+compile_commands.json
 include/glm/out/*
 obj
 output
