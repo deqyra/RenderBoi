@@ -1,6 +1,6 @@
 #include "script_component.hpp"
 
-#include "../scene.hpp"
+#include "../../scene.hpp"
 
 namespace Renderboi
 {

@@ -9,7 +9,7 @@
 
 #include <renderboi/core/frame_of_reference.hpp>
 
-#include "scene.hpp"
+#include "../scene.hpp"
 #include "scene_object.hpp"
 
 /* ╔══════════════════════════════════════════╗

@@ -14,7 +14,7 @@
 #include <renderboi/window/input_processor.hpp>
 
 #include <renderboi/toolbox/script.hpp>
-#include <renderboi/toolbox/scene/scene_object.hpp>
+#include <renderboi/toolbox/scene/object/scene_object.hpp>
 
 #include <cpptools/math/sine_generator.hpp>
 

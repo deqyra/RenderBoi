@@ -6,8 +6,8 @@ endif()
 
 # Create script file to copy headers
 file(WRITE ${CMAKE_BINARY_DIR}/cp_${GETOPT_WIN_LIB_NAME}_headers.cmake
-    "file(COPY ${CMAKE_CURRENT_SOURCE_DIR}
-        DESTINATION ${EXPORT_LOCATION}/include
+    "file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}\"
+        DESTINATION \"${EXPORT_LOCATION}/include\"
         FILES_MATCHING
         PATTERN \"*.h\"
     )\n"

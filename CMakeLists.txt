@@ -293,27 +293,27 @@ set(RB_TOOLBOX_SOURCE_FILES
     mesh_generators/torus_generator.hpp
     mesh_generators/mesh_type.hpp
     mesh_generators/type_to_gen_mapping.hpp
-    scene/component.cpp
-    scene/component.hpp 
-    scene/component_type.hpp 
-    scene/object_transform.cpp
-    scene/object_transform.hpp
     scene/scene.cpp
     scene/scene.hpp 
-    scene/scene_object_metadata.hpp 
-    scene/scene_object.cpp
-    scene/scene_object.hpp 
-    scene/scene_renderer.cpp
-    scene/scene_renderer.hpp 
-    scene/components/all_components.hpp 
-    scene/components/camera_component.cpp
-    scene/components/camera_component.hpp 
-    scene/components/light_component.cpp
-    scene/components/light_component.hpp 
-    scene/components/mesh_component.cpp
-    scene/components/mesh_component.hpp 
-    scene/components/script_component.cpp
-    scene/components/script_component.hpp 
+    scene/object/component.cpp
+    scene/object/component.hpp 
+    scene/object/component_type.hpp 
+    scene/object/object_transform.cpp
+    scene/object/object_transform.hpp
+    scene/object/scene_object_metadata.hpp 
+    scene/object/scene_object.cpp
+    scene/object/scene_object.hpp 
+    scene/object/components/all_components.hpp 
+    scene/object/components/camera_component.cpp
+    scene/object/components/camera_component.hpp 
+    scene/object/components/light_component.cpp
+    scene/object/components/light_component.hpp 
+    scene/object/components/mesh_component.cpp
+    scene/object/components/mesh_component.hpp 
+    scene/object/components/script_component.cpp
+    scene/object/components/script_component.hpp 
+    scene/renderer/scene_renderer.cpp
+    scene/renderer/scene_renderer.hpp 
     runnables/basic_window_manager.cpp
     runnables/basic_window_manager.hpp 
     runnables/camera_aspect_ratio_manager.cpp

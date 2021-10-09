@@ -15,8 +15,8 @@
 #include <cpptools/container/tree.hpp>
 
 #include "../script.hpp"
-#include "scene_object.hpp"
-#include "scene_object_metadata.hpp"
+#include "object/scene_object.hpp"
+#include "object/scene_object_metadata.hpp"
 
 namespace Renderboi
 {
