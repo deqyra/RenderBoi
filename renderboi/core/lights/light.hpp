@@ -27,6 +27,8 @@ protected:
     Light(const LightType type);
 
 public:
+    virtual ~Light() = default;
+
     /// @brief ID of the light instance.
     const unsigned int id;
 

@@ -10,10 +10,10 @@
 #include "mesh_generators/mesh_type.hpp"
 #include "mesh_generators/type_to_gen_mapping.hpp"
 #include "scene/scene.hpp"
-#include "scene/scene_object.hpp"
-#include "scene/component.hpp"
-#include "scene/components/mesh_component.hpp"
-#include "scene/components/script_component.hpp"
+#include "scene/object/scene_object.hpp"
+#include "scene/object/component.hpp"
+#include "scene/object/components/mesh_component.hpp"
+#include "scene/object/components/script_component.hpp"
 
 namespace Renderboi
 {

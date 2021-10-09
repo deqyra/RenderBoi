@@ -101,7 +101,7 @@ public:
     /// upon attempting to set the monitor to the maximum video mode.
     ///
     /// @return The "largest" video mode supported by the monitor.
-    VideoMode getLargestVideoMode() const;
+    VideoMode getLargestVideoMode() const override;
 };
 
 using GLFW3MonitorPtr = std::shared_ptr<GLFW3Monitor>;

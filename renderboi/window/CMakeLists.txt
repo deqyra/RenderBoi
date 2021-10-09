@@ -82,8 +82,8 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config/env_info.config.hpp" "${CMAKE
 
 # Generate script file to copy headers
 file(WRITE ${CMAKE_BINARY_DIR}/cp_${RB_WINDOW_LIB_NAME}_headers.cmake
-    "file(COPY ${CMAKE_CURRENT_SOURCE_DIR}
-        DESTINATION ${EXPORT_LOCATION}/include/renderboi
+    "file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}\"
+        DESTINATION \"${EXPORT_LOCATION}/include/renderboi\"
         FILES_MATCHING
         PATTERN \"*.hpp\"
    )\n"

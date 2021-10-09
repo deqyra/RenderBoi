@@ -25,10 +25,10 @@
 #include <renderboi/toolbox/controls/controlled_entity_manager.hpp>
 #include <renderboi/toolbox/mesh_generators/mesh_type.hpp>
 #include <renderboi/toolbox/scene/scene.hpp>
-#include <renderboi/toolbox/scene/scene_renderer.hpp>
-#include <renderboi/toolbox/scene/scene_object.hpp>
-#include <renderboi/toolbox/scene/component_type.hpp>
-#include <renderboi/toolbox/scene/components/all_components.hpp>
+#include <renderboi/toolbox/scene/object/scene_object.hpp>
+#include <renderboi/toolbox/scene/object/component_type.hpp>
+#include <renderboi/toolbox/scene/object/components/all_components.hpp>
+#include <renderboi/toolbox/scene/renderer/scene_renderer.hpp>
 #include <renderboi/toolbox/runnables/input_logger.hpp>
 #include <renderboi/toolbox/runnables/mouse_camera_manager.hpp>
 #include <renderboi/toolbox/runnables/keyboard_movement_script.hpp>

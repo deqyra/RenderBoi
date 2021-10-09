@@ -3,13 +3,12 @@
 
 #include <memory>
 
-#include "scene/scene_object.hpp"
+#include "scene/object/scene_object.hpp"
 
 namespace Renderboi
 {
 
-/// @brief Abstract class to autonomously update scene object on a per-frame 
-/// basis.
+/// @brief Abstract class to autonomously update scene objects.
 class Script
 {
     private:

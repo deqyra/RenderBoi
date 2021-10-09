@@ -15,7 +15,7 @@
 
 #include "../factory.hpp"
 #include "../script.hpp"
-#include "scene_object.hpp"
+#include "object/scene_object.hpp"
 
 namespace Renderboi
 {
@@ -276,6 +276,7 @@ void Scene::triggerUpdate()
         script->update((float)(delta.count()));
     }
 }
+
 void Scene::_init()
 {
     const ObjectTree::NodePtr objectRootNode = _objects.getRoot();
@@ -289,11 +290,11 @@ void Scene::_init()
     // Set and map metadata
     const SceneObjectMetadata meta = {
         objectRootNode->value->id,  // ID of the object this metadata refers to
-        _MaxUInt,                    // ID of the object which is parent to the object this metadata refers to
+        _MaxUInt,                   // ID of the object which is parent to the object this metadata refers to
         objectRootNode->id,         // ID of the graph node containing the object
         transformRootNode->id,      // ID of the graph node containing the world matrix of the object
         updateRootNode->id,         // ID of the graph node containing the update flag of the object
-        _MaxUInt                     // ID of the subscription to the transform notifier of the object
+        _MaxUInt                    // ID of the subscription to the transform notifier of the object
     };
     _objectMetadata[meta.id] = meta;
 }

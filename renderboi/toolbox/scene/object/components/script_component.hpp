@@ -5,7 +5,7 @@
 
 #include "../component.hpp"
 #include "../component_type.hpp"
-#include "../../script.hpp"
+#include "../../../script.hpp"
 
 namespace Renderboi
 {

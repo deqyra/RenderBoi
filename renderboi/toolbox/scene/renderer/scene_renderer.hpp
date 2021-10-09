@@ -13,9 +13,9 @@
 #include <renderboi/core/ubo/matrix_ubo.hpp>
 #include <renderboi/core/ubo/light_ubo.hpp>
 
-#include "scene.hpp"
-#include "scene_object.hpp"
-#include "component.hpp"
+#include "../scene.hpp"
+#include "../object/scene_object.hpp"
+#include "../object/component.hpp"
 
 namespace Renderboi
 {

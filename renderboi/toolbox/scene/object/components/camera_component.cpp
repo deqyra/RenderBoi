@@ -1,6 +1,6 @@
 #include "camera_component.hpp"
 
-#include "../scene.hpp"
+#include "../../scene.hpp"
 #include "../scene_object.hpp"
 #include "../object_transform.hpp"
 

@@ -6,9 +6,9 @@ namespace Renderboi
 {
 
 const std::unordered_map<Framebuffer::Mode, unsigned int> Framebuffer::_targetMap = {
-    {Mode::ReadWrite, GL_FRAMEBUFFER},
-    {Mode::Read, GL_READ_FRAMEBUFFER},
-    {Mode::Write, GL_DRAW_FRAMEBUFFER}
+    {Mode::ReadWrite,   GL_FRAMEBUFFER},
+    {Mode::Read,        GL_READ_FRAMEBUFFER},
+    {Mode::Write,       GL_DRAW_FRAMEBUFFER}
 };
 
 Framebuffer::Framebuffer() :

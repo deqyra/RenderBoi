@@ -18,11 +18,11 @@
 #include <renderboi/toolbox/mesh_generators/plane_generator.hpp>
 #include <renderboi/toolbox/mesh_generators/torus_generator.hpp>
 #include <renderboi/toolbox/scene/scene.hpp>
-#include <renderboi/toolbox/scene/scene_object.hpp>
-#include <renderboi/toolbox/scene/scene_renderer.hpp>
-#include <renderboi/toolbox/scene/components/camera_component.hpp>
-#include <renderboi/toolbox/scene/components/light_component.hpp>
-#include <renderboi/toolbox/scene/components/mesh_component.hpp>
+#include <renderboi/toolbox/scene/object/scene_object.hpp>
+#include <renderboi/toolbox/scene/object/components/camera_component.hpp>
+#include <renderboi/toolbox/scene/object/components/light_component.hpp>
+#include <renderboi/toolbox/scene/object/components/mesh_component.hpp>
+#include <renderboi/toolbox/scene/renderer/scene_renderer.hpp>
 #include <renderboi/toolbox/runnables/basic_window_manager.hpp>
 #include <renderboi/toolbox/runnables/camera_aspect_ratio_manager.hpp>
 #include <renderboi/toolbox/runnables/gamepad_movement_script.hpp>

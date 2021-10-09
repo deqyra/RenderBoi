@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "scene/scene.hpp"
-#include "scene/scene_object.hpp"
+#include "scene/object/scene_object.hpp"
 
 namespace Renderboi
 {

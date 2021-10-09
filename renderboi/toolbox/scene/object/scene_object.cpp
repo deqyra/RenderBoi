@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-#include "scene.hpp"
+#include "../scene.hpp"
 
 namespace Renderboi
 {
