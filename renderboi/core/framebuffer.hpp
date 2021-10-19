@@ -23,7 +23,8 @@ private:
     /// @brief The location of the framebuffer resource on the GPU.
     unsigned int _location;
 
-    /// @brief Map keeping track of the framebuffer locations currently
+    /// @brief Map keeping track of the framebuffer locations currently being 
+    /// bound to the GL context.
     static const std::unordered_map<Mode, unsigned int> _targetMap;
 
 public:
