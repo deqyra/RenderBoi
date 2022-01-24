@@ -1,6 +1,7 @@
 #include "scene_object.hpp"
 
 #include <stdexcept>
+#include <unordered_map>
 
 #include "../scene.hpp"
 
@@ -22,10 +23,13 @@ SceneObject::SceneObject(std::string name) :
 
 SceneObject::~SceneObject()
 {
-    for (const auto& component : _components)
-    {
-        component->_releaseSceneObject();
-    }
+    clearComponents();
+    clearRenderTraitConfigs();
+}
+
+void SceneObject::_setScene(ScenePtr scene)
+{
+    _scene = scene;
 }
 
 void SceneObject::init()
@@ -43,11 +47,6 @@ ScenePtr SceneObject::getScene() const
     return _scene;
 }
 
-void SceneObject::setScene(ScenePtr scene)
-{
-    _scene = scene;
-}
-
 SceneObjectPtr SceneObject::clone() const
 {
     SceneObjectPtr clonedObject = std::make_shared<SceneObject>();
@@ -63,15 +62,27 @@ SceneObjectPtr SceneObject::clone() const
     return clonedObject;
 }
 
+void SceneObject::clearComponents()
+{
+    for (const auto& component : _components)
+    {
+        component->_release();
+    }
+    _components = std::vector<ComponentPtr>();
+}
+
+void SceneObject::clearRenderTraitConfigs()
+{
+    for (const auto& [trait, config] : _renderTraitConfigs)
+    {
+        config->_release();
+    }
+    _renderTraitConfigs = std::unordered_map<RenderTrait, RenderTraitConfigPtr>();
+}
+
 std::vector<ComponentPtr> SceneObject::getAllComponents() const
 {
-    std::vector<ComponentPtr> components;
-    components.reserve(_components.size());
-
-    // During this copy, all ComponentPtrs are copied as ComponentsWPtrs)
-    std::copy(_components.begin(), _components.end(), std::back_inserter(components));
-
-    return components;
+    return _components;
 }
 
 }//namespace Renderboi

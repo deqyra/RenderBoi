@@ -9,6 +9,7 @@
 #include <string>
 #include <stdexcept>
 #include <type_traits>
+#include <unordered_map>
 #include <vector>
 
 #include <renderboi/core/transform.hpp>
@@ -18,6 +19,8 @@
 #include "object_transform.hpp"
 #include "component.hpp"
 #include "component_type.hpp"
+#include "../../render/traits/render_trait.hpp"
+#include "../../render/traits/render_trait_config.hpp"
 
 namespace Renderboi
 {
@@ -27,7 +30,8 @@ using ScenePtr = std::shared_ptr<Scene>;
 using SceneWPtr = std::weak_ptr<Scene>;
 
 /// @brief An object meant to be part of a scene. Abstract entity made up of 
-/// components which give it concrete aspects in the context of a scene.
+/// components which give it concrete aspects in the context of a scene. Also
+/// contains information on how to draw itself.
 class SceneObject : public std::enable_shared_from_this<SceneObject>
 {
 friend Scene;
@@ -43,13 +47,16 @@ private:
     /// @brief Components making up this scene object.
     std::vector<ComponentPtr> _components;
 
+    /// @brief How the object should be rendered according to certain traits.
+    std::unordered_map<RenderTrait, RenderTraitConfigPtr> _renderTraitConfigs;
+
     /// @brief Pointer to the parent scene of this object.
     ScenePtr _scene;
 
     /// @brief Set the parent scene of this object.
     ///
     /// @param scene A pointer to the new parent scene of this object.
-    void setScene(const ScenePtr scene);
+    void _setScene(const ScenePtr scene);
 
 public:
     /// @param name Name to give to the scene object.
@@ -72,12 +79,12 @@ public:
     /// @return A pointer to the parent scene of this object.
     ScenePtr getScene() const;
 
-    /// @brief Get a raw pointer to a new scene object instance cloned from
+    /// @brief Get a shared pointer to a new scene object instance cloned from
     /// this one. All components are cloned as well. Ownership and 
     /// responsibility for the allocated resources are fully transferred to
-    /// the caller.
+    /// the caller (although wrapped in a shared pointer).
     ///
-    /// @return A raw pointer to the cloned scene object instance.
+    /// @return A shared pointer to the cloned scene object instance.
     SceneObjectPtr clone() const;
 
     /// @brief Construct a component and add it to this object.
@@ -125,6 +132,12 @@ public:
     /// @return An array of pointers to all the components this object is 
     /// made of.
     std::vector<ComponentPtr> getAllComponents() const;
+
+    /// @brief Clear components.
+    void clearComponents();
+
+    /// @brief Clear render traits.
+    void clearRenderTraitConfigs();
 
     /// @brief Unique ID of the object.
     const unsigned int id;
