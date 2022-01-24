@@ -4,8 +4,11 @@
 namespace Renderboi
 {
 
+/// @brief Collection of literals describing different aspects of an object to
+/// be rendered.
 enum class RenderTrait
 {
+    Mesh,
     Outline,
     CastShadows
 };

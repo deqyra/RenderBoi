@@ -101,6 +101,7 @@ RenderBoi:
             ✔ Keep a shared pointer to the scene @done(20-10-21 19:59)
             ☐ Remove component
             ☐ Add object tags (bitfield enum)
+            ☐ Move Shader and Material from MeshComponent to MeshRenderTraitConfig?
             ☐ Serialisation
         SceneRenderer:
             ✔ Implement a framerate limiter @done(20-10-19 21:49)

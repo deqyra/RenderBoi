@@ -20,7 +20,7 @@ ScriptComponent::ScriptComponent(const SceneObjectPtr sceneObject, const ScriptP
 
 ScriptComponent::~ScriptComponent()
 {
-    _releaseSceneObject();
+    _release();
 }
 
 ScriptPtr ScriptComponent::getScript() const
@@ -71,7 +71,7 @@ void ScriptComponent::_detachScript()
     scene->detachScript(_script->id);
 }
 
-void ScriptComponent::_releaseSceneObject()
+void ScriptComponent::_release()
 {
     _detachScript();
     _sceneObject.reset();

@@ -285,7 +285,7 @@ void Scene::_init()
 
     // Reset the object graph root node pointer to a scene object initialized with a pointer to this Scene.
     objectRootNode->value.reset(new SceneObject("SCENE_ROOT"));
-    objectRootNode->value->setScene(this->shared_from_this());
+    objectRootNode->value->_setScene(this->shared_from_this());
 
     // Set and map metadata
     const SceneObjectMetadata meta = {
@@ -304,7 +304,9 @@ void Scene::_terminate()
     // Remove scene references in all scene objects, unsubscribe scene from object updates
     for (const auto& [_, meta] : _objectMetadata)
     {
-        _objects[meta.id]->value->setScene(nullptr);
+        _objects[meta.id]->value->clearComponents();
+        _objects[meta.id]->value->clearRenderTraitConfigs();
+        _objects[meta.id]->value->_setScene(nullptr);
         _objects[meta.id]->value->transform.getNotifier().deleteSubscriber(meta.transformSubscriberId);
     }
 
@@ -389,7 +391,7 @@ SceneObjectMetadata Scene::_findObjectMetaOrThrow(const unsigned int id, const s
 void Scene::_performObjectRegistration(const SceneObjectPtr object, const SceneObjectMetadata& parentMeta)
 {
     // Set the scene pointer upon registering the object
-    object->setScene(this->shared_from_this());
+    object->_setScene(this->shared_from_this());
 
     const Transform parentTransform = _transforms[parentMeta.transformNodeId]->value;
     // Get transform of new object and apply parent transform to it

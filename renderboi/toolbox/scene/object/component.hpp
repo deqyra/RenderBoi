@@ -68,7 +68,7 @@ protected:
     SceneObjectPtr _sceneObject;
 
     /// @brief Release the parent scene object pointer.
-    virtual void _releaseSceneObject();
+    virtual void _release();
 
 public:
     virtual ~Component();

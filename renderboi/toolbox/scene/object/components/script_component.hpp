@@ -28,7 +28,7 @@ class ScriptComponent : public Component
         void _detachScript();
 
         /// @brief Release the parent scene object pointer.
-        void _releaseSceneObject() override;
+        void _release() override;
 
     public:
         /// @param sceneObject Pointer to the scene object which will be parent

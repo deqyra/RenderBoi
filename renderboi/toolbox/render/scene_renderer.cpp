@@ -14,12 +14,12 @@
 #include <renderboi/core/ubo/matrix_ubo.hpp>
 #include <renderboi/core/ubo/light_ubo.hpp>
 
-#include "../scene.hpp"
-#include "../object/scene_object.hpp"
-#include "../object/component.hpp"
-#include "../object/components/mesh_component.hpp"
-#include "../object/components/light_component.hpp"
-#include "../object/components/camera_component.hpp"
+#include "../scene/scene.hpp"
+#include "../scene/object/scene_object.hpp"
+#include "../scene/object/component.hpp"
+#include "../scene/object/components/mesh_component.hpp"
+#include "../scene/object/components/light_component.hpp"
+#include "../scene/object/components/camera_component.hpp"
 
 namespace Renderboi
 {

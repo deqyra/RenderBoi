@@ -26,7 +26,7 @@ Component::Component(const ComponentType type, const SceneObjectPtr sceneObject)
 
 Component::~Component()
 {
-    _releaseSceneObject();
+    _release();
 }
 
 SceneObjectPtr Component::getSceneObject() const
@@ -34,7 +34,7 @@ SceneObjectPtr Component::getSceneObject() const
     return _sceneObject;
 }
 
-void Component::_releaseSceneObject()
+void Component::_release()
 {
     _sceneObject.reset();
 }
