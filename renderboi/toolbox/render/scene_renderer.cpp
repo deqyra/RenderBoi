@@ -1,6 +1,7 @@
 #include "scene_renderer.hpp"
 
 #include <chrono>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <thread>
@@ -21,7 +22,7 @@
 #include "../scene/object/components/light_component.hpp"
 #include "../scene/object/components/camera_component.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 SceneRenderer::SceneRenderer(const unsigned int framerateLimit) :
@@ -33,14 +34,14 @@ SceneRenderer::SceneRenderer(const unsigned int framerateLimit) :
 
 }
 
-void SceneRenderer::renderScene(const ScenePtr scene) const
+void SceneRenderer::renderScene(Scene& scene) const
 {
-    scene->updateAllTransforms();
+    scene.updateAllTransforms();
 
     // Get pointers to meshes, lights, and the scene camera
-    const std::vector<SceneObjectPtr> meshObjects = scene->getObjectsWithComponent<MeshComponent>();
-    const std::vector<SceneObjectPtr> lightObjects = scene->getObjectsWithComponent<LightComponent>();
-    const std::vector<SceneObjectPtr> cameraObjects = scene->getObjectsWithComponent<CameraComponent>();
+    const ObjectVector meshObjects = scene.getObjectsWithComponent<ComponentType::Mesh>();
+    const ObjectVector lightObjects = scene.getObjectsWithComponent<ComponentType::Light>();
+    const ObjectVector cameraObjects = scene.getObjectsWithComponent<ComponentType::Camera>();
 
     if (cameraObjects.size() == 0)
     {
@@ -54,24 +55,24 @@ void SceneRenderer::renderScene(const ScenePtr scene) const
     }
 
     // Get the actual camera
-    const SceneObjectPtr cameraObj = cameraObjects[0];
-    const std::shared_ptr<CameraComponent> cameraComp = cameraObj->getComponent<CameraComponent>();
+    const SceneObject& cameraObj = cameraObjects[0];
+    const CameraComponent& cameraComp = cameraObj.componentMap().getComponent<ComponentType::Camera>();
 
     // Set up matrices in their UBO
-    const glm::mat4 view = cameraComp->getViewMatrix();
-    const glm::mat4 projection = cameraComp->getProjectionMatrix();
+    const glm::mat4 view = cameraComp.getViewMatrix();
+    const glm::mat4 projection = cameraComp.getProjectionMatrix();
     _matrixUbo.setView(view);
     _matrixUbo.setProjection(projection);
 
     // Preprocess lights
-    std::vector<LightPtr> lights;
+    LightVector lights;
     std::vector<Transform> worldTransforms;
-    for (const auto& lightObj : lightObjects)
+    for (const SceneObject& lightObj : lightObjects)
     {
-        std::shared_ptr<LightComponent> lightComp = lightObj->getComponent<LightComponent>();
+        LightComponent& lightComp = lightObj.componentMap().getComponent<ComponentType::Light>();
         // Get the actual light and its world model matrix (needed to compute its world position)
-        lights.push_back(lightComp->getLight());
-        worldTransforms.push_back(scene->getWorldTransform(lightObj->id));
+        lights.push_back(lightComp.light());
+        worldTransforms.push_back(scene.getWorldTransform(lightObj.id));
     }
     _sendLightData(lights, worldTransforms, view);
 
@@ -85,7 +86,7 @@ void SceneRenderer::renderScene(const ScenePtr scene) const
     for (const auto& meshObj : meshObjects)
     {
         // Draw the mesh
-        drawMesh(meshObj, cameraComp->getViewMatrix());
+        drawMesh(meshObj, cameraComp.getViewMatrix());
     }
 }
 
@@ -95,7 +96,7 @@ void SceneRenderer::setFramerateLimit(const unsigned int framerateLimit)
 }
 
 void SceneRenderer::_sendLightData(
-    const std::vector<LightPtr>& lights,
+    const LightVector& lights,
     const std::vector<Transform>& worldTransforms,
     const glm::mat4& view
 ) const
@@ -107,18 +108,18 @@ void SceneRenderer::_sendLightData(
 
     for (unsigned int i = 0; i < lights.size(); i++)
     {
-        LightPtr light = lights[i];
+        Light& light = lights[i];
         glm::vec3 position = glm::vec3(view * glm::vec4(worldTransforms[i].getPosition(), 1.f));
 
-        switch (light->lightType)
+        switch (light.lightType)
         {
             case LightType::PointLight:
                 if (pLightIndex < LightUBO::PointLightMaxCount)
                 {
                     // Retrieve the light as a PointLight
-                    std::shared_ptr<PointLight> pLight = std::static_pointer_cast<PointLight>(light);
+                    PointLight& pLight = static_cast<PointLight&>(light);
                     // Send it to the UBO
-                    _lightUbo.setPoint(pLightIndex++, *pLight, position);
+                    _lightUbo.setPoint(pLightIndex++, pLight, position);
                 }
                 else
                 {
@@ -130,9 +131,9 @@ void SceneRenderer::_sendLightData(
                 if (sLightIndex < LightUBO::SpotLightMaxCount)
                 {
                     // Retrieve the light as a SpotLight
-                    std::shared_ptr<SpotLight> sLight = std::static_pointer_cast<SpotLight>(light);
+                    SpotLight& sLight = static_cast<SpotLight&>(light);
                     // Send it to the UBO
-                    _lightUbo.setSpot(sLightIndex++, *sLight, position);
+                    _lightUbo.setSpot(sLightIndex++, sLight, position);
                 }
                 else
                 {
@@ -144,9 +145,9 @@ void SceneRenderer::_sendLightData(
                 if (dLightIndex < LightUBO::DirectionalLightMaxCount)
                 {
                     // Retrieve the light as a DirectionalLight
-                    std::shared_ptr<DirectionalLight> dLight = std::static_pointer_cast<DirectionalLight>(light);
+                    DirectionalLight& dLight = static_cast<DirectionalLight&>(light);
                     // Send it to the UBO
-                    _lightUbo.setDirectional(dLightIndex++, *dLight);
+                    _lightUbo.setDirectional(dLightIndex++, dLight);
                 }
                 else
                 {
@@ -163,9 +164,9 @@ void SceneRenderer::_sendLightData(
     _lightUbo.setDirectionalCount(dLightIndex);
 }
 
-void SceneRenderer::drawMesh(const SceneObjectPtr meshObject, const glm::mat4& viewMatrix) const
+void SceneRenderer::drawMesh(SceneObject& meshObject, const glm::mat4& viewMatrix) const
 {
-    const Transform objectTransform = meshObject->getWorldTransform();
+    const Transform objectTransform = meshObject.worldTransform();
     const glm::mat4 modelMatrix = objectTransform.getModelMatrix();
 
     // Detect non uniform scaling: compute the dot product of the world scale
@@ -186,11 +187,11 @@ void SceneRenderer::drawMesh(const SceneObjectPtr meshObject, const glm::mat4& v
     _matrixUbo.setModel(modelMatrix);
     _matrixUbo.setNormal(normalMatrix);
 
-    const std::shared_ptr<MeshComponent> meshComponent = meshObject->getComponent<MeshComponent>();
+    MeshComponent& meshComponent = meshObject.componentMap().getComponent<ComponentType::Mesh>();
     
     // Set up shader and material
-    const Material material = meshComponent->getMaterial();
-    ShaderProgram shader = meshComponent->getShader();
+    const Material& material = meshComponent.material();
+    ShaderProgram& shader = meshComponent.shader();
     shader.use();
     material.bindTextures();
 
@@ -199,7 +200,7 @@ void SceneRenderer::drawMesh(const SceneObjectPtr meshObject, const glm::mat4& v
         shader.setMaterial("material", material);
     }
 
-    meshComponent->getMesh()->draw();
+    meshComponent.mesh().draw();
 }
 
-}//namespace Renderboi
+} // namespace renderboi

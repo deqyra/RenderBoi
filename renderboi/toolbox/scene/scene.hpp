@@ -7,6 +7,7 @@
 #include <limits>
 #include <memory>
 #include <tuple>
+#include <type_traits>
 #include <unordered_map>
 #include <vector>
 
@@ -15,10 +16,11 @@
 #include <cpptools/container/tree.hpp>
 
 #include "../script.hpp"
+#include "object/component_type.hpp"
 #include "object/scene_object.hpp"
 #include "object/scene_object_metadata.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 class Factory;
@@ -26,7 +28,8 @@ class Factory;
 /// @brief A scene containing 3D objects organised in a tree structure. Handles
 /// self-updating scripts and processes input from the application. Use Factory
 /// to instantiate and terminate.
-class Scene : public std::enable_shared_from_this<Scene>
+
+class Scene
 {
 friend Factory;
 
@@ -48,14 +51,14 @@ private:
     /// whether the transforms of the mirrored scene objects need an update.
     BoolTree _updateMarkers;
 
-    /// @brief Tells whether all transforms in the scene are up to date.
+    /// @brief Indicates how many transforms in the scene are out of date.
     mutable unsigned int _outdatedTransformNodes;
 
     /// @brief Map scene object IDs to object metadata structs.
     std::unordered_map<unsigned int, SceneObjectMetadata> _objectMetadata;
 
-    /// @brief Map script IDs to script pointers.
-    std::unordered_map<unsigned int, ScriptPtr> _scripts;
+    /// @brief Map script IDs to script references.
+    std::unordered_map<unsigned int, Script&> _scripts;
 
     /// @brief Last time a scene update was triggered.
     std::chrono::time_point<std::chrono::system_clock> _lastTime;
@@ -98,33 +101,29 @@ private:
     /// @exception If the provided ID does not match that of an object 
     /// registered in the scene, the function will throw a 
     /// std::runtime_error.
-    SceneObjectMetadata _findObjectMetaOrThrow(const unsigned int id, const std::string& failureMessage) const;
+    SceneObjectMetadata& _findObjectMetaOrThrow(const unsigned int id, const std::string& failureMessage);
 
-    /// @brief Check that the provided pointer to a scene object is not 
-    /// null, or throw.
-    ///
-    /// @param object Pointer to check.
-    ///
-    /// @exception If the provided pointer is null, the function will throw
-    /// a std::runtime_error.
-    void _checkNotNullOrThrow(const SceneObjectPtr object) const;
-
-    /// @brief Check that the provided scene object has no parent scene, or
+    /// @brief Get the metadata entry for the object of provided ID, or 
     /// throw an exception.
     ///
-    /// @param object Pointer to the object to check.
+    /// @param id ID of the object whose metadata to find.
+    /// @param failureMessage Quick indicating in which context a bad ID was
+    /// provided.
     ///
-    /// @exception If the provided scene object already has a parent scene, 
-    /// the function will throw a std::runtime_error.
-    void _verifyNoParentSceneOrThrow(const SceneObjectPtr object) const;
+    /// @return The metadata entry of the object of provided ID, if found.
+    ///
+    /// @exception If the provided ID does not match that of an object 
+    /// registered in the scene, the function will throw a 
+    /// std::runtime_error.
+    const SceneObjectMetadata& _findObjectMetaOrThrow(const unsigned int id, const std::string& failureMessage) const;
 
     /// @brief Perform the actual scene object registration. Call after all
     /// sanity checks have passed.
     ///
-    /// @param object Pointer to the object to register in the scene.
+    /// @param object Reference to the object to register in the scene.
     /// @param parentMeta Metadata entry for the scene object which should 
     /// be parent the newly registered scene object.
-    void _performObjectRegistration(const SceneObjectPtr object, const SceneObjectMetadata& parentMeta);
+    void _performObjectRegistration(SceneObjectPtr&& object, const SceneObjectMetadata& parentMeta);
 
     /// @brief Recursively update world transforms in a DFS traversal of the
     /// transform tree.
@@ -168,24 +167,25 @@ private:
 
 public:
     Scene();
+    ~Scene();
 
     /// @brief Get a pointer to the object of provided ID.
     ///
     /// @param id ID of the object whose pointer to get.
     ///
-    /// @return A pointer to the object of provided ID.
+    /// @return A reference to the object of provided ID.
     ///
     /// @exception If the provided ID does not match that of an object 
     /// present in the scene, the function will throw a std::runtime_error.
-    SceneObjectPtr operator[](const unsigned int id);
+    SceneObject& operator[](const unsigned int id);
 
     /// @brief Create a new object and attach it to the graph as a root 
     /// child.
     ///
     /// @param name Name to give to the scene object.
     ///
-    /// @return A pointer to the newly created object.
-    SceneObjectPtr newObject(const std::string name = "");
+    /// @return A reference to the newly created object.
+    SceneObject& newObject(const std::string& name = "");
 
     /// @brief Create a new object and attach it to the graph as a child of
     /// the object with provided ID.
@@ -193,11 +193,11 @@ public:
     /// @param parentId ID of the object which should be parent to the newly
     /// created object.
     ///
-    /// @return A pointer to the newly created object.
+    /// @return A reference to the newly created object.
     ///
     /// @exception If the provided ID does not match that of an object 
     /// present in the scene, the function will throw a std::runtime_error.
-    SceneObjectPtr newObject(const unsigned int parentId);
+    SceneObject& newObject(const unsigned int parentId);
 
     /// @brief Create a new object and attach it to the graph as a child of
     /// the object with provided ID.
@@ -206,34 +206,11 @@ public:
     /// @param parentId ID of the object which should be parent to the newly
     /// created object.
     ///
-    /// @return A pointer to the newly created object.
+    /// @return A reference to the newly created object.
     ///
     /// @exception If the provided ID does not match that of an object 
     /// present in the scene, the function will throw a std::runtime_error.
-    SceneObjectPtr newObject(const std::string name, const unsigned int parentId);
-
-    /// @brief Register an object in the scene as a root child.
-    ///
-    /// @param object Poitner to the object to register.
-    ///
-    /// @exception If the scene object is already registered to a scene, 
-    /// whether it is this scene or another one, the function will throw a
-    /// std::runtime_error.
-    void registerObject(const SceneObjectPtr object);
-
-    /// @brief Register an object in the scene as a child of the object
-    /// with provided ID.
-    ///
-    /// @param object Poitner to the object to register.
-    /// @param parentId ID of the object which should be parent to the newly
-    /// registered object.
-    ///
-    /// @exception If the scene object is already registered to a scene, 
-    /// whether it is this scene or another one, the function will throw a
-    /// std::runtime_error. If the provided ID does not match that of an 
-    /// object present in the scene, the function will throw a 
-    /// std::runtime_error.
-    void registerObject(const SceneObjectPtr object, const unsigned int parentId);
+    SceneObject& newObject(const std::string& name, const unsigned int parentId);
 
     /// @brief Remove the object with provided ID from the scene, as well as
     /// all of its children.
@@ -281,7 +258,7 @@ public:
     ///
     /// @exception If the provided ID does not match that of an object 
     /// present in the scene, the function will throw a std::runtime_error.
-    SceneObjectPtr getParent(const unsigned int id) const;
+    SceneObject& getParent(const unsigned int id) const;
     
     /// @brief Update all world transforms of objects marked for update.
     void updateAllTransforms();
@@ -297,28 +274,30 @@ public:
     /// present in the scene, the function will throw a std::runtime_error.
     Transform getWorldTransform(const unsigned int id, const bool cascadeUpdate = true) const;
 
-    /// @brief Get pointers to all scene objects.
+    /// @brief Get references to all scene objects.
     ///
     /// @param mustBeEnabled Whether or not to filter the objects depending
     /// on their enabled state.
     ///
-    /// @return An array filled with pointers to all the objects in the 
+    /// @return An array filled with references to all the objects in the 
     /// scene which meet the criteria.
-    std::vector<SceneObjectPtr> getAllObjects(const bool mustBeEnabled = true) const;
+    std::vector<std::reference_wrapper<SceneObject>> getAllObjects(const bool mustBeEnabled = true) const;
 
     /// @brief Register a script in the scene. It will then receive update
     /// signals from the scene.
     ///
-    /// @param script Pointer to the script to register in the scene.
+    /// @param script Reference to the script to register in the scene.
     ///
     /// @exception If the provided script pointer is null, the function will
     /// throw a std::runtime_error.
-    void registerScript(const ScriptPtr script);
+    void registerScript(Script& script);
 
     /// @brief Detach a script from the scene so that it no longer receives 
     /// update signals from it.
     ///
     /// @param id ID of the script to detach from the scene.
+    ///
+    /// @return A pointer to the script that was just detached.
     void detachScript(const unsigned int id);
 
     /// @brief Trigger a scene update, which will send an update signal to 
@@ -328,31 +307,31 @@ public:
     /// @brief Get pointers to all scene objects which have a certain 
     /// component.
     ///
-    /// @tparam T Type of the concrete component to test for.
+    /// @tparam T Literal describing the type of component to query.
     ///
     /// @param mustBeEnabled Whether or not to filter the objects depending
     /// on their enabled state.
     ///
     /// @return An array filled with pointers to all the objects in the 
     /// scene which meet the criteria.
-    template<class T>
-    std::vector<SceneObjectPtr> getObjectsWithComponent(const bool mustBeEnabled = true) const;
+    template<ComponentType T>
+    std::vector<std::reference_wrapper<SceneObject>> getObjectsWithComponent(const bool mustBeEnabled = true) const;
 };
 
-template<class T>
-std::vector<SceneObjectPtr> Scene::getObjectsWithComponent(const bool mustBeEnabled) const
+template<ComponentType T>
+std::vector<std::reference_wrapper<SceneObject>> Scene::getObjectsWithComponent(const bool mustBeEnabled) const
 {
-    const std::vector<SceneObjectPtr> all = getAllObjects();
-    std::vector<SceneObjectPtr> result;
+    const std::vector<std::reference_wrapper<SceneObject>> all = getAllObjects();
+    std::vector<std::reference_wrapper<SceneObject>> result;
 
     // Tells whether an object whose weak pointer is provided should be added to the result vector
-    std::function<bool(const SceneObjectPtr)> componentChecker = [this, mustBeEnabled](const SceneObjectPtr obj) -> bool
+    std::function<bool(const SceneObject&)> componentChecker = [this, mustBeEnabled](const SceneObject& obj) -> bool
     {
         // Skip if the object is not enabled or if any of its parents is not enabled
-        if (mustBeEnabled && !obj->enabled) return false;
-        if (mustBeEnabled && _hasDisabledParent(obj->id)) return false;
+        if (mustBeEnabled && !obj.enabled) return false;
+        if (mustBeEnabled && _hasDisabledParent(obj.id)) return false;
         // Return whether the object has the component being asked for
-        return obj->hasComponent<T>();
+        return obj.componentMap().hasComponent<T>();
     };
 
     // Copy all object pointers into the result vector using the check function
@@ -361,9 +340,8 @@ std::vector<SceneObjectPtr> Scene::getObjectsWithComponent(const bool mustBeEnab
     return result;
 }
 
-using ScenePtr = std::shared_ptr<Scene>;
-using SceneWPtr = std::weak_ptr<Scene>;
+using ScenePtr = std::unique_ptr<Scene>;
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__SCENE__SCENE_HPP

@@ -6,7 +6,7 @@
 
 #include "shader_stage.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Collection of literals describing the different aspects which
@@ -113,6 +113,6 @@ const std::unordered_map<ShaderFeature, ShaderStage>& FeatureStages();
 
 std::string to_string(const ShaderFeature v);
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__SHADER__SHADER_FEATURE_HPP

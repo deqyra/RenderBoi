@@ -1,6 +1,6 @@
 #include "directional_light.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 DirectionalLight::DirectionalLight(const glm::vec3 direction) :
@@ -39,4 +39,4 @@ glm::mat4 DirectionalLight::_computeViewMatrix() const
     return glm::mat4();
 }
 
-}//namespace Renderboi
+} // namespace renderboi

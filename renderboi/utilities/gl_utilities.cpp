@@ -5,11 +5,11 @@
 
 #include <glad/gl.h>
 
-namespace Renderboi
+namespace renderboi
 {
 static std::unordered_set<int> ignoredMessageTypes;
 
-void glIgnoreDebugMessagesOfType(int type)
+void glIgnoreDebugMessagesOfType(const int type)
 {
     ignoredMessageTypes.insert(type);
 }
@@ -20,11 +20,11 @@ void glStopIgnoringDebugMessages()
 }
 
 void APIENTRY glDebugCallback(
-    unsigned int source,
-    unsigned int type,
-    unsigned int id,
-    unsigned int severity,
-    int length,
+    const unsigned int source,
+    const unsigned int type,
+    const unsigned int id,
+    const unsigned int severity,
+    const int length,
     const char* message,
     const void* userParam)
 {
@@ -82,4 +82,4 @@ float glGetAspectRatio()
 
     return (float)(dims[2]) / (float)(dims[3]);
 }
-}//namespace Renderboi
+} // namespace renderboi

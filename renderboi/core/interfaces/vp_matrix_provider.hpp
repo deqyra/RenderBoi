@@ -6,7 +6,7 @@
 #include <glm/vec3.hpp>
 #include <glm/matrix.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Interface for a class able to provide view and projection matrices.
@@ -39,8 +39,8 @@ public:
     virtual glm::mat4 getViewProjectionMatrix() const = 0;
 };
 
-using VPMatrixProviderPtr = std::shared_ptr<VPMatrixProvider>;
+using VPMatrixProviderPtr = std::unique_ptr<VPMatrixProvider>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__INTERFACES__VP_MATRIX_PROVIDER_HPP

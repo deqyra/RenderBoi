@@ -2,20 +2,32 @@
 #define RENDERBOI__TOOLBOX__RENDER__TRAITS__RENDERERS__MESH_TRAIT_RENDERER_HPP
 
 #include "../trait_renderer.hpp"
+#include "../config/mesh_render_trait_config.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Concrete trait renderer for meshes.
 class MeshTraitRenderer : public TraitRenderer
 {
 public:
+    /////////////////////////////////////////////
+    ///                                       ///
+    /// Methods overridden from TraitRenderer ///
+    ///                                       ///
+    /////////////////////////////////////////////
+
     /// @brief Render a mesh?
-    virtual void render();
+    virtual void render() const override;
 };
 
-using MeshTraitRendererPtr = std::shared_ptr<MeshTraitRenderer>;
+struct RenderTraitMeta<RenderTrait::Mesh>::Renderer
+{
+    using type = MeshTraitRenderer;
+};
 
-} // namespace Renderboi
+using MeshTraitRendererPtr = std::unique_ptr<MeshTraitRenderer>;
+
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__RENDER__TRAITS__RENDERERS__MESH_TRAIT_RENDERER_HPP

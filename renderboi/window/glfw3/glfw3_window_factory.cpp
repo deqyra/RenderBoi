@@ -1,10 +1,12 @@
 #include "glfw3_window_factory.hpp"
 
+#include <algorithm>
 #include <cstdlib>
 #include <cstdarg>
 #include <cstring>
 #include <fstream>
 #include <iostream>
+#include <iterator>
 #include <string>
 
 #include <glad/gl.h>
@@ -29,7 +31,7 @@
 #include "glfw3_window.hpp"
 #include "glfw3_utilities.hpp"
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 using ReLoc = ResourceLocator;
@@ -38,8 +40,8 @@ using ReType = ResourceType;
 std::map<unsigned int, Monitor::VideoMode>
 WindowFactory<WindowBackend::GLFW3>::_nativeVideoModes = std::map<unsigned int, Monitor::VideoMode>();
 
-std::map<unsigned int, MonitorPtr>
-WindowFactory<WindowBackend::GLFW3>::_monitors = std::map<unsigned int, MonitorPtr>();
+std::map<unsigned int, GLFW3MonitorPtr>
+WindowFactory<WindowBackend::GLFW3>::_monitors = std::map<unsigned int, GLFW3MonitorPtr>();
 
 GLFWmonitorfun* WindowFactory<WindowBackend::GLFW3>::_monitorCallback = nullptr;
 
@@ -84,15 +86,28 @@ void WindowFactory<WindowBackend::GLFW3>::SetErrorCallback(const void* callback)
     glfwSetErrorCallback(*((ErrorCallbackSignature*)callback));
 }
 
-MonitorPtr WindowFactory<WindowBackend::GLFW3>::GetPrimaryMonitor()
+Monitor& WindowFactory<WindowBackend::GLFW3>::GetPrimaryMonitor()
 {
-    GLFW3Monitor* glfw3Monitor = new GLFW3Monitor(glfwGetPrimaryMonitor());
-    return GLFW3MonitorPtr(glfw3Monitor);
+    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+    GLFW3Monitor& glfw3Monitor = *(GLFW3Monitor*)(glfwGetMonitorUserPointer(monitor));
+    return glfw3Monitor;
 }
 
-std::map<unsigned int, MonitorPtr> WindowFactory<WindowBackend::GLFW3>::GetMonitors()
+std::map<unsigned int, Monitor&> WindowFactory<WindowBackend::GLFW3>::GetMonitors()
 {
-    return _monitors;
+    std::map<unsigned int, Monitor&> monitors;
+
+    std::transform(
+        _monitors.begin(), _monitors.end(),
+        std::inserter(monitors, monitors.end()),
+        [](const auto& pair) -> const std::pair<unsigned int, Monitor&>
+        {
+            const auto& [id, monitor] = pair;
+            return {id, *monitor};
+        }
+    );
+
+    return monitors;
 }
 
 void WindowFactory<WindowBackend::GLFW3>::SetMonitorCallback(const void* callback)
@@ -100,12 +115,9 @@ void WindowFactory<WindowBackend::GLFW3>::SetMonitorCallback(const void* callbac
     _monitorCallback = (MonitorCallbackSignature*) callback;
 }
 
-Monitor::VideoMode WindowFactory<WindowBackend::GLFW3>::GetMonitorNativeVideoMode(const MonitorPtr monitor)
+Monitor::VideoMode WindowFactory<WindowBackend::GLFW3>::GetMonitorNativeVideoMode(const Monitor& monitor)
 {
-    if (monitor == nullptr)
-        throw std::runtime_error("WindowFactory<GLFW3>: null monitor pointer passed, cannot retrieve video mode.");
-
-    auto it = _nativeVideoModes.find(monitor->id);
+    auto it = _nativeVideoModes.find(monitor.id);
     if (it == _nativeVideoModes.end())
         throw std::runtime_error("WindowFactory<GLFW3>: native video mode could not be retrieved for passed monitor.");
 
@@ -132,11 +144,13 @@ GLWindowPtr WindowFactory<WindowBackend::GLFW3>::MakeWindow(const WindowCreation
 	glfwWindowHint(GLFW_OPENGL_PROFILE,             Window::GLFW3Adapter::getValue(params.glProfile));
 #endif//EGL_DETECTED
 
+    // Any GLWindow pointer is EXPECTED to be a GLFW3Window pointer, allowing for a static_cast
+
     // Shared GL context
     GLFWwindow* sharedContextWindow = nullptr;
     if (params.shareContext != nullptr)
     {
-        GLFW3WindowPtr glfw3SharedWindow = std::static_pointer_cast<GLFW3Window>(params.shareContext);
+        const GLFW3Window* const glfw3SharedWindow = static_cast<const GLFW3Window* const>(params.shareContext);
         sharedContextWindow = glfw3SharedWindow->_w;
     }
 
@@ -144,7 +158,7 @@ GLWindowPtr WindowFactory<WindowBackend::GLFW3>::MakeWindow(const WindowCreation
     GLFWmonitor* fullscreenMonitor = nullptr;
     if (params.monitor != nullptr)
     {
-        GLFW3MonitorPtr glfw3Monitor = std::static_pointer_cast<GLFW3Monitor>(params.monitor);
+        const GLFW3Monitor* const glfw3Monitor = static_cast<const GLFW3Monitor* const>(params.monitor);
         fullscreenMonitor = glfw3Monitor->_m;
     }
 
@@ -187,9 +201,9 @@ GLWindowPtr WindowFactory<WindowBackend::GLFW3>::MakeWindow(const WindowCreation
     }
 
     // Initialize a GLWindow instance with a GLFWwindow object
-    const GLFW3WindowPtr glfw3Window = std::make_shared<GLFW3Window>(window, params.title);
+    GLFW3WindowPtr glfw3Window = std::make_unique<GLFW3Window>(window, params.title);
     // Set the user pointer of the GLFWwindow to the newly created GLWindow instance
-    const GLWindowPtr glWindow = std::static_pointer_cast<GLWindow>(glfw3Window);
+    GLWindowPtr glWindow = std::move(glfw3Window);
     glfwSetWindowUserPointer(window, (void*)glWindow.get());
 
     // Then, a function can retrieve the GLWindow instance from the GLFWwindow
@@ -201,30 +215,32 @@ GLWindowPtr WindowFactory<WindowBackend::GLFW3>::MakeWindow(const WindowCreation
     glfwSetCursorPosCallback(window, globalGlfwMouseCursorCallback);
 
     // Plug in joystick events
-    GLFW3Utilities::subscribeToGlfwJoystickStatus(glWindow);
+    GLFW3Utilities::subscribeToGlfwJoystickStatus(glWindow.get());
 
-    return glWindow;
+    return std::move(glWindow);
 }
 
-void WindowFactory<WindowBackend::GLFW3>::DestroyWindow(GLWindowPtr window)
+void WindowFactory<WindowBackend::GLFW3>::DestroyWindow(GLWindowPtr&& window)
 {
-    GLFWwindow* glfw3Window = std::static_pointer_cast<GLFW3Window>(window)->_w;
-    GLFW3Utilities::unsubscribeFromGlfwJoystickStatus(window);
+    // Any GLWindow pointer passed in is REQUIRED to be a GLFW3Window
+    GLFWwindow* glfw3Window = static_cast<GLFW3Window*>(window.get())->_w;
+    GLFW3Utilities::unsubscribeFromGlfwJoystickStatus(window.get());
     glfwSetWindowShouldClose(glfw3Window, true);
     glfwDestroyWindow(glfw3Window);
 }
 
-std::map<unsigned int, MonitorPtr> WindowFactory<WindowBackend::GLFW3>::_ListMonitors()
+std::map<unsigned int, GLFW3MonitorPtr> WindowFactory<WindowBackend::GLFW3>::_ListMonitors()
 {
     int count;
     GLFWmonitor** monitors = glfwGetMonitors(&count);
 
-    std::map<unsigned int, MonitorPtr> managedMonitors;
+    std::map<unsigned int, GLFW3MonitorPtr> managedMonitors;
     for (int i = 0; i < count; i++)
     {
         GLFW3Monitor* glfw3Monitor = new GLFW3Monitor(monitors[i]);
-        GLFW3MonitorPtr glfw3ManagedMonitor = GLFW3MonitorPtr(glfw3Monitor);
-        managedMonitors[glfw3Monitor->id] = std::static_pointer_cast<Monitor>(glfw3ManagedMonitor);
+        glfwSetMonitorUserPointer(monitors[i], static_cast<void*>(glfw3Monitor));
+
+        managedMonitors[glfw3Monitor->id] = GLFW3MonitorPtr(glfw3Monitor);
     }
 
     return managedMonitors;
@@ -240,13 +256,15 @@ void WindowFactory<WindowBackend::GLFW3>::_SaveMonitorVideoModes()
 
 void WindowFactory<WindowBackend::GLFW3>::_GlobalGlfwMonitorCallback(GLFWmonitor* m, int event)
 {
-    if (_monitorCallback != nullptr) (*_monitorCallback)(m, event);
+    if (_monitorCallback != nullptr)
+        (*_monitorCallback)(m, event);
 
     if (event == GLFW_CONNECTED)
     {
         GLFW3Monitor* glfw3Monitor = new GLFW3Monitor(m);
-        GLFW3MonitorPtr glfw3ManagedMonitor = GLFW3MonitorPtr(glfw3Monitor);
-        _monitors[glfw3Monitor->id] = std::static_pointer_cast<Monitor>(glfw3ManagedMonitor);
+        glfwSetMonitorUserPointer(m, static_cast<void*>(glfw3Monitor));
+
+        _monitors[glfw3Monitor->id] = GLFW3MonitorPtr(glfw3Monitor);
     }
     else // if (event == GLFW_DISCONNECTED)
     {
@@ -259,4 +277,4 @@ void WindowFactory<WindowBackend::GLFW3>::_GlobalGlfwMonitorCallback(GLFWmonitor
     }
 }
 
-}//namespace Renderboi::Window
+} // namespace renderboi::Window

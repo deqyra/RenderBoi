@@ -6,7 +6,7 @@
 
 #include "shader_feature.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Holds the requested configuration for a shader prior to building it.
@@ -104,6 +104,6 @@ public:
     static const std::unordered_map<ShaderFeature, std::vector<ShaderFeature>>& IncompatibleFeatures();
 };
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__SHADER__SHADER_CONFIG_HPP

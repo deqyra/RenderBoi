@@ -1,7 +1,7 @@
 #include "spot_light.hpp"
 #include "tools.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 SpotLight::SpotLight(const glm::vec3 direction) :
@@ -122,4 +122,4 @@ glm::mat4 SpotLight::_computeViewMatrix() const
     return glm::mat4();
 }
 
-}//namespace Renderboi
+} // namespace renderboi

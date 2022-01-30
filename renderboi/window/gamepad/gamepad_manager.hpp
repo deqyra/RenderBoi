@@ -7,14 +7,14 @@
 #include "gamepad.hpp"
 #include "../enums.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 namespace Window
 {
 
 /// @brief Interface for an entity in charge of managing gamepad handles and 
 /// forwarding input from the window.
-class GamepadManager : public std::enable_shared_from_this<GamepadManager>
+class GamepadManager
 {
 private:
     using Joystick = Window::Input::Joystick;
@@ -24,18 +24,19 @@ private:
 
 public:
     GamepadManager();
+    virtual ~GamepadManager() = default;
 
     /// @brief Callback for when a gamepad is connected on a slot.
     /// 
     /// @param slot Litteral describing the slot on which the gamepad was
     /// connected.
-    virtual void gamepadConnected(Joystick slot) const = 0;
+    virtual void gamepadConnected(const Joystick slot) const = 0;
 
     /// @brief Callback for when a gamepad is disconnected from a slot.
     /// 
     /// @param slot Litteral describing the slot from which the gamepad was
     /// disconnected.
-    virtual void gamepadDisconnected(Joystick slot) const = 0;
+    virtual void gamepadDisconnected(const Joystick slot) const = 0;
 
     /// @brief Get an array filled with litterals representing handles to
     /// present gamepads. This function may be called only from the main thread.
@@ -45,27 +46,27 @@ public:
     ///
     /// @return An array filled with litterals representing handles to present 
     /// gamepads.
-    virtual std::vector<Joystick> pollPresentGamepads(bool unused = true) const = 0;
+    virtual std::vector<Joystick> pollPresentGamepads(const bool unused = true) const = 0;
 
     /// @brief Get a gamepad plugged into a certain slot. The gamepad can then
     /// be enabled to start receiving input from the main thread. This function 
     /// may be called only from the main thread.
     ///
-    /// @param slot Virtual slot on which to find the controller to manage.
+    /// @param slot Virtual slot on which to find the managed controller.
     ///
-    /// @return A pointer to the newly managed gamepad.
+    /// @return A referenced to the requested managed gamepad.
     ///
     /// @exception If a gamepad cannot be found on the provided slot, the 
     /// function will throw an std::runtime_error.
-    virtual GamepadPtr getGamepad(Joystick slot) = 0;
+    virtual Gamepad& getGamepad(const Joystick slot) = 0;
 
     /// @brief Enable polling the state for a gamepad. May be called from any
     /// thread.
-    virtual void startGamepadPolling(Joystick slot) const = 0;
+    virtual void startGamepadPolling(const Joystick slot) const = 0;
 
     /// @brief Disable polling the state for a gamepad. May be called from any
     /// thread.
-    virtual void stopGamepadPolling(Joystick slat) const = 0;
+    virtual void stopGamepadPolling(const Joystick slat) const = 0;
 
     /// @brief Process any pending gamepad connection event.
     virtual void refreshGamepadStatuses() const = 0;
@@ -80,23 +81,23 @@ protected:
     /// @brief Method allowing inheriting classes to set the state of a gamepad
     /// without privileged access to it.
     ///
-    /// @param gamepad Pointer to the gamepad instance whose state to set.
+    /// @param gamepad Reference to the gamepad instance whose state to set.
     /// @param state State to set within the gamepad.
-    static void setGamepadState(GamepadPtr gamepad, GamepadState state);
+    static void setGamepadState(Gamepad& gamepad, GamepadState state);
 
     /// @brief Method allowing inheriting classes to notify a gamepad about its
     /// connection status without privileged access to it.
     ///
-    /// @param gamepad Pointer to the gamepad instance to notify of its 
+    /// @param gamepad Reference to the gamepad instance to notify of its 
     /// connection status.
-    static void setGamepadConnected(GamepadPtr gamepad);
+    static void setGamepadConnected(Gamepad& gamepad);
 
     /// @brief Method allowing inheriting classes to notify a gamepad about its
     /// disconnection status without privileged access to it.
     ///
-    /// @param gamepad Pointer to the gamepad instance to notify of its 
+    /// @param gamepad Reference to the gamepad instance to notify of its 
     /// disconnection status.
-    static void setGamepadDisconnected(GamepadPtr gamepad);
+    static void setGamepadDisconnected(Gamepad& gamepad);
 
     /// @brief Method allowing inheriting classes to instantiate a gamepad,
     /// without privileged access to it (private constructor may not be called
@@ -110,15 +111,14 @@ protected:
 template<typename ...ArgTypes>
 GamepadPtr GamepadManager::createGamepad(ArgTypes&& ...args)
 {
-    Gamepad* gamepad = new Gamepad(std::forward<ArgTypes>(args)...);
-    return GamepadPtr(gamepad);
+    return GamepadPtr(new Gamepad(std::forward<ArgTypes>(args)...));
 }
 
-}//namespace Window
+} // namespace Window
 
 using GamepadManager = Window::GamepadManager;
-using GamepadManagerPtr = std::shared_ptr<GamepadManager>;
+using GamepadManagerPtr = std::unique_ptr<GamepadManager>;
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__WINDOW__GAMEPAD__GAMEPAD_MANAGER_HPP

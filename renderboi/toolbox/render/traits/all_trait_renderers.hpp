@@ -1,0 +1,8 @@
+#ifndef RENDERBOI__TOOLBOX__RENDER__TRAITS__ALL_TRAIT_RENDERERS_HPP
+#define RENDERBOI__TOOLBOX__RENDER__TRAITS__ALL_TRAIT_RENDERERS_HPP
+
+#include "config/mesh_render_trait_config.hpp"
+
+#include "renderers/mesh_trait_renderer.hpp"
+
+#endif//RENDERBOI__TOOLBOX__RENDER__TRAITS__ALL_TRAIT_RENDERERS_HPP

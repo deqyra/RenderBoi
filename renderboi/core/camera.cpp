@@ -5,7 +5,7 @@
 
 #include "transform.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 Camera::Camera(
@@ -29,7 +29,7 @@ Camera::Camera(
 }
 
 Camera::Camera(const Camera& other) :
-    ParentDependentVPMatrixProvider(*dynamic_cast<ParentDependentVPMatrixProvider*>(this)),
+    ParentDependentVPMatrixProvider(*this),
     _forward(other._forward),
     _left(other._left),
     _up(other._up),
@@ -172,4 +172,4 @@ glm::mat4 Camera::_computeViewMatrix() const
     return glm::lookAt(_parentWorldTransform.getPosition(), _parentWorldTransform.getPosition() + _forward, _up);
 }
 
-}//namespace Renderboi
+} // namespace renderboi

@@ -7,7 +7,7 @@
 #include "shader_feature.hpp"
 #include "shader_stage.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 class ShaderBuilder;
@@ -73,6 +73,6 @@ class Shader
         bool supports(const ShaderFeature feature) const;
 };
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__SHADER__SHADER_HPP

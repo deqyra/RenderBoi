@@ -8,11 +8,9 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-#include <renderboi/utilities/to_string.hpp>
-
 #include "shader_feature.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 std::unordered_map<unsigned int, std::unordered_map<std::string, unsigned int>>
@@ -224,4 +222,4 @@ bool ShaderProgram::supports(const ShaderFeature feature) const
     return it != _supportedFeatures.end();
 }
 
-}//namespace Renderboi
+} // namespace renderboi

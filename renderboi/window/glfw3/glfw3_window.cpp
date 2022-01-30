@@ -15,7 +15,7 @@
 #include "glfw3_monitor.hpp"
 #include "glfw3_window_factory.hpp"
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 using GLFW3WindowFactory = WindowFactory<WindowBackend::GLFW3>;
@@ -24,7 +24,7 @@ GLFW3Window::GLFW3Window(GLFWwindow* window, std::string title) :
     GLWindow(title),
     _w(window)
 {
-    _gamepadManager = std::static_pointer_cast<GamepadManager>(std::make_shared<GLFW3GamepadManager>());
+    _gamepadManager = std::make_unique<GLFW3GamepadManager>();
     _gamepadManager->pollPresentGamepads();
     _fullscreenMonitor = glfwGetWindowMonitor(_w);
 }
@@ -40,7 +40,10 @@ void GLFW3Window::setTitle(std::string title)
     glfwSetWindowTitle(_w, _title.c_str());
 }
 
-void GLFW3Window::setInputMode(Window::Input::Mode::Target target, Window::Input::Mode::Value value)
+void GLFW3Window::setInputMode(
+    const Window::Input::Mode::Target target,
+    const Window::Input::Mode::Value value
+)
 {
     unsigned int glfw3Target = Window::GLFW3Adapter::getValue(target);
     unsigned int glfw3Value = Window::GLFW3Adapter::getValue(value);
@@ -102,11 +105,14 @@ void GLFW3Window::getFramebufferSize(int& width, int& height) const
     glfwGetFramebufferSize(_w, &width, &height);
 }
 
-void GLFW3Window::goFullscreen(MonitorPtr monitor, bool borderless)
+void GLFW3Window::goFullscreen(const bool borderless)
 {
-    if (!monitor) monitor = GLFW3WindowFactory::GetPrimaryMonitor();
+    goFullscreen(GLFW3WindowFactory::GetPrimaryMonitor(), borderless);
+}
 
-    GLFW3MonitorPtr glfwMonitor = std::static_pointer_cast<GLFW3Monitor>(monitor);
+void GLFW3Window::goFullscreen(Monitor& monitor, const bool borderless)
+{
+    GLFW3Monitor& glfwMonitor = static_cast<GLFW3Monitor&>(monitor);
 
     glfwGetWindowSize(_w, &_widthBeforeFullscreen, &_heightBeforeFullscreen);
     glfwGetWindowPos(_w, &_xPosBeforeFullscreen, &_yPosBeforeFullscreen);
@@ -139,24 +145,28 @@ void GLFW3Window::goFullscreen(MonitorPtr monitor, bool borderless)
         refreshRate = mode.refreshRate;
 
 #else //if defined(GLFW3_BORDERLESS_POLICY_MAX_MODE)
-        Monitor::VideoMode mode = glfwMonitor->getLargestVideoMode();
+        Monitor::VideoMode mode = glfwMonitor.getLargestVideoMode();
         width = mode.width;
         height = mode.height;
         refreshRate = mode.refreshRate;
 #endif
     }
 
-    glfwSetWindowMonitor(_w, glfwMonitor->getGlfwMonitorPointer(), 0, 0, width, height, refreshRate);
-    _fullscreenMonitor = glfwMonitor->getGlfwMonitorPointer();
+    glfwSetWindowMonitor(_w, glfwMonitor.getGlfwMonitorPointer(), 0, 0, width, height, refreshRate);
+    _fullscreenMonitor = glfwMonitor.getGlfwMonitorPointer();
 }
 
-void GLFW3Window::goFullscreen(MonitorPtr monitor, int width, int height, int refreshRate)
+void GLFW3Window::goFullscreen(const int width, const int height, const int refreshRate)
 {
-    if (!monitor) monitor = GLFW3WindowFactory::GetPrimaryMonitor();
-    GLFW3MonitorPtr glfwMonitor = std::static_pointer_cast<GLFW3Monitor>(monitor);
+    goFullscreen(GLFW3WindowFactory::GetPrimaryMonitor(), width, height, refreshRate);
+}
 
-    glfwSetWindowMonitor(_w, glfwMonitor->getGlfwMonitorPointer(), 0, 0, width, height, refreshRate);
-    _fullscreenMonitor = glfwMonitor->getGlfwMonitorPointer();
+void GLFW3Window::goFullscreen(Monitor& monitor, const int width, const int height, const int refreshRate)
+{
+    GLFW3Monitor& glfwMonitor = static_cast<GLFW3Monitor&>(monitor);
+
+    glfwSetWindowMonitor(_w, glfwMonitor.getGlfwMonitorPointer(), 0, 0, width, height, refreshRate);
+    _fullscreenMonitor = glfwMonitor.getGlfwMonitorPointer();
 }
 
 bool GLFW3Window::isFullscreen() const
@@ -178,7 +188,7 @@ void GLFW3Window::exitFullscreen()
     _fullscreenMonitor = nullptr;
 }
 
-void GLFW3Window::setRefreshRate(int rate)
+void GLFW3Window::setRefreshRate(const int rate)
 {
     if (!isFullscreen()) return;
 
@@ -192,7 +202,7 @@ bool GLFW3Window::shouldClose() const
     return glfwWindowShouldClose(_w);
 }
 
-void GLFW3Window::setShouldClose(bool value)
+void GLFW3Window::setShouldClose(const bool value)
 {
     _exitSignaled = value;
     glfwSetWindowShouldClose(_w, value);
@@ -221,7 +231,7 @@ void GLFW3Window::getCursorPos(double& x, double& y) const
     glfwGetCursorPos(_w, &x, &y);
 }
 
-void GLFW3Window::makeContextCurrent(GLContextClientPtr context)
+void GLFW3Window::makeContextCurrent()
 {
     glfwMakeContextCurrent(_w);
 	// Load GL pointers
@@ -229,19 +239,16 @@ void GLFW3Window::makeContextCurrent(GLContextClientPtr context)
 	{
         throw std::runtime_error("GLFW3Window: Failed to load GL function pointers.");
     }
-
-    _glContextClient = context;
 }
 
 void GLFW3Window::releaseContext()
 {
     glfwMakeContextCurrent(nullptr);
-    _glContextClient = nullptr;
 }
 
-bool GLFW3Window::extensionSupported(std::string extName)
+bool GLFW3Window::extensionSupported(const std::string extName)
 {
     return (bool)glfwExtensionSupported(extName.c_str());
 }
 
-}//namespace Renderboi::Window
+} // namespace renderboi::Window

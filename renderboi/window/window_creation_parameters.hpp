@@ -7,7 +7,7 @@
 #include "gl_window.hpp"
 #include "monitor.hpp"
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 struct WindowCreationParameters
@@ -39,11 +39,11 @@ struct WindowCreationParameters
 
     /// @brief Pointer to the window whose context to share. Pass nullptr to 
     /// instantiate a new context.
-    GLWindowPtr shareContext;
+    const GLWindow* shareContext;
 
     /// @brief Monitor on which the window should go fullscreen. Pass nullptr to
     /// stay in windowed mode.
-    MonitorPtr monitor;
+    const Monitor* monitor;
 
     /// @brief If the window is requested to go fullscreen on a monitor and this
     /// is enabled, the window will fit exactly the current video mode of the 
@@ -109,6 +109,6 @@ const WindowCreationParameters DefaultWindowCreationParameters = {
     .debug                      = false
 };
 
-}//namespace Renderboi::Window
+} // namespace renderboi::Window
 
 #endif//RENDERBOI__WINDOW__WINDOW_CREATION_PARAMETERS_HPP

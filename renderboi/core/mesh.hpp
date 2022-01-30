@@ -1,25 +1,23 @@
 #ifndef RENDERBOI__CORE__MESH_HPP
 #define RENDERBOI__CORE__MESH_HPP
 
-#include <string>
-#include <vector>
 #include <memory>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 #include <glad/gl.h>
 
 #include "material.hpp"
 #include "vertex.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
-
-class Mesh;
-using MeshPtr = std::shared_ptr<Mesh>;
-using MeshWPtr = std::weak_ptr<Mesh>;
 
 /// @brief A mesh holding vertices to be rendered using indexed drawing.
 class Mesh
 {
+
 private:
     /// @brief Keeps track of how many instances were created (used as a 
     /// unique ID system).
@@ -96,6 +94,8 @@ public:
     const unsigned int id;
 };
 
-}//namespace Renderboi
+using MeshPtr = std::unique_ptr<Mesh>;
+
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__MESH_HPP

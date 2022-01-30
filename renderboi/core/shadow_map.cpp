@@ -1,6 +1,6 @@
 #include "shadow_map.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 ShadowMap::ShadowMap(unsigned int width, unsigned int height) :
@@ -15,4 +15,4 @@ void ShadowMap::_GenerateShadowMap()
 
 }
 
-}//namespace Renderboi
+} // namespace renderboi

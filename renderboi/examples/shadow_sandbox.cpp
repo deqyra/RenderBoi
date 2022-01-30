@@ -23,6 +23,7 @@
 #include <renderboi/toolbox/scene/object/components/camera_component.hpp>
 #include <renderboi/toolbox/scene/object/components/light_component.hpp>
 #include <renderboi/toolbox/scene/object/components/mesh_component.hpp>
+#include <renderboi/toolbox/scene/object/components/script_component.hpp>
 #include <renderboi/toolbox/runnables/basic_window_manager.hpp>
 #include <renderboi/toolbox/runnables/camera_aspect_ratio_manager.hpp>
 #include <renderboi/toolbox/runnables/gamepad_movement_script.hpp>
@@ -31,13 +32,15 @@
 #include <renderboi/toolbox/runnables/keyboard_movement_script.hpp>
 #include <renderboi/toolbox/runnables/mouse_camera_manager.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 using Ref = FrameOfReference;
 
-ShadowSandbox::ShadowSandbox(const GLWindowPtr window, const GLSandboxParameters params) :
-    GLSandbox(window, params)
+ShadowSandbox::ShadowSandbox(GLWindow& window, const GLSandboxParameters& params) :
+    GLSandbox(window, params),
+    _title(window.getTitle()),
+    _gamepad(nullptr)
 {
 
 }
@@ -45,27 +48,20 @@ ShadowSandbox::ShadowSandbox(const GLWindowPtr window, const GLSandboxParameters
 void ShadowSandbox::setUp()
 {
     // Update window title
-    _title = _window->getTitle();
-    _window->setTitle(_title + " - Shadows");
+    _window.setTitle(_title + " - Shadows");
 
     // Remove cursor from window
     namespace InputMode = Window::Input::Mode;
-    _window->setInputMode(InputMode::Target::Cursor, InputMode::Value::DisabledCursor);
+    _window.setInputMode(InputMode::Target::Cursor, InputMode::Value::DisabledCursor);
 
     using Joystick = Window::Input::Joystick;
-    GamepadManagerPtr gManager = _window->getGamepadManager();
-    std::vector<Joystick> presentGamepads = gManager->pollPresentGamepads();
+    GamepadManager& gManager = _window.getGamepadManager();
+    std::vector<Joystick> presentGamepads = gManager.pollPresentGamepads();
 
     if (presentGamepads.size())
     {
-        _gamepad = gManager->getGamepad(presentGamepads[0]);
-        _gamepadPresent = true;
+        _gamepad = &(gManager.getGamepad(presentGamepads[0]));
         _gamepad->enable();
-    }
-    else
-    {
-        _gamepad = nullptr;
-        _gamepadPresent = false;
     }
 }
 
@@ -103,7 +99,7 @@ void ShadowSandbox::run()
     ///                                       ///
     /////////////////////////////////////////////
 
-    ScenePtr scene = Factory::MakeScene();
+    Scene scene;
 
     PlaneGenerator::Parameters planeParameters = {
         PlaneTileSize,      // tileSizeX
@@ -129,7 +125,9 @@ void ShadowSandbox::run()
     );
     Texture2D floorTex = Texture2D("wood.png", PixelSpace::sRGB);
     floorMaterial.pushDiffuseMap(floorTex);
-    SceneObjectPtr floorObj = Factory::MakeSceneObjectWithMesh<MeshType::Plane>("Floor", planeParameters, floorMaterial, blinnPhongShader);
+    SceneObject* fp = nullptr;
+
+    SceneObject& floorObj = Factory::MakeSceneObjectWithMesh<MeshType::Plane>(scene, "Floor", planeParameters, floorMaterial, blinnPhongShader);
 
     // WALLS
     Material wallMaterial = Material(
@@ -142,10 +140,10 @@ void ShadowSandbox::run()
     wallMaterial.pushDiffuseMap(wallTex);
 
     // XY wall
-    SceneObjectPtr xyWallObj = Factory::MakeSceneObjectWithMesh<MeshType::Plane>("XY wall", planeParameters, wallMaterial, blinnPhongShader);
+    SceneObject& xyWallObj = Factory::MakeSceneObjectWithMesh<MeshType::Plane>(scene, "XY wall", planeParameters, wallMaterial, blinnPhongShader);
 
     // YZ wall
-    SceneObjectPtr yzWallObj = Factory::MakeSceneObjectWithMesh<MeshType::Plane>("YZ wall", planeParameters, wallMaterial, blinnPhongShader);
+    SceneObject& yzWallObj = Factory::MakeSceneObjectWithMesh<MeshType::Plane>(scene, "YZ wall", planeParameters, wallMaterial, blinnPhongShader);
 
     TorusGenerator::Parameters torusParameters = {
         4.f,    // toroidalRadius
@@ -155,28 +153,28 @@ void ShadowSandbox::run()
     };
 
     // TORUS
-    SceneObjectPtr torusObj = Factory::MakeSceneObjectWithMesh<MeshType::Torus>("Torus", torusParameters, Materials::Default, blinnPhongShader);
+    SceneObject& torusObj = Factory::MakeSceneObjectWithMesh<MeshType::Torus>(scene, "Torus", torusParameters, Materials::Default, blinnPhongShader);
 
     // LIGHT
-    SceneObjectPtr lightObj = Factory::MakeSceneObjectWithMesh<MeshType::Cube>("Light cube", {0.3f, {0.f, 0.f, 0.f}, false}, Materials::Default, fullLightShader);
-    std::shared_ptr<PointLight> light = std::make_shared<PointLight>(LightBaseRange);
-    lightObj->addComponent<LightComponent>(light);
+    SceneObject& lightObj = Factory::MakeSceneObjectWithMesh<MeshType::Cube>(scene, "Light cube", {0.3f, {0.f, 0.f, 0.f}, false}, Materials::Default, fullLightShader);
+    PointLight light(LightBaseRange);
+    lightObj.componentMap().addComponent<ComponentType::Light>(light);
 
     // CAMERA
-    SceneObjectPtr cameraObj = Factory::MakeSceneObject("Camera");
-    CameraPtr camera = std::make_shared<Camera>(CameraParams);
-    cameraObj->addComponent<CameraComponent>(camera);
+    SceneObject& cameraObj = scene.newObject("Camera");
+    Camera camera(CameraParams);
+    cameraObj.componentMap().addComponent<ComponentType::Camera>(camera);
 
     //depthShader.setFloat("near", camera->getNearDistance());
     //depthShader.setFloat("far", camera->getFarDistance());
 
     // Register all objects
-    scene->registerObject(floorObj);
-    scene->registerObject(xyWallObj);
-    scene->registerObject(yzWallObj);
-    scene->registerObject(torusObj);
-    scene->registerObject(lightObj);
-    scene->registerObject(cameraObj);
+    // scene->registerObject(floorObj);
+    // scene->registerObject(xyWallObj);
+    // scene->registerObject(yzWallObj);
+    // scene->registerObject(torusObj);
+    // scene->registerObject(lightObj);
+    // scene->registerObject(cameraObj);
 
 
 
@@ -190,15 +188,15 @@ void ShadowSandbox::run()
     const glm::vec3 Y = Transform::Y;
     const glm::vec3 Z = Transform::Z;
 
-    floorObj->transform.rotateBy<Ref::World>(glm::radians(-90.f), X);
-    floorObj->transform.translateBy<Ref::World>({0.f, 0.f, WallSize});
-    yzWallObj->transform.rotateBy<Ref::World>(glm::radians(90.f), Y);
-    yzWallObj->transform.translateBy<Ref::World>({0.f, 0.f, WallSize});
-    torusObj->transform.translateBy<Ref::World>({WallSize / 2.f, WallSize / 2.f, WallSize / 2.f});
-    torusObj->transform.rotateBy<Ref::World>(glm::radians(45.f), X);
-    lightObj->transform.setPosition<Ref::World>(LightPosition);
-    cameraObj->transform.setPosition<Ref::World>(StartingCameraPosition);
-    cameraObj->transform.rotateBy<Ref::Parent>(glm::radians(180.f), Y);
+    floorObj.transform().rotateBy<Ref::World>(glm::radians(-90.f), X);
+    floorObj.transform().translateBy<Ref::World>({0.f, 0.f, WallSize});
+    yzWallObj.transform().rotateBy<Ref::World>(glm::radians(90.f), Y);
+    yzWallObj.transform().translateBy<Ref::World>({0.f, 0.f, WallSize});
+    torusObj.transform().translateBy<Ref::World>({WallSize / 2.f, WallSize / 2.f, WallSize / 2.f});
+    torusObj.transform().rotateBy<Ref::World>(glm::radians(45.f), X);
+    lightObj.transform().setPosition<Ref::World>(LightPosition);
+    cameraObj.transform().setPosition<Ref::World>(StartingCameraPosition);
+    cameraObj.transform().rotateBy<Ref::Parent>(glm::radians(180.f), Y);
 
 
 
@@ -209,59 +207,59 @@ void ShadowSandbox::run()
     /////////////////////////////////////
 
     // Link camera to MouseCameraManager
-    std::shared_ptr<MouseCameraManager> cameraManager = std::make_shared<MouseCameraManager>(camera);
+    MouseCameraManager cameraManager(camera);
 
     // Link camera to CameraAspectRatioManager
-    std::shared_ptr<CameraAspectRatioManager> cameraAspectRatioManager = std::make_shared<CameraAspectRatioManager>(camera);
+    CameraAspectRatioManager cameraAspectRatioManager(camera);
 
     // Attach object movement script to scene
-    std::shared_ptr<ShadowSandboxScript> sandboxScript = std::make_shared<ShadowSandboxScript>(lightObj, torusObj);
-    scene->registerScript(std::static_pointer_cast<Script>(sandboxScript));
+    ShadowSandboxScript sandboxScript(lightObj, torusObj);
+    scene.registerScript((Script&)(sandboxScript));
     
-    std::shared_ptr<BasisProvider> cameraAsBasisProvider = std::static_pointer_cast<BasisProvider>(camera);
+    BasisProvider& cameraAsBasisProvider = (BasisProvider&)(camera);
 
     // Add script component to camera: KeyboardMovementScript
     ControlledEntityManager<KeyboardMovementScript> keyboardMovementScriptManager(cameraAsBasisProvider);
-    cameraObj->addComponent<ScriptComponent>(std::static_pointer_cast<Script>(keyboardMovementScriptManager.getEntity()));
+    cameraObj.componentMap().addComponent<ComponentType::Script>((Script&)(keyboardMovementScriptManager.entity()));
 
     // Add script component to camera: GamepadMovementScript
-    std::shared_ptr<GamepadMovementScript> gamepadMovementScript = std::make_shared<GamepadMovementScript>(cameraAsBasisProvider);
-    cameraObj->addComponent<ScriptComponent>(std::static_pointer_cast<Script>(gamepadMovementScript));
+    GamepadMovementScript gamepadMovementScript(cameraAsBasisProvider);
+    cameraObj.componentMap().addComponent<ComponentType::Script>((Script&)(gamepadMovementScript));
 
     // Add script component to scene: GamepadCameraManager
-    std::shared_ptr<GamepadCameraManager> gamepadCameraManager = std::make_shared<GamepadCameraManager>(camera);
-    scene->registerScript(std::static_pointer_cast<Script>(gamepadCameraManager));
+    GamepadCameraManager gamepadCameraManager(camera);
+    scene.registerScript((Script&)(gamepadCameraManager));
 
     // Window script
-    ControlledEntityManager<BasicWindowManager> windowManager;
+    ControlledEntityManager<BasicWindowManager> windowManager(_window);
 
     // Instantiate an input logger
-    InputLoggerPtr logger = std::make_shared<InputLogger>();
-    logger->disableEventLog(InputProcessor::EventType::MouseCursor);
-    logger->disableEventLog(GamepadInputProcessor::EventType::Axis);
+    InputLogger logger;
+    logger.disableEventLog(InputProcessor::EventType::MouseCursor);
+    logger.disableEventLog(GamepadInputProcessor::EventType::Axis);
 
     // Register all input processors to the splitter
-    InputSplitterPtr splitter = std::make_shared<InputSplitter>();
-    splitter->registerInputProcessor(std::static_pointer_cast<InputProcessor>(cameraManager));
-    splitter->registerInputProcessor(std::static_pointer_cast<InputProcessor>(cameraAspectRatioManager));
-    splitter->registerInputProcessor(std::static_pointer_cast<InputProcessor>(sandboxScript));
-    splitter->registerInputProcessor(std::static_pointer_cast<InputProcessor>(keyboardMovementScriptManager.getEventTranslator()));
-    splitter->registerInputProcessor(std::static_pointer_cast<InputProcessor>(windowManager.getEntity()));
-    splitter->registerInputProcessor(std::static_pointer_cast<InputProcessor>(windowManager.getEventTranslator()));
+    InputSplitter splitter;
+    splitter.registerInputProcessor((InputProcessor&)(cameraManager));
+    splitter.registerInputProcessor((InputProcessor&)(cameraAspectRatioManager));
+    splitter.registerInputProcessor((InputProcessor&)(sandboxScript));
+    splitter.registerInputProcessor((InputProcessor&)(keyboardMovementScriptManager.eventTranslator()));
+    splitter.registerInputProcessor((InputProcessor&)(windowManager.entity()));
+    splitter.registerInputProcessor((InputProcessor&)(windowManager.eventTranslator()));
 
     // Register all gamepad input processors to the splitter
-    splitter->registerGamepadInputProcessor(std::static_pointer_cast<GamepadInputProcessor>(gamepadMovementScript));
-    splitter->registerGamepadInputProcessor(std::static_pointer_cast<GamepadInputProcessor>(gamepadCameraManager));
+    splitter.registerGamepadInputProcessor((GamepadInputProcessor&)(gamepadMovementScript));
+    splitter.registerGamepadInputProcessor((GamepadInputProcessor&)(gamepadCameraManager));
 
     // Register the logger as both a classic input processor and a gamepad input processor
-    splitter->registerInputProcessor(std::static_pointer_cast<InputProcessor>(logger));
-    splitter->registerGamepadInputProcessor(std::static_pointer_cast<GamepadInputProcessor>(logger));
+    splitter.registerInputProcessor((InputProcessor&)(logger));
+    splitter.registerGamepadInputProcessor((GamepadInputProcessor&)(logger));
     
     // Register the splitter to the window and the gamepad
-    _window->registerInputProcessor(std::static_pointer_cast<InputProcessor>(splitter));
-    if (_gamepadPresent)
+    _window.registerInputProcessor((InputProcessor&)(splitter));
+    if (_gamepad)
     {
-        _gamepad->registerInputProcessor(std::static_pointer_cast<GamepadInputProcessor>(splitter));
+        _gamepad->registerInputProcessor((GamepadInputProcessor&)(splitter));
     }
 
     glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
@@ -270,22 +268,21 @@ void ShadowSandbox::run()
 
     SceneRenderer sceneRenderer;
 
-    while (!_window->exitSignaled())
+    while (!_window.exitSignaled())
     {
         // Process awaiting render events
-        _eventManager->processPendingEvents();
+        _window.processPendingContextEvents();
 
         // Do a single render pass
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
 
         // Update and draw scene
-        scene->triggerUpdate();
+        scene.triggerUpdate();
         sceneRenderer.renderScene(scene);
-        _window->swapBuffers();
+        _window.swapBuffers();
     }
 
-    splitter->detachAllInputProcessors();
-    Factory::DestroyScene(scene);
+    splitter.detachAllInputProcessors();
 
     GLSandbox::_terminateContext();
 }
@@ -295,9 +292,9 @@ void ShadowSandbox::tearDown()
     namespace InputMode = Window::Input::Mode;
 
     // Reset everything back to how it was
-    _window->setInputMode(InputMode::Target::Cursor, InputMode::Value::NormalCursor);
-    _window->detachInputProcessor();
-    _window->setTitle(_title);
+    _window.setInputMode(InputMode::Target::Cursor, InputMode::Value::NormalCursor);
+    _window.detachInputProcessor();
+    _window.setTitle(_title);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -308,10 +305,10 @@ void ShadowSandbox::tearDown()
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-ShadowSandboxScript::ShadowSandboxScript(SceneObjectPtr lightObj, SceneObjectPtr torusObj) :
+ShadowSandboxScript::ShadowSandboxScript(SceneObject& lightObj, SceneObject& torusObj) :
     _lightObj(lightObj),
     _torusObj(torusObj),
-    _lightStartingPos(lightObj->getWorldTransform().getPosition()),
+    _lightStartingPos(lightObj.worldTransform().getPosition()),
     _pause(false),
     _speedFactor(2.f),
     _sine(LightMovementFrequency)
@@ -331,14 +328,14 @@ void ShadowSandboxScript::update(float timeElapsed)
     if (!_pause)
     {
         glm::vec3 newLightPos = _lightStartingPos + LightMovementAxis * _sine.get() * (LightMovementAmplitude / 2.f);
-        _lightObj->transform.setPosition<Ref::World>(newLightPos);
+        _lightObj.transform().setPosition<Ref::World>(newLightPos);
 
         float delta = _speedFactor * timeElapsed;
-        _torusObj->transform.rotateBy<Ref::World>(glm::radians(45.f * delta), TorusRotationAxis);
+        _torusObj.transform().rotateBy<Ref::World>(glm::radians(45.f * delta), TorusRotationAxis);
     }
 }
 
-void ShadowSandboxScript::processKeyboard(const GLWindowPtr _window, const Window::Input::Key key, const int scancode, const Window::Input::Action action, const int mods)
+void ShadowSandboxScript::processKeyboard(GLWindow& _window, const Window::Input::Key key, const int scancode, const Window::Input::Action action, const int mods)
 {
     using Key = Window::Input::Key;
     using Action = Window::Input::Action;
@@ -370,4 +367,4 @@ ShadowSandboxScript* ShadowSandboxScript::clone() const
     return nullptr;
 }
 
-}//namespace Renderboi
+} // namespace renderboi

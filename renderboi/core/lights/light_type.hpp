@@ -1,7 +1,7 @@
-#ifndef LIGHT_TYPE_HPP
-#define LIGHT_TYPE_HPP
+#ifndef RENDERBOI__CORE__LIGHTS__LIGHT_TYPE_HPP
+#define RENDERBOI__CORE__LIGHTS__LIGHT_TYPE_HPP
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Collection of literals describing the available types of light.
@@ -15,6 +15,6 @@ enum class LightType
     SpotLight
 };
 
-}//namespace Renderboi
+} // namespace renderboi
 
-#endif//LIGHT_TYPE_HPP
+#endif//RENDERBOI__CORE__LIGHTS__LIGHT_TYPE_HPP

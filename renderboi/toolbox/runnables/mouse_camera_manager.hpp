@@ -6,7 +6,7 @@
 #include <renderboi/window/input_processor.hpp>
 #include <renderboi/window/gl_window.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Provides event callbacks to manage a camera as in a FPS game. This 
@@ -18,8 +18,8 @@ private:
     MouseCameraManager(const MouseCameraManager& other) = delete;
     MouseCameraManager& operator=(const MouseCameraManager& other) = delete;
 
-    /// @brief Pointer to the camera controlled by the script.
-    const CameraPtr _camera;
+    /// @brief Reference to the camera controlled by the script.
+    Camera& _camera;
 
     /// @brief Camera sensitivity (mouse).
     float _lookSensitivity;
@@ -37,9 +37,9 @@ public:
     /// @brief The default mouse sensitivity.
     static constexpr float DefaultLookSensitivity = 0.1f;
 
-    /// @param camera Pointer to the camera whose orientation to manage.
+    /// @param camera Reference to the camera whose orientation to manage.
     /// @param sensitivity The amplitude of the rotation induced by mouse movement.
-    MouseCameraManager(const CameraPtr camera, const float sensitivity = DefaultLookSensitivity);
+    MouseCameraManager(Camera& camera, const float sensitivity = DefaultLookSensitivity);
 
     //////////////////////////////////////////////
     ///                                        ///
@@ -49,13 +49,13 @@ public:
 
     /// @brief Callback for a mouse cursor event.
     ///
-    /// @param window Pointer to the GLWindow in which the event was
+    /// @param window Reference to the GLWindow in which the event was
     /// triggered.
     /// @param xpos X coordinate of the new position of the mouse.
     /// @param ypos Y coordinate of the new position of the mouse.
-    void processMouseCursor(const GLWindowPtr window, const double xpos, const double ypos) override;
+    void processMouseCursor(GLWindow& window, const double xpos, const double ypos) override;
 };
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__RUNNABLES__MOUSE_CAMERA_MANAGER_HPP

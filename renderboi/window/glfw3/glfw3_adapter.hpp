@@ -5,7 +5,7 @@
 
 #include "../enums.hpp"
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 /// @brief Contains utilities to translate GLFW constants to RenderBoi enums 
@@ -50,37 +50,37 @@ namespace GLFW3Adapter
     ///
     /// @return A literal of type E which describes the provided GLFW3 macro.
     template<typename E>
-    E getEnum(int constant);
+    E getEnum(const int constant);
 
     template<>
-    Input::Mode::Target getEnum(int macro);
+    Input::Mode::Target getEnum(const int macro);
 
     template<>
-    Input::Mode::Value getEnum(int macro);
+    Input::Mode::Value getEnum(const int macro);
 
     template<>
-    Input::Action getEnum(int macro);
+    Input::Action getEnum(const int macro);
 
     template<>
-    Input::Key getEnum(int macro);
+    Input::Key getEnum(const int macro);
 
     template<>
-    Input::Modifier getEnum(int macro);
+    Input::Modifier getEnum(const int macro);
 
     template<>
-    Input::MouseButton getEnum(int macro);
+    Input::MouseButton getEnum(const int macro);
 
     template<>
-    Input::Joystick getEnum(int macro);
+    Input::Joystick getEnum(const int macro);
 
     template<>
-    Input::Gamepad::Button getEnum(int macro);
+    Input::Gamepad::Button getEnum(const int macro);
 
     template<>
-    Input::Gamepad::Axis getEnum(int macro);
+    Input::Gamepad::Axis getEnum(const int macro);
 
     template<>
-    OpenGLProfile getEnum(int macro);
+    OpenGLProfile getEnum(const int macro);
 
     /// @brief Get the GLFW3 macro corresponding to the given RenderBoi enum.
     ///
@@ -90,39 +90,39 @@ namespace GLFW3Adapter
     ///
     /// @return The GLFW3 macro which corresponds to the given literal.
     template<typename E>
-    int getValue(E literal);
+    int getValue(const E literal);
 
     template<>
-    int getValue(Input::Mode::Target literal);
+    int getValue(const Input::Mode::Target literal);
 
     template<>
-    int getValue(Input::Mode::Value literal);
+    int getValue(const Input::Mode::Value literal);
 
     template<>
-    int getValue(Input::Action literal);
+    int getValue(const Input::Action literal);
 
     template<>
-    int getValue(Input::Key literal);
+    int getValue(const Input::Key literal);
 
     template<>
-    int getValue(Input::Modifier literal);
+    int getValue(const Input::Modifier literal);
 
     template<>
-    int getValue(Input::MouseButton literal);
+    int getValue(const Input::MouseButton literal);
 
     template<>
-    int getValue(Input::Joystick literal);
+    int getValue(const Input::Joystick literal);
 
     template<>
-    int getValue(Input::Gamepad::Button literal);
+    int getValue(const Input::Gamepad::Button literal);
 
     template<>
-    int getValue(Input::Gamepad::Axis literal);
+    int getValue(const Input::Gamepad::Axis literal);
 
     template<>
-    int getValue(OpenGLProfile literal);
+    int getValue(const OpenGLProfile literal);
 }
 
-}//namespace Renderboi::Window
+} // namespace renderboi::Window
 
 #endif//RENDERBOI__WINDOW__GLFW3_ADAPTER_HPP

@@ -1,5 +1,5 @@
-#ifndef RENDERBOI__TOOLBOX__OBJECT_TRANSFORM_HPP
-#define RENDERBOI__TOOLBOX__OBJECT_TRANSFORM_HPP
+#ifndef RENDERBOI__TOOLBOX__OBJECT__OBJECT_TRANSFORM_HPP
+#define RENDERBOI__TOOLBOX__OBJECT__OBJECT_TRANSFORM_HPP
 
 #include <memory>
 
@@ -54,16 +54,18 @@
  * More details in object_transform.cpp.
  */
 
-namespace Renderboi
+namespace renderboi
 {
 
 class SceneObject;
-using SceneObjectPtr = std::shared_ptr<SceneObject>;
+using SceneObjectPtr = std::unique_ptr<SceneObject>;
 
 /// @brief Wraps a Transform and is attached to a SceneObject. Refer to the
 /// README section at the top of the .hpp file for more info.
 class ObjectTransform : public Transform
 {
+friend SceneObject;
+
 public:
     using TransformNotifier = cpptools::Notifier<const unsigned int>;
 
@@ -71,42 +73,46 @@ protected:
     /// @brief Will notify subscribers that the transform has been modified.
     TransformNotifier _transformNotifier;
     /// @brief The SceneObject the transform is attached to.
-    SceneObjectWPtr _sceneObject;
+    SceneObject& _sceneObject;
     /// @brief The ID of the SceneObject the transform is attached to.
     unsigned int _objectId;
 
     /// @brief Notify all subscribers that the transform was updated.
-    void notifyChange() const;
+    void _notifyChange() const;
+
+    /// @brief Get the transform of the parent scene object to this instance.
+    ///
+    /// @return The transform of the parent scene object to this instance.
+    Transform _getParentTransform() const;
 
 public:
-    /// @param transform Base state of the object transform.
-    ObjectTransform(const Transform transform);
-
+    /// @param sceneObject Reference to the scene object of the object transform.
     /// @param position Base position of the transform.
     /// @param rotation Base orientation of the transform.
     /// @param scale Base scale of the transform.
     ObjectTransform(
+        SceneObject& sceneObject,
         const glm::vec3 position = glm::vec3(0.f), 
         const glm::quat orientation = glm::quat(1.f, glm::vec3(0.f)), 
         const glm::vec3 scale = glm::vec3(1.f)
     );
 
-    ObjectTransform(const ObjectTransform& other) = delete;
+    /// @param sceneObject Reference to the scene object of the object transform.
+    /// @param transform Base state of the object transform.
+    ObjectTransform(SceneObject& sceneObject, const Transform transform);
 
+    /// @param other Instance to assign to this.
     ObjectTransform& operator=(const ObjectTransform& other);
 
+    /// @param other Transform instance to assign to this.
     ObjectTransform& operator=(const Transform& other);
+
+    ObjectTransform(const ObjectTransform& other) = delete;
 
     /// @brief Get the object the transform is attached to.
     ///
-    /// @return Pointer to the scene object the transform is attached to.
-    SceneObjectWPtr getSceneObject() const;
-
-    /// @brief Set which object the transform is attached to
-    ///
-    /// @param sceneObj A pointer to the scene object the transform should
-    /// be attached to.
-    void setSceneObject(const SceneObjectPtr sceneObj);
+    /// @return Reference to the scene object the transform is attached to.
+    SceneObject& sceneObject() const;
 
     /// @brief Retrieve the notifier attached to this transform.
     ///
@@ -236,6 +242,8 @@ public:
     Transform compoundFrom(const ObjectTransform& other) const;
 };
 
-}//namespace Renderboi
+using ObjectTransformPtr = std::unique_ptr<ObjectTransform>;
 
-#endif//RENDERBOI__TOOLBOX__OBJECT_TRANSFORM_HPP
+} // namespace renderboi
+
+#endif//RENDERBOI__TOOLBOX__OBJECT__OBJECT_TRANSFORM_HPP

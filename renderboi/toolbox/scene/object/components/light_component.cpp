@@ -4,12 +4,13 @@
 
 #include "../scene_object.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
-LightComponent::LightComponent(const SceneObjectPtr sceneObject, const LightPtr light) :
-    Component(ComponentType::Light, sceneObject),
-    _light(light)
+LightComponent::LightComponent(SceneObject& sceneObject, LightPtr&& light) :
+    Component(sceneObject),
+    _lightPtr(std::move(light)),
+    _light(*_lightPtr)
 {
     if (!light)
     {
@@ -17,48 +18,29 @@ LightComponent::LightComponent(const SceneObjectPtr sceneObject, const LightPtr 
     }
 }
 
+LightComponent::LightComponent(SceneObject& sceneObject, Light& light) :
+    Component(sceneObject),
+    _lightPtr(nullptr),
+    _light(light)
+{
+}
+
 LightComponent::~LightComponent()
 {
 
 }
 
-LightPtr LightComponent::getLight() const
+Light& LightComponent::light()
 {
     return _light;
 }
 
-void LightComponent::setLight(const LightPtr light)
+LightComponent* LightComponent::clone(SceneObject& newParent) const
 {
-    if (!light)
-    {
-        throw std::runtime_error("LightComponent: cannot set light to null pointer.");
-    }
-
-    _light = light;
+    return new LightComponent(
+        newParent,
+        std::move(LightPtr(_light.clone()))
+    );
 }
 
-LightComponent* LightComponent::clone(const SceneObjectPtr newParent) const
-{
-    LightPtr clonedLight = LightPtr(_light->clone());
-    return new LightComponent(newParent, clonedLight);
-}
-
-template<>
-ComponentType Component::componentType<LightComponent>()
-{
-    return ComponentType::Light;
-}
-
-template<>
-std::string Component::componentTypeString<LightComponent>()
-{
-    return "Light";
-}
-
-template<>
-bool Component::multipleInstancesAllowed<LightComponent>()
-{
-    return false;
-}
-
-}//namespace Renderboi
+} // namespace renderboi

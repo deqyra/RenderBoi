@@ -9,7 +9,7 @@
 #include "materials.hpp"
 #include "vertex.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 unsigned int Mesh::_count = 0;
@@ -178,4 +178,4 @@ void Mesh::draw()
     );
 }
 
-}//namespace Renderboi
+} // namespace renderboi

@@ -8,12 +8,12 @@
 #include <vector>
 
 #include "enums.hpp"
-#include "gl_context_client.hpp"
 #include "input_processor.hpp"
 #include "monitor.hpp"
+#include "event/gl_context_event_manager.hpp"
 #include "gamepad/gamepad_manager.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
     
 namespace Window
@@ -21,12 +21,23 @@ namespace Window
 
 /// @brief Abstract window, supporting event callbacks through a custom 
 /// InputProcessor.
-class GLWindow : public std::enable_shared_from_this<GLWindow>
+class GLWindow
 {
-public:
+protected:
     /// @param title Title of the window.
     GLWindow(std::string title);
-    virtual ~GLWindow();
+
+    /// @param title Title of the window.
+    /// @param contextEventManager Reference to the context event manager of the
+    /// window.
+    GLWindow(std::string title, GLContextEventManager& contextEventManager);
+
+public:
+    virtual ~GLWindow() = default;
+
+    ////////////////////////////
+    ///   INPUT FORWARDING   ///
+    ////////////////////////////
 
     /// @brief Callback for a framebuffer resize event.
     ///
@@ -70,42 +81,14 @@ public:
     /// @param ypos Y coordinate of the new position of the mouse.
     virtual void processMouseCursor(const double xpos, const double ypos);
 
-    /// @brief Register an input processor to the window. Input events 
-    /// will be forwarded to it.
-    ///
-    /// @param inputProcessor Pointer to the input processor to register
-    /// to the window.
-    ///
-    /// @exception If the provided pointer is null, the function will 
-    /// throw a std::runtime_error.
-    virtual void registerInputProcessor(const InputProcessorPtr inputProcessor);
-
-    /// @brief Discard any registered custom input processor.
-    virtual void detachInputProcessor();
-
-    /// @brief Tells whether an exit signal was sent to the window.
-    virtual bool exitSignaled();
-
-    /// @brief Send an exit signal to the window.
-    ///
-    /// @param value Whether the exit signal sent is positive or negative.
-    virtual void signalExit(bool value = true);
-
-    /// @brief Get a pointer to the entity which manages gamepads. May be called
-    /// from any thread.
-    ///
-    /// @return A pointer to the gamepad manager.
-    virtual GamepadManagerPtr getGamepadManager();
+    /////////////////////////////
+    ///   WINDOW MANAGEMENT   ///
+    /////////////////////////////
 
     /// @brief Get the title of the window. May be called from any thread.
     ///
     /// @return The title of the window.
     virtual std::string getTitle() const;
-
-    /// @brief Get a pointer to the GL context client which the window manages.
-    ///
-    /// @return A pointer to the GL context client which the window manages.
-    virtual GLContextClientPtr getGlContextClient() const;
 
     /// @brief Set the title of the window. May only be called from the main
     /// thread.
@@ -113,20 +96,89 @@ public:
     /// @return The title of the window.
     virtual void setTitle(std::string title) = 0;
 
+    /// @brief Tells whether an exit signal was sent to the window.
+    virtual bool exitSignaled();
+
+    /// @brief Send an exit signal to the window.
+    ///
+    /// @param value Whether the exit signal sent is positive or negative.
+    virtual void signalExit(const bool value = true);
+
+    /// @brief Get a pointer to the entity which manages gamepads. May be called
+    /// from any thread.
+    ///
+    /// @return A pointer to the gamepad manager.
+    virtual GamepadManager& getGamepadManager();
+
+    /// @brief Register an entity to which context events should be forwarded
+    /// when they occur.
+    ///
+    /// @param context Pointer to the context event manager.
+    ///
+    /// @exception If the provided pointer is nullptr, the function will throw
+    /// an std::runtime_error.
+    void registerContextEventManager(GLContextEventManagerPtr&& contextEventManager);
+
+    /// @brief Discard the registered custom context event manager. This
+    /// restores the default context event manager.
+    virtual void detachContextEventManager();
+
+    /// @brief Forward a context event which occurred to the registered context
+    /// client.
+    ///
+    /// @param event Literal describing the event to forward to the registered
+    /// context client.
+    void forwardContextEvent(const GLContextEvent event);
+
+    /// @brief Register an input processor to the window. Input events 
+    /// will be forwarded to it.
+    ///
+    /// @param inputProcessor Reference to the input processor to register
+    /// to the window.
+    ///
+    /// @exception If the provided pointer is null, the function will 
+    /// throw a std::runtime_error.
+    virtual void registerInputProcessor(InputProcessor& inputProcessor);
+
+    /// @brief Get a pointer to the input processor of the window.
+    ///
+    /// @return A pointer to the input processor of the window.
+    virtual const InputProcessor& getInputProcessor();
+
+    /// @brief Discard the currently registered custom input processor. This
+    /// restores the default input processor.
+    virtual void detachInputProcessor();
+
+    /////////////////////////
+    ///   INPUT POLLING   ///
+    /////////////////////////
+
+    /// @brief Process all context events that were registered. May be called
+    /// from the rendering thread only, as this may in turn issue gl* calls.
+    void processPendingContextEvents();
+
+    /// @brief Poll input and process queued events. May only be called from the
+    /// main thread.
+    void pollAllEvents();
+
+    /// @brief Call pollAllEvents() in a loop until requested to exit. May only
+    /// be called from the main thread.
+    ///
+    /// @see signalExit()
+    /// @see exitSignaled()
+    void startPollingLoop();
+
+    ////////////////////////////
+    ///   ABSTRACT METHODS   ///
+    ////////////////////////////
+
     /// @brief Set the input mode of a certain target in the window. May only be
     /// called from the main thread.
     ///
     /// @param target Literal describing which aspect of the window whose
     /// input mode should be set.
     /// @param value Literal describing which input to set the target to.
-    virtual void setInputMode(const Window::Input::Mode::Target target, const Window::Input::Mode::Value value) = 0;
-
-    /// @brief Poll and process input and queued events until requested to exit.
-    void pollAllEvents();
-
-    /// @brief Call pollAllEvents() in a loop until requested to exit (see 
-    /// signalExit() and exitSignaled()).
-    void startPollingLoop();
+    virtual void setInputMode(const Input::Mode::Target target, const Input::Mode::Value value) = 0;
 
     /// @brief Hide the window. May be called only from the main thread.
     virtual void hide() = 0;
@@ -180,32 +232,49 @@ public:
     /// @param[out] height Will receive the height of the framebuffer.
     virtual void getFramebufferSize(int& width, int& height) const = 0;
 
-    /// @brief Display the window in fullscreen on the specified monitor. The
-    /// primary monitor will be used if none is provided. May be called only
-    /// from the main thread.
+    /// @brief Display the window in fullscreen on the primary monitor. May be
+    /// called only from the main thread.
     ///
-    /// @param monitor Pointer to the monitor on which to make the window go
-    /// fullscreen.
     /// @param borderless Whether or not to go borderless fullscreen. When 
     /// enabled, this makes the window fit exactly the video mode of the monitor
     /// it is on. Otherwise, the attributes of the window are left untouched.
-    virtual void goFullscreen(MonitorPtr monitor = nullptr, bool borderless = false) = 0;
+    virtual void goFullscreen(const bool borderless = false) = 0;
 
-    /// @brief Display the window in fullscreen on the specified monitor. The
-    /// primary monitor will be used if none is provided. The window will switch
-    /// to the video mode which is the closest to the indicated parameters. May
-    /// be called only from the main thread.
+    /// @brief Display the window in fullscreen on the specified monitor. May be
+    /// called only from the main thread.
     ///
-    /// @param monitor Pointer to the monitor on which to make the window go
-    /// fullscreen.
+    /// @param monitor Monitor on which to make the window go fullscreen.
+    /// @param borderless Whether or not to go borderless fullscreen. When 
+    /// enabled, this makes the window fit exactly the video mode of the monitor
+    /// it is on. Otherwise, the attributes of the window are left untouched.
+    virtual void goFullscreen(Monitor& monitor, const bool borderless = false) = 0;
+
+    /// @brief Display the window in fullscreen on the primary monitor. The
+    /// window will switch to the video mode which is the closest to the 
+    /// requested parameters. May be called only from the main thread.
+    ///
     /// @param width Desired width of the video mode.
     /// @param height Desired height of the video mode.
     /// @param refreshRate Desired refresh rate.
     virtual void goFullscreen(
-        MonitorPtr monitor = nullptr,
-        int width = -1,
-        int height = -1,
-        int refreshRate = -1
+        const int width = -1,
+        const int height = -1,
+        const int refreshRate = -1
+    ) = 0;
+
+    /// @brief Display the window in fullscreen on the specified monitor. The
+    /// window will switch to the video mode which is the closest to the 
+    /// indicated parameters. May be called only from the main thread.
+    ///
+    /// @param monitor Monitor on which to make the window go fullscreen.
+    /// @param width Desired width of the video mode.
+    /// @param height Desired height of the video mode.
+    /// @param refreshRate Desired refresh rate.
+    virtual void goFullscreen(
+        Monitor& monitor,
+        const int width = -1,
+        const int height = -1,
+        const int refreshRate = -1
     ) = 0;
 
     /// @brief Whether or not the window is displayed in fullscreen mode. May be
@@ -221,7 +290,7 @@ public:
     /// @brief Set the refresh rate of a fullscreen window. Has no effect on a
     /// window displayed in windowed mode. May be called only from the main 
     /// thread.
-    virtual void setRefreshRate(int rate) = 0;
+    virtual void setRefreshRate(const int rate) = 0;
 
     /// @brief Whether the window was flagged for closing. May be called from
     /// any thread.
@@ -255,7 +324,7 @@ public:
 
     /// @brief Make the GL context current for the calling thread. May be called
     /// from any thread.
-    virtual void makeContextCurrent(GLContextClientPtr context) = 0;
+    virtual void makeContextCurrent() = 0;
 
     /// @brief Make the GL context non-current for the calling thread. May be 
     /// called from any thread.
@@ -265,15 +334,11 @@ public:
     /// context must be current on the calling thread.
     ///
     /// @param extName String containing the name of the extension to query.
-    virtual bool extensionSupported(std::string extName) = 0;
+    virtual bool extensionSupported(const std::string extName) = 0;
 
 protected:
     /// @brief Default input processor of all windows.
     static const InputProcessorPtr _DefaultInputProcessor;
-
-    /// @brief Custom input processor to be registered at any point, 
-    /// providing custom callbacks.
-    InputProcessorPtr _inputProcessor;
 
     /// @brief Title of the window.
     std::string _title;
@@ -285,17 +350,23 @@ protected:
     /// by inheriting classes.
     GamepadManagerPtr _gamepadManager;
 
-    /// @brief Entity which utilizes the context painted by the window.
-    GLContextClientPtr _glContextClient;
+    /// @brief Entity to which context events will be forwarded when received.
+    GLContextEventManagerPtr _glContextEventManager;
+
+    /// @brief Custom input processor to be registered at any point, 
+    /// providing custom callbacks.
+    InputProcessor* _inputProcessor;
+
+private:
 };
 
-using GLWindowPtr = std::shared_ptr<GLWindow>;
+using GLWindowPtr = std::unique_ptr<GLWindow>;
 
-}//namespace Window
+} // namespace Window
 
 using GLWindow = Window::GLWindow;
-using GLWindowPtr = std::shared_ptr<GLWindow>;
+using GLWindowPtr = std::unique_ptr<GLWindow>;
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__WINDOW__GL_WINDOW_HPP

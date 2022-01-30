@@ -1,39 +1,53 @@
 #ifndef RENDERBOI__TOOLBOX__RENDER__TRAITS__RENDER_TRAIT_CONFIG_HPP
 #define RENDERBOI__TOOLBOX__RENDER__TRAITS__RENDER_TRAIT_CONFIG_HPP
 
-#include "renderboi/toolbox/render/traits/render_trait.hpp"
 #include <memory>
 
-namespace Renderboi
+#include "render_trait.hpp"
+
+namespace renderboi
 {
 
-/// @see class SceneObject in renderboi/toolbox/scene/object/scene_object.hpp
 class SceneObject;
-using SceneObjectPtr = std::shared_ptr<SceneObject>;
+using SceneObjectPtr = std::unique_ptr<SceneObject>;
+
+class RenderTraitConfigMap;
 
 /// @brief Abstract configuration class for a render trait. To be inherited from
 /// when specializing config for specific render traits.
 class RenderTraitConfig
 {
-friend SceneObject;
+friend RenderTraitConfigMap;
 
-protected:
+private:
     /// @brief Reference to the parent scene object of the trait config.
-    SceneObjectPtr _parentSceneObject;
-
-    /// @brief Release held references to owned resources.
-    virtual void _release();
+    SceneObject& _sceneObject;
 
 public:
     /// @param parentSceneObject Reference to the parent scene object.
-    RenderTraitConfig(SceneObjectPtr parentSceneObject);
+    RenderTraitConfig(SceneObject& parentSceneObject);
 
-    /// @brief Constant reference to the parent scene object.
-    const SceneObjectPtr& ParentSceneObject = _parentSceneObject;
+    virtual ~RenderTraitConfig();
+
+    /// @brief Get a reference to the parent scene object of this instance.
+    ///
+    /// @return A reference to the parent scene object of this instance.
+    SceneObject& sceneObject();
+
+    /// @brief Get a raw pointer to a new render trait config instance cloned 
+    /// from this one. Ownership and responsibility for the allocated 
+    /// resources are fully transferred to the caller.
+    ///
+    /// @param newParent Reference to the scene object which will be parent to
+    /// the cloned render trait config instance.
+    ///
+    /// @return A raw pointer to the render trait config instance cloned from 
+    /// this one.
+    virtual RenderTraitConfig* clone(SceneObject& newParent) const = 0;
 };
 
-using RenderTraitConfigPtr = std::shared_ptr<RenderTraitConfig>;
+using RenderTraitConfigPtr = std::unique_ptr<RenderTraitConfig>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__RENDER__TRAITS__RENDER_TRAIT_CONFIG_HPP

@@ -9,7 +9,8 @@
 
 #include "../gl_window.hpp"
 
-namespace Renderboi::Window::GLFW3Utilities
+/// @brief Collection of free functions that are useful when working with GLFW3.
+namespace renderboi::Window::GLFW3Utilities
 {
 
 /// @brief Callback for a framebuffer resize event. Will get the GLWindow instance
@@ -20,7 +21,7 @@ namespace Renderboi::Window::GLFW3Utilities
 /// place.
 /// @param width New width (in pixels) of the framebuffer.
 /// @param height New height (in pixels) of the framebuffer.
-void globalGlfwFramebufferResizeCallback(GLFWwindow* window, const int width, const int height);
+void globalGlfwFramebufferResizeCallback(GLFWwindow* const window, const int width, const int height);
 
 /// @brief Callback for a keyboard event. Will get the GLWindow instance
 /// corresponding to the window which received the event, from its user pointer,
@@ -35,7 +36,7 @@ void globalGlfwFramebufferResizeCallback(GLFWwindow* window, const int width, co
 /// the key which triggered the event.
 /// @param mods Bit field describing which modifiers were enabled 
 /// during the key event (Ctrl, Shift, etc).
-void globalGlfwKeyboardCallback(GLFWwindow* window, const int key, const int scancode, const int action, const int mods);
+void globalGlfwKeyboardCallback(GLFWwindow* const window, const int key, const int scancode, const int action, const int mods);
 
 /// @brief Callback for a mouse button event. Will get the GLWindow instance
 /// corresponding to the window which received the event, from its user pointer,
@@ -49,7 +50,7 @@ void globalGlfwKeyboardCallback(GLFWwindow* window, const int key, const int sca
 /// the button which triggered the event.
 /// @param mods Bit field describing which modifiers were enabled 
 /// during the button event (Ctrl, Shift, etc).
-void globalGlfwMouseButtonCallback(GLFWwindow* window, const int button, const int action, const int mods);
+void globalGlfwMouseButtonCallback(GLFWwindow* const window, const int button, const int action, const int mods);
 
 /// @brief Callback for a mouse cursor event. Will get the GLWindow instance
 /// corresponding to the window which received the event, from its user pointer,
@@ -59,7 +60,7 @@ void globalGlfwMouseButtonCallback(GLFWwindow* window, const int button, const i
 /// place.
 /// @param xpos X coordinate of the new position of the mouse.
 /// @param ypos Y coordinate of the new position of the mouse.
-void globalGlfwMouseCursorCallback(GLFWwindow* window, const double xpos, const double ypos);
+void globalGlfwMouseCursorCallback(GLFWwindow* const window, const double xpos, const double ypos);
 
 /// @brief Callback for error-reporting by GLFW.
 ///
@@ -72,13 +73,13 @@ void globalGlfwErrorCallback(const int error, const char* description);
 /// connected.
 ///
 /// @param window Pointer to the window to subscribe.
-void subscribeToGlfwJoystickStatus(GLWindowPtr window);
+void subscribeToGlfwJoystickStatus(GLWindow* const window);
 
 /// @brief Unsubscribe a window from the event callback for when a joystick is 
 /// connected.
 ///
 /// @param window Pointer to the window to unsubscribe.
-void unsubscribeFromGlfwJoystickStatus(GLWindowPtr window);
+void unsubscribeFromGlfwJoystickStatus(GLWindow* const window);
 
 /// @brief Callback for a joystick status event. The event will be forwarded to
 /// the gamepad managers of all windows which were subscribed through 
@@ -99,12 +100,12 @@ void unsubscribeFromGlfwJoystickStatus(GLWindowPtr window);
 /// relates to.
 /// @param event Value describing whether the joystick was connected or 
 /// disconnected. 
-void globalGlfwJoystickCallback(int jid, int event);
+void globalGlfwJoystickCallback(const int jid, const int event);
 
 /// @brief Poll all gamepads and initialize internal structures to keep track of
 /// those.
 void initGamepadStatuses();
 
-}//namespace Renderboi::Window::GLFW3Utilities
+} // namespace renderboi::Window::GLFW3Utilities
 
 #endif//RENDERBOI__WINDOW__GLFW3__GLFW3_UTILITIES_HPP

@@ -5,7 +5,7 @@
 
 #include <glad/gl.h>
 
-namespace Renderboi
+namespace renderboi
 {
 
 std::unordered_map<unsigned int, unsigned int> Shader::_locationRefCounts = std::unordered_map<unsigned int, unsigned int>();
@@ -90,4 +90,4 @@ bool Shader::supports(const ShaderFeature feature) const
     return it != _supportedFeatures.end();
 }
 
-}//namespace Renderboi
+} // namespace renderboi

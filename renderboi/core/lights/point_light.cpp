@@ -2,7 +2,7 @@
 
 #include "tools.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 PointLight::PointLight(float range) :
@@ -60,4 +60,4 @@ glm::mat4 PointLight::_computeViewMatrix() const
     return glm::mat4();
 }
 
-}//namespace Renderboi
+} // namespace renderboi

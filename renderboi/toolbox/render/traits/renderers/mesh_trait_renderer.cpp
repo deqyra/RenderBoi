@@ -1,11 +1,11 @@
 #include "mesh_trait_renderer.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
-void MeshTraitRenderer::render()
+void MeshTraitRenderer::render() const
 {
     
 }
 
-} // namespace Renderboi
+} // namespace renderboi

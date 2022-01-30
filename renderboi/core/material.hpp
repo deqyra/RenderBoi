@@ -1,12 +1,13 @@
 #ifndef RENDERBOI__CORE__MATERIAL_HPP
 #define RENDERBOI__CORE__MATERIAL_HPP
 
-#include <glm/glm.hpp>
 #include <vector>
+
+#include <glm/glm.hpp>
 
 #include "texture_2d.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Material with ambient, diffuse and specular components, as well as 
@@ -140,6 +141,6 @@ public:
     void bindTextures() const;
 };
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__MATERIAL_HPP

@@ -6,13 +6,13 @@
 
 #include <renderboi/window/enums.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 using Ref = FrameOfReference;
 
 GamepadMovementScript::GamepadMovementScript(
-    const BasisProviderPtr basisProvider,
+    BasisProvider& basisProvider,
     const float speed,
     const float sprintMultiplier
 ) :
@@ -22,10 +22,10 @@ GamepadMovementScript::GamepadMovementScript(
     _sprintMultiplier(sprintMultiplier),
     _sprint(false)
 {
-    if (!basisProvider) throw std::runtime_error("GamepadMovementScript: cannot construct from a null BasisProvider pointer.");
+
 }
 
-void GamepadMovementScript::update(float timeElapsed)
+void GamepadMovementScript::update(const float timeElapsed)
 {
     // Compute distance to cover in this frame
     float velocity = timeElapsed * _moveSpeed;
@@ -33,17 +33,17 @@ void GamepadMovementScript::update(float timeElapsed)
         velocity *= _sprintMultiplier;
 
     // Retrieve the linked scene object.
-    glm::vec3 position = _sceneObject->transform.getPosition();
+    glm::vec3 position = _sceneObject->transform().getPosition();
 
     glm::vec2 movement = velocity * _direction;
-    position += _basisProvider->left() * movement.x;
-    position += _basisProvider->forward() * movement.y;
+    position += _basisProvider.left() * movement.x;
+    position += _basisProvider.forward() * movement.y;
 
     // Update parent position
-    _sceneObject->transform.setPosition<Ref::Parent>(position);
+    _sceneObject->transform().setPosition<Ref::Parent>(position);
 }
 
-void GamepadMovementScript::setSceneObject(const SceneObjectPtr sceneObject)
+void GamepadMovementScript::setSceneObject(SceneObject* const sceneObject)
 {
     if (!sceneObject)
     {
@@ -59,13 +59,13 @@ GamepadMovementScript* GamepadMovementScript::clone() const
     return new GamepadMovementScript(_basisProvider, _moveSpeed, _sprintMultiplier);
 }
 
-void GamepadMovementScript::processButton(const GamepadPtr gamepad, const Window::Input::Gamepad::Button button, const Window::Input::Action action)
+void GamepadMovementScript::processButton(const Gamepad& gamepad, const Window::Input::Gamepad::Button button, const Window::Input::Action action)
 {
     if (button == Window::Input::Gamepad::Button::A)
         _sprint = (action == Window::Input::Action::Press);
 }
 
-void GamepadMovementScript::processAxis(const GamepadPtr gamepad, const Window::Input::Gamepad::Axis axis, const float value)
+void GamepadMovementScript::processAxis(const Gamepad& gamepad, const Window::Input::Gamepad::Axis axis, const float value)
 {
     if (axis == Window::Input::Gamepad::Axis::LeftX)
         _direction.x = -value;
@@ -74,4 +74,4 @@ void GamepadMovementScript::processAxis(const GamepadPtr gamepad, const Window::
         _direction.y = -value;
 }
 
-}//namespace Renderboi
+} // namespace renderboi

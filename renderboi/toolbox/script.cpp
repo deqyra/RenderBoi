@@ -1,6 +1,6 @@
 #include "script.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 unsigned int Script::_count = 0;
@@ -16,14 +16,14 @@ Script::~Script()
 
 }
 
-SceneObjectPtr Script::getSceneObject() const
+SceneObject* Script::sceneObject() const
 {
     return _sceneObject;
 }
 
-void Script::setSceneObject(const SceneObjectPtr sceneObject)
+void Script::setSceneObject(SceneObject* const sceneObject)
 {
     _sceneObject = sceneObject;
 }
 
-}//namespace Renderboi
+} // namespace renderboi

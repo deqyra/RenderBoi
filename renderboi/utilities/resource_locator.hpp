@@ -5,7 +5,7 @@
 #include <filesystem>
 #include <unordered_map>
 
-namespace Renderboi
+namespace renderboi
 {
 
 enum class ResourceType
@@ -47,7 +47,7 @@ public:
     static std::string locate(const ResourceType type, const std::string& filename);
 };
 
-}//namespace Renderboi
+} // namespace renderboi
 
 
 #endif//RENDERBOI__UTILITIES__RESOURCE_LOCATOR_HPP

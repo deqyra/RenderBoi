@@ -1,6 +1,6 @@
 #include "input_processor.hpp"
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 // Initialize static stuff
@@ -14,13 +14,13 @@ InputProcessor::InputProcessor() :
 
 // Default callbacks do nothing
 
-void InputProcessor::processFramebufferResize(const GLWindowPtr window, const unsigned int width, const unsigned int height)
+void InputProcessor::processFramebufferResize(GLWindow& window, const unsigned int width, const unsigned int height)
 {
 
 }
 
 void InputProcessor::processKeyboard(
-    const GLWindowPtr window,
+    GLWindow& window,
     const Window::Input::Key key,
     const int scancode,
     const Window::Input::Action action,
@@ -31,7 +31,7 @@ void InputProcessor::processKeyboard(
 }
 
 void InputProcessor::processMouseButton(
-    const GLWindowPtr window,
+    GLWindow& window,
     const Window::Input::MouseButton button,
     const Window::Input::Action action,
     const int mods
@@ -40,9 +40,9 @@ void InputProcessor::processMouseButton(
 
 }
 
-void InputProcessor::processMouseCursor(const GLWindowPtr window, const double xpos, const double ypos)
+void InputProcessor::processMouseCursor(GLWindow& window, const double xpos, const double ypos)
 {
 
 }
 
-}//namespace Renderboi::Window
+} // namespace renderboi::Window

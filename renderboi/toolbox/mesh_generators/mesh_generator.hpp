@@ -1,0 +1,50 @@
+#ifndef RENDERBOI__TOOLBOX__MESH_GENERATOR_HPP
+#define RENDERBOI__TOOLBOX__MESH_GENERATOR_HPP
+
+#include <renderboi/core/mesh.hpp>
+
+#include "mesh_type.hpp"
+
+namespace renderboi
+{
+
+/*            ╔════════════╗
+ *            ║   README   ║
+ *            ╚════════════╝
+ * 
+ *      DERIVING FROM MeshGenerator    
+ * =====================================
+ *
+ * - Write new mesh generator
+ * - Add new enum value to MeshType
+ * - Specialize MeshTypeMeta<MeshType::MyNewMesh> like so:
+ *
+ *     template<>
+ *     struct MeshTypeMeta<MeshType::MyNewMesh>
+ *     {
+ *         struct Generator
+ *         {
+ *             struct Generator
+    {
+        using type = MyNewGenerator;
+    };
+ *         }
+ *     };
+ *
+ * - Include header in all_mesh_generators.hpp
+ */
+
+/// @brief Interface for classes which can generate parameterized vertex data.
+class MeshGenerator
+{
+public:
+    /// @brief Generate the vertex data, put it in a new mesh object and 
+    /// return it.
+    ///
+    /// @return A pointer to the mesh containing the generated vertices.
+    virtual MeshPtr generateMesh() const = 0;
+};
+
+} // namespace renderboi
+
+#endif//RENDERBOI__TOOLBOX__MESH_GENERATOR_HPP

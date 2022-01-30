@@ -3,7 +3,7 @@
 
 #include "material.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 /// @brief A library of standard (and cheap-looking) materials.
 namespace Materials
@@ -192,6 +192,6 @@ const Material YellowRubber = Material(
 );
 
 }//namespace Materials
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__MATERIALS_HPP

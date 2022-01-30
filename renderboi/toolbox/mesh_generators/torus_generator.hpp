@@ -3,9 +3,9 @@
 
 #include <renderboi/core/mesh.hpp>
 
-#include "../interfaces/mesh_generator.hpp"
+#include "mesh_generator.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Generates the vertex data for a torus.
@@ -55,10 +55,14 @@ public:
     /// the toroidal ("large") circumference of the torus.
     /// @param poloidalVertexRes How many vertices to use by default along 
     /// the poloidal ("small") circumference of the torus.
-    TorusGenerator(float toroidalRadius, float poloidalRadius, unsigned int toroidalVertexRes = DefaultToroidalVertexResolution, unsigned int poloidalVertexRes = DefaultPoloidalVertexResolution);
+    TorusGenerator(
+        const float toroidalRadius,
+        const float poloidalRadius,
+        const unsigned int toroidalVertexRes = DefaultToroidalVertexResolution,
+        const unsigned int poloidalVertexRes = DefaultPoloidalVertexResolution);
 
     /// @param parameters Parameters of the vertex generation.
-    TorusGenerator(Parameters parameters);
+    TorusGenerator(const Parameters parameters);
 
     /// @brief Parameters of the vertex generation.
     Parameters parameters;
@@ -76,6 +80,15 @@ public:
     MeshPtr generateMesh() const override;
 };
 
-}//namespace Renderboi
+template<>
+struct MeshTypeMeta<MeshType::Torus>
+{
+    struct Generator
+    {
+        using type = TorusGenerator;
+    };
+};
+
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__MESH_GENERATORS__TORUS_GENERATOR_HPP

@@ -10,16 +10,15 @@
 #include "gamepad_state.hpp"
 #include "gamepad_input_processor.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 namespace Window
 {
 
 class GamepadManager;
-using GamepadManagerPtr = std::shared_ptr<GamepadManager>;
 
 /// @brief Proxy class to receive input from a XBox-like gamepad.
-class Gamepad : public std::enable_shared_from_this<Gamepad>
+class Gamepad
 {
 public:
     using Axis = Window::Input::Gamepad::Axis;
@@ -28,8 +27,11 @@ public:
 private:
     friend GamepadManager;
 
-    /// @param manager Pointer to the gamepad manager which the gamepad will be linked to.
-    Gamepad(GamepadManagerPtr manager, const Window::Input::Joystick slot, const std::string name);
+    /// @param manager Reference to the gamepad manager which the gamepad will be linked to.
+    Gamepad(GamepadManager& manager, const Window::Input::Joystick slot, const std::string name);
+
+    /// @brief Default input processor of all gamepads.
+    static GamepadInputProcessorPtr _DefaultInputProcessor;
 
     /// @brief Current state of the gamepad (buttons and axes).
     GamepadState _state;
@@ -46,13 +48,13 @@ private:
     std::unordered_map<Axis, bool> _axisWasInDeadZone;
 
     /// @brief Entity to which gamepad events should be forwarded.
-    GamepadInputProcessorPtr _inputProcessor;
+    GamepadInputProcessor* _inputProcessor;
 
-    /// @brief Pointer to the entity which will issue the calls to access the 
+    /// @brief Reference to the entity which will issue the calls to access the 
     /// concrete gamepad mechanisms.
-    GamepadManagerPtr _manager;
+    GamepadManager& _manager;
 
-    /// @brief To be called when the is connected.
+    /// @brief To be called when the gamepad is connected.
     void _processConnected();
 
     /// @brief To be called when the gamepad is disconnected.
@@ -78,7 +80,7 @@ private:
     ///
     /// @return Whether or not the provided value is in the dead zone of the 
     /// provided axis.
-    inline bool _valueIsInAxisDeadZone(const float& value, const Axis& axis) const;
+    inline bool _valueIsInAxisDeadZone(const float value, const Axis axis) const;
 
 public:
     /// @brief Enable polling the state of the gamepad.
@@ -113,13 +115,17 @@ public:
     /// @brief Get a pointer to the entity currently receiving gamepad events.
     ///
     /// @return A pointer to the entity currently receiving gamepad events.
-    GamepadInputProcessorPtr getInputProcessor() const;
+    GamepadInputProcessor& getInputProcessor() const;
 
     /// @brief Set the pointer to the entity which will receive gamepad events.
     ///
     /// @param inputProcessor A pointer to the entity which will receive gamepad
     /// events.
-    void registerInputProcessor(const GamepadInputProcessorPtr inputProcessor);
+    void registerInputProcessor(GamepadInputProcessor& inputProcessor);
+
+    /// @brief Reset the pointer to the entity which will receive gamepad events
+    /// to the default instance.
+    void detachInputProcessor();
 
     /// @brief Get the dead zone for an axis, a pair of values between which
     /// axis events are ignored and not being forwarded.
@@ -127,7 +133,7 @@ public:
     /// @param axis Litteral describing which axis to get the dead zone for.
     ///
     /// @return The pair of values forming the axis dead zone.
-    std::pair<float, float> getAxisDeadZone(const Axis axis) const;
+    const std::pair<float, float>& getAxisDeadZone(const Axis axis) const;
 
     /// @brief Set the dead zone for an axis, a pair of values between which
     /// axis events are ignored and not being forwarded.
@@ -155,11 +161,11 @@ public:
     std::string name;
 };
 
-}//namespace Window
+} // namespace Window
 
 using Gamepad = Window::Gamepad;
-using GamepadPtr = std::shared_ptr<Gamepad>;
+using GamepadPtr = std::unique_ptr<Gamepad>;
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__WINDOW__GAMEPAD__GAMEPAD_HPP

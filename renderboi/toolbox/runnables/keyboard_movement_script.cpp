@@ -6,13 +6,13 @@
 
 #include <renderboi/window/enums.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 using Ref = FrameOfReference;
 
 KeyboardMovementScript::KeyboardMovementScript(
-    const BasisProviderPtr basisProvider,
+    BasisProvider& basisProvider,
     const float speed,
     const float sprintMultiplier
 ) :
@@ -22,10 +22,10 @@ KeyboardMovementScript::KeyboardMovementScript(
     _movementFlags{ false },
     _sprint(false)
 {
-    if (!basisProvider) throw std::runtime_error("KeyboardMovementScript: cannot construct from a null BasisProvider pointer.");
+
 }
 
-void KeyboardMovementScript::update(float timeElapsed)
+void KeyboardMovementScript::update(const float timeElapsed)
 {
     // Compute distance to cover in this frame
     float velocity = timeElapsed * _moveSpeed;
@@ -33,7 +33,7 @@ void KeyboardMovementScript::update(float timeElapsed)
         velocity *= _sprintMultiplier;
 
     // Retrieve the linked scene object.
-    glm::vec3 position = _sceneObject->transform.getPosition();
+    glm::vec3 position = _sceneObject->transform().getPosition();
 
     // Compute velocity across basis vectors
     float forwardVelocity = 0.f;
@@ -49,14 +49,14 @@ void KeyboardMovementScript::update(float timeElapsed)
         leftVelocity -= velocity;
 
     // Compute new position
-    position += _basisProvider->forward() * forwardVelocity;
-    position += _basisProvider->left() * leftVelocity;
+    position += _basisProvider.forward() * forwardVelocity;
+    position += _basisProvider.left() * leftVelocity;
 
     // Update parent position
-    _sceneObject->transform.setPosition<Ref::Parent>(position);
+    _sceneObject->transform().setPosition<Ref::Parent>(position);
 }
 
-void KeyboardMovementScript::setSceneObject(const SceneObjectPtr sceneObject)
+void KeyboardMovementScript::setSceneObject(SceneObject* const sceneObject)
 {
     if (!sceneObject)
     {
@@ -72,7 +72,7 @@ KeyboardMovementScript* KeyboardMovementScript::clone() const
     return new KeyboardMovementScript(_basisProvider, _moveSpeed, _sprintMultiplier);
 }
 
-void KeyboardMovementScript::triggerAction(const GLWindowPtr window, const KeyboardMovementAction& action)
+void KeyboardMovementScript::triggerAction(const KeyboardMovementAction& action)
 {
     switch (action)
     {
@@ -94,7 +94,7 @@ void KeyboardMovementScript::triggerAction(const GLWindowPtr window, const Keybo
     }
 }
 
-void KeyboardMovementScript::stopAction(const GLWindowPtr window, const KeyboardMovementAction& action)
+void KeyboardMovementScript::stopAction(const KeyboardMovementAction& action)
 {
     switch (action)
     {
@@ -116,41 +116,40 @@ void KeyboardMovementScript::stopAction(const GLWindowPtr window, const Keyboard
     }
 }
 
-ControlSchemeManagerPtr<KeyboardMovementAction> KeyboardMovementScript::getDefaultControlScheme() const
+const ControlScheme<KeyboardMovementAction>& KeyboardMovementScript::getDefaultControlScheme() const
 {
-    ControlSchemeManagerPtr<KeyboardMovementAction>
-    schemeManager = std::make_shared<ControlSchemeManager<KeyboardMovementAction>>();
-
-    using Window::Input::Key;
-    schemeManager->bindControl(Control(Key::W), KeyboardMovementAction::Forward);
-    schemeManager->bindControl(Control(Key::A), KeyboardMovementAction::Left);
-    schemeManager->bindControl(Control(Key::S), KeyboardMovementAction::Backward);
-    schemeManager->bindControl(Control(Key::D), KeyboardMovementAction::Right);
-    schemeManager->bindControl(Control(Key::LeftShift), KeyboardMovementAction::Sprint);
-
-    return schemeManager;
-}
-
-std::string to_string(const KeyboardMovementAction& action)
-{
+    static ControlScheme<KeyboardMovementAction> scheme;
     static bool runOnce = false;
-    static std::unordered_map<KeyboardMovementAction, std::string> enumNames;
 
     if (!runOnce)
     {
-        enumNames[KeyboardMovementAction::Forward]   = "Forward";
-        enumNames[KeyboardMovementAction::Backward]  = "Backward";
-        enumNames[KeyboardMovementAction::Left]      = "Left";
-        enumNames[KeyboardMovementAction::Right]     = "Right";
-        enumNames[KeyboardMovementAction::Sprint]    = "Sprint";
+        using Window::Input::Key;
+        scheme.bindControl(Control(Key::W), KeyboardMovementAction::Forward);
+        scheme.bindControl(Control(Key::A), KeyboardMovementAction::Left);
+        scheme.bindControl(Control(Key::S), KeyboardMovementAction::Backward);
+        scheme.bindControl(Control(Key::D), KeyboardMovementAction::Right);
+        scheme.bindControl(Control(Key::LeftShift), KeyboardMovementAction::Sprint);
 
         runOnce = true;
     }
 
-    auto it = enumNames.find(action);
-    if (it != enumNames.end()) return it->second;
-
-    return "Unknown";
+    return scheme;
 }
 
-}//namespace Renderboi
+std::string to_string(const KeyboardMovementAction action)
+{
+    static std::unordered_map<KeyboardMovementAction, std::string> enumNames = {
+        {KeyboardMovementAction::Forward,   "Forward"},
+        {KeyboardMovementAction::Backward,  "Backward"},
+        {KeyboardMovementAction::Left,      "Left"},
+        {KeyboardMovementAction::Right,     "Right"},
+        {KeyboardMovementAction::Sprint,    "Sprint"},
+    };
+
+    auto it = enumNames.find(action);
+    return (it != enumNames.end())
+        ? it->second
+        : "Unknown";
+}
+
+} // namespace renderboi

@@ -1,7 +1,7 @@
 #ifndef RENDERBOI__CORE__FRAME_OF_REFERENCE_HPP
 #define RENDERBOI__CORE__FRAME_OF_REFERENCE_HPP
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Collection of literals to be used as template parameters for 
@@ -23,6 +23,6 @@ enum class FrameOfReference
     World
 };
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__FRAME_OF_REFERENCE_HPP

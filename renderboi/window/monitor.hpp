@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 /// @brief Class to represent a monitor on the system. All methods of this class 
@@ -17,8 +17,6 @@ private:
     static unsigned int _count;
 
 public:
-    Monitor();
-
     virtual ~Monitor();
 
     /// @brief Data structure describing a video mode for a monitor.
@@ -50,22 +48,22 @@ public:
         
     public:
         /// @param size Size of the gamma ramp.
-        GammaRamp(unsigned int size);
+        GammaRamp(const unsigned int size);
 
         /// @param size Size of the gamma ramp.
         /// @param ramp Ramp to use for all three RGB components of the final
         /// gamma ramp.
-        GammaRamp(unsigned int size, std::vector<unsigned short> ramp);
+        GammaRamp(const unsigned int size, const std::vector<unsigned short> ramp);
 
         /// @param size Size of the gamma ramp.
         /// @param red Ramp for the red component of the final gamma ramp.
         /// @param green Ramp for the green component of the final gamma ramp.
         /// @param blue Ramp for the blue component of the final gamma ramp.
         GammaRamp(
-            unsigned int size,
-            std::vector<unsigned short> red,
-            std::vector<unsigned short> green,
-            std::vector<unsigned short> blue
+            const unsigned int size,
+            const std::vector<unsigned short> red,
+            const std::vector<unsigned short> green,
+            const std::vector<unsigned short> blue
         );
 
         /// @brief Get the size of the gamma ramp.
@@ -81,7 +79,7 @@ public:
         /// @brief Set the red component of the gamma ramp.
         ///
         /// @param red The red component to set for the gamma ramp.
-        void setRed(std::vector<unsigned short> red);
+        void setRed(const std::vector<unsigned short> red);
 
         /// @brief Get the green component of the gamma ramp.
         ///
@@ -91,7 +89,7 @@ public:
         /// @brief Set the green component of the gamma ramp.
         ///
         /// @param green The green component to set for the gamma ramp.
-        void setGreen(std::vector<unsigned short> green);
+        void setGreen(const std::vector<unsigned short> green);
 
         /// @brief Get the blue component of the gamma ramp.
         ///
@@ -101,7 +99,7 @@ public:
         /// @brief Set the blue component of the gamma ramp.
         ///
         /// @param blue The blue component to set for the gamma ramp.
-        void setBlue(std::vector<unsigned short> blue);
+        void setBlue(const std::vector<unsigned short> blue);
 
         /// @brief Generate a gamma ramp from a single exponent.
         ///
@@ -109,7 +107,7 @@ public:
         /// @param e Exponent to compute the gamma ramp from.
         ///
         /// @return The generated gamma ramp.
-        static GammaRamp FromExponent(unsigned int size, float e);
+        static GammaRamp FromExponent(const unsigned int size, const float e);
 
         /// @brief Generate a gamma ramp from a single exponent.
         ///
@@ -119,18 +117,28 @@ public:
         /// @param eBlue Exponent to compute the blue ramp from.
         ///
         /// @return The generated gamma ramp.
-        static GammaRamp FromExponents(unsigned int size, float eRed, float eGreen, float eBlue);
+        static GammaRamp FromExponents(
+            const unsigned int size,
+            const float eRed,
+            const float eGreen,
+            const float eBlue
+        );
     };
 
+protected:
+    /// @param name Name of the monitor.
+    Monitor(std::string name);
+
+public:
     /// @brief Get the current video mode of the monitor.
     ///
     /// @return The current video mode of the monitor.
-    virtual VideoMode getCurrentVideoMode() const = 0;
+    virtual const VideoMode getCurrentVideoMode() const = 0;
 
     /// @brief Get the video modes supported by the monitor.
     ///
     /// @return An array filled with the video modes support by the monitor.
-    virtual std::vector<VideoMode> getVideoModes() const = 0;
+    virtual const std::vector<VideoMode>& getVideoModes() const = 0;
 
     /// @brief Get the physical size of the monitor in millimetres.
     ///
@@ -161,11 +169,6 @@ public:
     /// @param[out] height To receive the height of the work area.
     virtual void getWorkArea(int& xscale, int& yscale, int& width, int& height) const = 0;
 
-    /// @brief Get the human-readable name of the monitor.
-    ///
-    /// @return The human-readable name of the monitor.
-    virtual std::string getName() const = 0;
-
     /// @brief Get the gamma ramp of the monitor.
     ///
     /// @return The gamma ramp of the monitor.
@@ -176,17 +179,24 @@ public:
     /// @return The gamma ramp to set for the monitor.
     virtual void setGammaRamp(const GammaRamp& gammaRamp) const = 0;
 
-    /// @brief Get the largest video mode supported by the monitor.
+    /// @brief Get the "largest" video mode supported by the monitor.
     ///
-    /// @return The largest video mode supported by the monitor.
+    /// @return The "largest" video mode supported by the monitor.
+    ///
+    /// @note Since a video mode is hardly sizeable, this function may only 
+    /// return a hypothetical video mode made of the single largest attribute 
+    /// values encountered across all supported video modes.
     virtual VideoMode getLargestVideoMode() const = 0;
 
     /// @brief ID of the monitor.
     const unsigned int id;
+
+    /// @brief Name of the monitor.
+    const std::string name;
 };
 
-using MonitorPtr = std::shared_ptr<Monitor>;
+using MonitorPtr = std::unique_ptr<Monitor>;
 
-}//namespace Renderboi::Window
+} // namespace renderboi::Window
 
 #endif//RENDERBOI__WINDOW__MONITOR_HPP

@@ -2,28 +2,24 @@
 
 #include <stdexcept>
 
-namespace Renderboi
+namespace renderboi
 {
 
 InputSplitter::InputSplitter() :
     _subscriberRollingCount(0),
-    _subscribers()
+    _subscribers(),
+    _gamepadSubscribers()
 {
 
 }
 
-unsigned int InputSplitter::registerInputProcessor(InputProcessorPtr inputProcessor)
+unsigned int InputSplitter::registerInputProcessor(InputProcessor& inputProcessor)
 {
-    if (!inputProcessor)
-    {
-        throw std::runtime_error("InputSplitter: cannot register null input processor pointer.");
-    }
-
-    _subscribers[_subscriberRollingCount] = inputProcessor;
+    _subscribers.insert({_subscriberRollingCount, inputProcessor});
     return _subscriberRollingCount++;
 }
 
-void InputSplitter::detachInputProcessor(unsigned int subscriptionId)
+void InputSplitter::detachInputProcessor(const unsigned int subscriptionId)
 {
     _subscribers.erase(subscriptionId);
 }
@@ -33,18 +29,13 @@ void InputSplitter::detachAllInputProcessors()
     _subscribers.clear();
 }
 
-unsigned int InputSplitter::registerGamepadInputProcessor(GamepadInputProcessorPtr inputProcessor)
+unsigned int InputSplitter::registerGamepadInputProcessor(GamepadInputProcessor& inputProcessor)
 {
-    if (!inputProcessor)
-    {
-        throw std::runtime_error("InputSplitter: cannot register null input processor pointer.");
-    }
-
-    _gamepadSubscribers[_subscriberRollingCount] = inputProcessor;
+    _gamepadSubscribers.insert({_subscriberRollingCount, inputProcessor});
     return _subscriberRollingCount++;
 }
 
-void InputSplitter::detachGamepadInputProcessor(unsigned int subscriptionId)
+void InputSplitter::detachGamepadInputProcessor(const unsigned int subscriptionId)
 {
     _gamepadSubscribers.erase(subscriptionId);
 }
@@ -54,79 +45,79 @@ void InputSplitter::detachAllIGamepadnputProcessors()
     _gamepadSubscribers.clear();
 }
 
-void InputSplitter::processFramebufferResize(const GLWindowPtr window, const unsigned int width, const unsigned int height)
+void InputSplitter::processFramebufferResize(GLWindow& window, const unsigned int width, const unsigned int height)
 {
-    for (const auto& [_, inputProc] : _subscribers)
+    for (auto& [_, inputProc] : _subscribers)
     {
-        inputProc->processFramebufferResize(window, width, height);
+        inputProc.processFramebufferResize(window, width, height);
     }
 }
 
 void InputSplitter::processKeyboard(
-    const GLWindowPtr window, 
+    GLWindow& window, 
     const Key key, 
     const int scancode, 
     const Action action, 
     const int mods
 )
 {
-    for (const auto [_, inputProc] : _subscribers)
+    for (auto& [_, inputProc] : _subscribers)
     {
-        inputProc->processKeyboard(window, key, scancode, action, mods);
+        inputProc.processKeyboard(window, key, scancode, action, mods);
     }
 }
 
 void InputSplitter::processMouseButton(
-    const GLWindowPtr window, 
+    GLWindow& window, 
     const MButton button, 
     const Action action, 
     const int mods
 )
 {
-    for (const auto [_, inputProc] : _subscribers)
+    for (auto& [_, inputProc] : _subscribers)
     {
-        inputProc->processMouseButton(window, button, action, mods);
+        inputProc.processMouseButton(window, button, action, mods);
     }
 }
 
-void InputSplitter::processMouseCursor(const GLWindowPtr window, const double xpos, const double ypos)
+void InputSplitter::processMouseCursor(GLWindow& window, const double xpos, const double ypos)
 {
-    for (const auto [_, inputProc] : _subscribers)
+    for (auto& [_, inputProc] : _subscribers)
     {
-        inputProc->processMouseCursor(window, xpos, ypos);
+        inputProc.processMouseCursor(window, xpos, ypos);
     }
 }
 
-void InputSplitter::processConnected(const GamepadPtr gamepad)
+void InputSplitter::processConnected(const Gamepad& gamepad)
 {
-    for (const auto [_, inputProc] : _gamepadSubscribers)
+    for (auto& [_, inputProc] : _gamepadSubscribers)
     {
-        inputProc->processConnected(gamepad);
+        inputProc.processConnected(gamepad);
     }
 }
 
-void InputSplitter::processDisconnected(const GamepadPtr gamepad)
+void InputSplitter::processDisconnected(const Gamepad& gamepad)
 {
-    for (const auto [_, inputProc] : _gamepadSubscribers)
+    for (auto& [_, inputProc] : _gamepadSubscribers)
     {
-        inputProc->processDisconnected(gamepad);
+        inputProc.processDisconnected(gamepad);
     }
 }
 
-void InputSplitter::processButton(const GamepadPtr gamepad, const GButton button, const Action action)
+void InputSplitter::processButton(const Gamepad& gamepad, const GButton button, const Action action)
 {
-    for (const auto [_, inputProc] : _gamepadSubscribers)
+    for (auto& [_, inputProc] : _gamepadSubscribers)
     {
-        inputProc->processButton(gamepad, button, action);
+        inputProc.processButton(gamepad, button, action);
     }
 }
 
-void InputSplitter::processAxis(const GamepadPtr gamepad, const Axis axis, const float value)
+void InputSplitter::processAxis(const Gamepad& gamepad, const Axis axis, const float value)
 {
-    for (const auto [_, inputProc] : _gamepadSubscribers)
+    for (auto& [_, inputProc] : _gamepadSubscribers)
     {
-        inputProc->processAxis(gamepad, axis, value);
+        inputProc.processAxis(gamepad, axis, value);
     }
 }
 
-}//namespace Renderboi
+} // namespace renderboi

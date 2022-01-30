@@ -9,23 +9,17 @@
 
 #include <glm/glm.hpp>
 
-#include <renderboi/utilities/to_string.hpp>
-
 #include <cpptools/container/tree.hpp>
 
 #include "../factory.hpp"
 #include "../script.hpp"
 #include "object/scene_object.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
-// As this->shared_from_this cannot be called until the Scene is fully 
-// constructed, the object graph is initialized with a null shared pointer, 
-// hence why this->init needs to be called immediately thereafter in order to 
-// properly initialize the root node with a shared pointer to this.
 Scene::Scene() :
-    _objects(SceneObjectPtr()),
+    _objects(std::make_unique<SceneObject>(*this, "SCENE_ROOT")),
     _transforms(Transform()),
     _updateMarkers(false),
     _outdatedTransformNodes(0),
@@ -33,72 +27,85 @@ Scene::Scene() :
     _scripts(),
     _lastTime(std::chrono::system_clock::now())
 {
-    
+    const ObjectTree::NodePtr objectRootNode = _objects.getRoot();
+    const TransformTree::NodePtr transformRootNode = _transforms.getRoot();
+    const BoolTree::NodePtr updateRootNode = _updateMarkers.getRoot();
+
+    const unsigned int rootId = objectRootNode->value->id;
+    // Set and map metadata
+    _objectMetadata[rootId] = {
+        .id                     = rootId,
+        .parentId               = _MaxUInt,
+        .objectNodeId           = objectRootNode->id,
+        .transformNodeId        = transformRootNode->id,
+        .updateNodeId           = updateRootNode->id,
+        .transformSubscriberId  = _MaxUInt
+    };
 }
 
-SceneObjectPtr Scene::operator[](const unsigned int id)
+Scene::~Scene()
 {
-    const SceneObjectMetadata meta = _findObjectMetaOrThrow(id, "cannot retrieve this object");
+    // Remove scene references in all scene objects, unsubscribe scene from object updates
+    for (const auto& [_, meta] : _objectMetadata)
+    {
+        _objects[meta.id]->value->transform().getNotifier().deleteSubscriber(meta.transformSubscriberId);
+    }
+
+    // Clear all trees
+    _objects.clear();
+    _transforms.clear();
+    _updateMarkers.clear();
+
+    // Clear metadata, scripts
+    _objectMetadata.clear();
+    _scripts.clear();
+}
+
+SceneObject& Scene::operator[](const unsigned int id)
+{
+    const SceneObjectMetadata& meta = _findObjectMetaOrThrow(id, "cannot retrieve this object");
     const ObjectTree::NodePtr node = _objects[meta.objectNodeId];
-    return node->value;
+    return *(node->value);
 }
 
-SceneObjectPtr Scene::newObject(const std::string name)
+SceneObject& Scene::newObject(const std::string& name)
 {
     const ObjectTree::NodePtr node = _objects.getRoot();
     const unsigned int rootId = node->value->id;
 
-    const SceneObjectPtr object = Factory::MakeSceneObject(name);
+    SceneObjectPtr object = std::make_unique<SceneObject>(*this, name);
+    SceneObject& objectRef = *object;
 
-    _performObjectRegistration(object, _objectMetadata[rootId]);
-
-    return object;
+    _performObjectRegistration(std::move(object), _objectMetadata[rootId]);
+    return objectRef;
 }
 
-SceneObjectPtr Scene::newObject(const unsigned int parentId)
+SceneObject& Scene::newObject(const unsigned int parentId)
 {
-    const SceneObjectPtr object = Factory::MakeSceneObject();
-    const SceneObjectMetadata meta = _findObjectMetaOrThrow(parentId, "cannot create new (unnamed) object with this parent");
- 
-    _performObjectRegistration(object, meta);
+    const SceneObjectMetadata& meta = _findObjectMetaOrThrow(parentId, "cannot create new (unnamed) object with this parent");
 
-    return object;
+    SceneObjectPtr object = std::make_unique<SceneObject>(*this);
+    SceneObject& objectRef = *object;
+
+    _performObjectRegistration(std::move(object), meta);
+    return objectRef;
 }
 
-SceneObjectPtr Scene::newObject(const std::string name, const unsigned int parentId)
+SceneObject& Scene::newObject(const std::string& name, const unsigned int parentId)
 {
-    const SceneObjectPtr object = Factory::MakeSceneObject(name);
-    const SceneObjectMetadata meta = _findObjectMetaOrThrow(parentId, "cannot create new object with this parent");
- 
-    _performObjectRegistration(object, meta);
+    const SceneObjectMetadata& meta = _findObjectMetaOrThrow(parentId, "cannot create new object with this parent");
 
-    return object;
-}
+    SceneObjectPtr object = std::make_unique<SceneObject>(*this, name);
+    SceneObject& objectRef = *object;
 
-void Scene::registerObject(const SceneObjectPtr object)
-{
-    _checkNotNullOrThrow(object);
-    _verifyNoParentSceneOrThrow(object);
-
-    const ObjectTree::NodePtr node = _objects.getRoot();
-    const unsigned int rootId = node->value->id;
-    // Register object as a root child
-    _performObjectRegistration(object, _objectMetadata[rootId]);
-}
-
-void Scene::registerObject(const SceneObjectPtr object, const unsigned int parentId)
-{
-    _checkNotNullOrThrow(object);
-    _verifyNoParentSceneOrThrow(object);
-    const SceneObjectMetadata meta = _findObjectMetaOrThrow(parentId, "cannot register object to this parent");
- 
-    _performObjectRegistration(object, meta);
+    _performObjectRegistration(std::move(object), meta);
+    return objectRef;
 }
 
 void Scene::removeObject(const unsigned int id)
 {
     // Retrieve object metadata
-    const SceneObjectMetadata meta = _findObjectMetaOrThrow(id, "cannot remove this object");
+    const SceneObjectMetadata& meta = _findObjectMetaOrThrow(id, "cannot remove this object");
 
     const ObjectTree::NodePtr objectNode = _objects[meta.objectNodeId];
     const std::vector<ObjectTree::NodePtr> children = objectNode->getChildren();
@@ -119,7 +126,7 @@ void Scene::removeObject(const unsigned int id)
     _updateMarkers.removeBranch(meta.updateNodeId);
     
     // Unsubscribe from transform notifier
-    objectNode->value->transform.getNotifier().deleteSubscriber(meta.transformSubscriberId);
+    objectNode->value->transform().getNotifier().deleteSubscriber(meta.transformSubscriberId);
 
     // Remove metadata
     _objectMetadata.erase(meta.id);
@@ -128,8 +135,8 @@ void Scene::removeObject(const unsigned int id)
 void Scene::moveObject(const unsigned int id, const unsigned int newParentId, const bool worldPositionStays)
 {
     // Retrieve IDs of both nodes in all graphs
-    const SceneObjectMetadata meta = _findObjectMetaOrThrow(id, "cannot move this object");
-    const SceneObjectMetadata parentMeta = _findObjectMetaOrThrow(id, "cannot move to this object");
+    const SceneObjectMetadata& meta = _findObjectMetaOrThrow(id, "cannot move this object");
+    const SceneObjectMetadata& parentMeta = _findObjectMetaOrThrow(id, "cannot move to this object");
 
     // Fetch the world transform of moved object, updating if necessary
     const Transform worldTransform = getWorldTransform(id);
@@ -143,7 +150,7 @@ void Scene::moveObject(const unsigned int id, const unsigned int newParentId, co
     {
         // Get the world transform of the new parent, not cascading the update
         const Transform parentTransform = getWorldTransform(newParentId, false);
-        _objects[meta.objectNodeId]->value->transform = worldTransform.compoundFrom(parentTransform);
+        _objects[meta.objectNodeId]->value->transform() = worldTransform.compoundFrom(parentTransform);
         // No need to mark the object for update as it stayed in place
     }
     // Mark object for update if it did not keep its world position
@@ -153,15 +160,15 @@ void Scene::moveObject(const unsigned int id, const unsigned int newParentId, co
 unsigned int Scene::getParentId(const unsigned int id) const
 {
     // Retrieve object metadata
-    const SceneObjectMetadata meta = _findObjectMetaOrThrow(id, "cannot retrieve the parent ID of this object");
+    const SceneObjectMetadata& meta = _findObjectMetaOrThrow(id, "cannot retrieve the parent ID of this object");
     return meta.parentId;
 }
 
-SceneObjectPtr Scene::getParent(const unsigned int id) const
+SceneObject& Scene::getParent(const unsigned int id) const
 {
     // Retrieve object metadata
-    const SceneObjectMetadata meta = _findObjectMetaOrThrow(id, "cannot retrieve the parent of this object");
-    return _objects[meta.parentId]->value;
+    const SceneObjectMetadata& meta = _findObjectMetaOrThrow(id, "cannot retrieve the parent of this object");
+    return *(_objects[meta.parentId]->value);
 }
 
 void Scene::updateAllTransforms()
@@ -174,8 +181,8 @@ void Scene::updateAllTransforms()
         // Start the DFS routine on each of the root children
         for(auto it = childNodes.begin(); it != childNodes.end(); it++)
         {
-            SceneObjectPtr object = (*it)->value;
-            _worldTransformDFSUpdate(object->id);
+            SceneObject& object = *((*it)->value);
+            _worldTransformDFSUpdate(object.id);
         }
 
         _outdatedTransformNodes = 0;
@@ -184,7 +191,7 @@ void Scene::updateAllTransforms()
 
 Transform Scene::getWorldTransform(const unsigned int id, const bool cascadeUpdate) const
 {
-    const SceneObjectMetadata meta = _findObjectMetaOrThrow(id, "cannot retrieve world transform of this object");
+    const SceneObjectMetadata& meta = _findObjectMetaOrThrow(id, "cannot retrieve world transform of this object");
 
     // Update transform if required
     if (_outdatedTransformNodes > 0)
@@ -235,27 +242,23 @@ Transform Scene::getWorldTransform(const unsigned int id, const bool cascadeUpda
     return node->value;
 }
 
-std::vector<SceneObjectPtr> Scene::getAllObjects(const bool mustBeEnabled) const
+std::vector<std::reference_wrapper<SceneObject>> Scene::getAllObjects(const bool mustBeEnabled) const
 {
-    std::vector<SceneObjectPtr> result;
+    std::vector<std::reference_wrapper<SceneObject>> result;
 
     for (const auto& [_, meta] : _objectMetadata)
     {
         const ObjectTree::NodePtr node = _objects[meta.objectNodeId];
-        if (!mustBeEnabled || node->value->enabled) result.push_back(node->value);
+        if (!mustBeEnabled || node->value->enabled)
+            result.push_back(*(node->value));
     }
 
     return result;
 }
 
-void Scene::registerScript(const ScriptPtr script)
+void Scene::registerScript(Script& script)
 {
-    if (script == nullptr)
-    {
-        throw std::runtime_error("Scene: provided nullptr for script registration.");
-    }
-
-    _scripts[script->id] = script;
+    _scripts.insert({script.id, script});
 }
 
 void Scene::detachScript(const unsigned int id)
@@ -273,51 +276,8 @@ void Scene::triggerUpdate()
     // Update all registered scripts
     for (const auto& [_, script] : _scripts)
     {
-        script->update((float)(delta.count()));
+        script.update((float)(delta.count()));
     }
-}
-
-void Scene::_init()
-{
-    const ObjectTree::NodePtr objectRootNode = _objects.getRoot();
-    const TransformTree::NodePtr transformRootNode = _transforms.getRoot();
-    const BoolTree::NodePtr updateRootNode = _updateMarkers.getRoot();
-
-    // Reset the object graph root node pointer to a scene object initialized with a pointer to this Scene.
-    objectRootNode->value.reset(new SceneObject("SCENE_ROOT"));
-    objectRootNode->value->_setScene(this->shared_from_this());
-
-    // Set and map metadata
-    const SceneObjectMetadata meta = {
-        objectRootNode->value->id,  // ID of the object this metadata refers to
-        _MaxUInt,                   // ID of the object which is parent to the object this metadata refers to
-        objectRootNode->id,         // ID of the graph node containing the object
-        transformRootNode->id,      // ID of the graph node containing the world matrix of the object
-        updateRootNode->id,         // ID of the graph node containing the update flag of the object
-        _MaxUInt                    // ID of the subscription to the transform notifier of the object
-    };
-    _objectMetadata[meta.id] = meta;
-}
-
-void Scene::_terminate()
-{
-    // Remove scene references in all scene objects, unsubscribe scene from object updates
-    for (const auto& [_, meta] : _objectMetadata)
-    {
-        _objects[meta.id]->value->clearComponents();
-        _objects[meta.id]->value->clearRenderTraitConfigs();
-        _objects[meta.id]->value->_setScene(nullptr);
-        _objects[meta.id]->value->transform.getNotifier().deleteSubscriber(meta.transformSubscriberId);
-    }
-
-    // Clear all trees
-    _objects.clear();
-    _transforms.clear();
-    _updateMarkers.clear();
-
-    // Clear metadata, scripts, inputProcessors
-    _objectMetadata.clear();
-    _scripts.clear();
 }
 
 void Scene::_objectTransformModified(const unsigned int id)
@@ -346,35 +306,7 @@ void Scene::_markForUpdate(const unsigned int id)
     }
 }
 
-void Scene::_checkNotNullOrThrow(const SceneObjectPtr object) const
-{
-    if (!object)
-    {
-        throw std::runtime_error("Scene: null SceneObject pointer was provided.");
-    }
-}
-
-void Scene::_verifyNoParentSceneOrThrow(const SceneObjectPtr object) const
-{
-    ScenePtr objectScene = object->getScene();
-    if (objectScene == this->shared_from_this())
-    {
-        const std::string s = "Scene: SceneObject with ID " + std::to_string(object->id)
-            + " is already registered to this scene.";
-
-        throw std::runtime_error(s.c_str());
-    }
-
-    if (objectScene != nullptr)
-    {
-        const std::string s = "Scene: SceneObject with ID " + std::to_string(object->id) 
-            + " already has a parent scene.";
-
-        throw std::runtime_error(s.c_str());
-    }
-}
-
-SceneObjectMetadata Scene::_findObjectMetaOrThrow(const unsigned int id, const std::string& failureMessage) const
+const SceneObjectMetadata& Scene::_findObjectMetaOrThrow(const unsigned int id, const std::string& failureMessage) const
 {
     auto it = _objectMetadata.find(id);
     if (it == _objectMetadata.end())
@@ -388,38 +320,44 @@ SceneObjectMetadata Scene::_findObjectMetaOrThrow(const unsigned int id, const s
     return it->second;
 }
 
-void Scene::_performObjectRegistration(const SceneObjectPtr object, const SceneObjectMetadata& parentMeta)
+SceneObjectMetadata& Scene::_findObjectMetaOrThrow(const unsigned int id, const std::string& failureMessage)
 {
-    // Set the scene pointer upon registering the object
-    object->_setScene(this->shared_from_this());
+    const SceneObjectMetadata& meta = _findObjectMetaOrThrow(id, failureMessage);
+    
+    // I feel utterly ashamed for writing this purposefully, but it's better than repeating code IMHO
+    return const_cast<SceneObjectMetadata&>(meta);
+}
 
+void Scene::_performObjectRegistration(SceneObjectPtr&& object, const SceneObjectMetadata& parentMeta)
+{
     const Transform parentTransform = _transforms[parentMeta.transformNodeId]->value;
+    SceneObject& objectRef = *object;
+
     // Get transform of new object and apply parent transform to it
-    Transform newTransform = (Transform)object->transform;
+    Transform newTransform = (Transform)(objectRef.transform());
     newTransform = newTransform.applyOver(parentTransform);
 
     // Create nodes in graphs, using parent node IDs from retrieved metadata
-    const unsigned int objectNodeId = _objects.addNode(object, parentMeta.objectNodeId);
-    const unsigned int transformNodeId = _transforms.addNode(newTransform, parentMeta.transformNodeId);
+    const unsigned int objectNodeId = _objects.addNode(std::move(object), parentMeta.objectNodeId);
+    const unsigned int transformNodeId = _transforms.addNode(std::move(newTransform), parentMeta.transformNodeId);
     const unsigned int updateNodeId = _updateMarkers.addNode(false, parentMeta.updateNodeId);
 
     // Hook up the notification receiver of the scene with the notifier of the object transform
-    std::function<void(const unsigned int&)> callback = [this](const unsigned int& id)
+    std::function<void(const unsigned int)> callback = [this](const unsigned int id)
     {
         this->_objectTransformModified(id);
     };
-    const unsigned int transformSubscriberId = object->transform.getNotifier().addSubscriber(callback);
+    const unsigned int transformSubscriberId = objectRef.transform().getNotifier().addSubscriber(callback);
 
     // Create metadata
-    const SceneObjectMetadata meta = {
-        object->id,             // ID of the object this metadata refers to
-        parentMeta.id,          // ID of the object which is parent to the object this metadata refers to
-        objectNodeId,           // ID of the graph node containing the object
-        transformNodeId,        // ID of the graph node containing the world matrix of the object
-        updateNodeId,           // ID of the graph node containing the update flag of the object
-        transformSubscriberId   // ID of the subscription to the transform notifier of the object
+    _objectMetadata[objectRef.id] = {
+        .id                     = objectRef.id,
+        .parentId               = parentMeta.id,
+        .objectNodeId           = objectNodeId,
+        .transformNodeId        = transformNodeId,
+        .updateNodeId           = updateNodeId,
+        .transformSubscriberId  = transformSubscriberId
     };
-    _objectMetadata[meta.id] = meta;
 }
 
 void Scene::_worldTransformDFSUpdate(const unsigned int startingId) const
@@ -519,12 +457,13 @@ void Scene::_worldTransformUpdateNoCascade(const unsigned int id) const
     if (parentTransformNode != nullptr)
     {
         // Apply the parent world transform to the object transform, and save it to the object world transform node
-        const Transform newTransform = ((Transform)(objectNode->value->transform)).applyOver(parentTransformNode->value);
+        const Transform objectTransform = (Transform)(objectNode->value->transform());
+        const Transform newTransform = objectTransform.applyOver(parentTransformNode->value);
         transformNode->value = newTransform;
     }
     else
     {
-        transformNode->value = (Transform)objectNode->value->transform;
+        transformNode->value = (Transform)(objectNode->value->transform());
     }
 
     // Reset the update marker
@@ -551,4 +490,4 @@ bool Scene::_hasDisabledParent(const unsigned int id) const
     return false;
 }
 
-}//namespace Renderboi
+} // namespace renderboi

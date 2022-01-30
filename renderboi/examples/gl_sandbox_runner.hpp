@@ -14,38 +14,38 @@
 #include "gl_sandbox.hpp"
 #include "gl_sandbox_parameters.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Encapsulates the instantiation, set-up, execution and tear-down of a 
 /// GLSandbox.
 ///
 /// @tparam T Type of the GLSandbox to instantiate.
-template<typename T, typename = typename std::enable_if_t<std::is_base_of_v<GLSandbox, T>, GLSandbox>>
+template<
+    typename T,
+    typename = typename std::enable_if_t<std::is_base_of_v<GLSandbox, T>, GLSandbox>
+>
 class GLSandboxRunner
 {
 public:
     using SandboxType = T;
-    using SandboxPtr = std::shared_ptr<T>;
+    using SandboxPtr = std::unique_ptr<T>;
 
 private:
-
     /// @brief Pointer to the hosted sandbox.
     SandboxPtr _sandbox;
 
-    /// @brief Pointer to the window to run the sandbox on.
-    GLWindowPtr _window;
-
-    /// @brief Pointer to the gamepad manager of the window.
-    GamepadManagerPtr _gamepadManager;
+    /// @brief Reference to the window to run the sandbox on.
+    GLWindow& _window;
 
 public:
-    /// @param window Pointer to the window to run the sandbox on.
+    /// @param window Reference to the window to run the sandbox on.
     /// @param params Parameters to run the sandbox with
-    GLSandboxRunner(GLWindowPtr window, GLSandboxParameters params) :
+    GLSandboxRunner(GLWindow& window, const GLSandboxParameters& params) :
         _window(window),
-        _sandbox(std::make_shared<SandboxType>(window, params))
+        _sandbox(std::make_unique<SandboxType>(window, params))
     {
+
     }
 
     ~GLSandboxRunner()
@@ -56,9 +56,9 @@ public:
     /// @brief Get a pointer to the sandbox being ran.
     ///
     /// @return A pointer to the sandbox being ran.
-    SandboxPtr getSandbox()
+    SandboxType& getSandbox()
     {
-        return _sandbox;
+        return *_sandbox;
     }
 
     /// @brief Poll the input of the window repeatedly, until the window's exit
@@ -68,8 +68,8 @@ public:
     {
         _sandbox->setUp();
 
-		std::thread th(&GLSandbox::run, _sandbox);
-		_window->startPollingLoop();
+		std::thread th(&GLSandbox::run, _sandbox.get());
+		_window.startPollingLoop();
 
 		th.join();
 		_sandbox->tearDown();

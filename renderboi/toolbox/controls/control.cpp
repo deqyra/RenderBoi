@@ -4,7 +4,7 @@
 
 #include <renderboi/window/enums.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 Control::Control(const Window::Input::Key key) :
@@ -23,12 +23,12 @@ Control::Control(const Window::Input::MouseButton mouseButton) :
 
 bool Control::operator==(const Control& other)
 {
-    return Renderboi::operator==(*this, other);
+    return renderboi::operator==(*this, other);
 }
 
 bool Control::operator<(const Control& other)
 {
-    return Renderboi::operator<(*this, other);
+    return renderboi::operator<(*this, other);
 }
 
 bool operator==(const Control& left, const Control& right)
@@ -79,12 +79,12 @@ std::string to_string(const Control& control)
     return "Unknown control";
 }
 
-}//namespace Renderboi
+} // namespace renderboi
 
 namespace std
 {
 
-bool less<Renderboi::Control>::operator()(const Renderboi::Control& left, const Renderboi::Control& right) const
+bool less<renderboi::Control>::operator()(const renderboi::Control& left, const renderboi::Control& right) const
 {
     return left < right;
 }

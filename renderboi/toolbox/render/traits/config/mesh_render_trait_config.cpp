@@ -2,26 +2,26 @@
 
 #include <stdexcept>
 
-#include "../render_trait_config.hpp"
 #include "../../../scene/object/scene_object.hpp"
+#include "../../../scene/object/component_type.hpp"
+#include "../render_trait_config.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
-MeshRenderTraitConfig::MeshRenderTraitConfig(SceneObjectPtr parentSceneObject) :
+MeshRenderTraitConfig::MeshRenderTraitConfig(SceneObject& parentSceneObject) :
     RenderTraitConfig(parentSceneObject),
-    _mesh(parentSceneObject->getComponent<MeshComponent>())
+    _mesh(parentSceneObject.componentMap().getComponent<ComponentType::Mesh>())
 {
-    if (!_mesh)
+    if (!parentSceneObject.componentMap().hasComponent<ComponentType::Mesh>())
     {
         throw std::runtime_error("MeshConfig: cannot be instantiated on an object without a MeshComponent");
     }
 }
 
-void MeshRenderTraitConfig::_release()
+MeshRenderTraitConfig* MeshRenderTraitConfig::clone(SceneObject& newParent) const
 {
-    _mesh = nullptr;
-    RenderTraitConfig::_release();
+    return new MeshRenderTraitConfig(newParent);
 }
 
-} // namespace Renderboi
+} // namespace renderboi

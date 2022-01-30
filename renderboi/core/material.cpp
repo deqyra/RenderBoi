@@ -2,12 +2,10 @@
 
 #include <string>
 
-#include <renderboi/utilities/to_string.hpp>
-
 #include <cpptools/exceptions/index_out_of_bounds_error.hpp>
 #include <cpptools/exceptions/unmatched_array_size_error.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 Material::Material(const Material& other) :
@@ -144,4 +142,4 @@ void Material::bindTextures() const
     }
 }
 
-}//namespace Renderboi
+} // namespace renderboi

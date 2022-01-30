@@ -4,11 +4,9 @@
 #include <stdexcept>
 #include <string>
 
-#include <renderboi/utilities/to_string.hpp>
-
 #include <cpptools/utility/string_tools.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 ShaderConfig::ShaderConfig() :
@@ -166,101 +164,89 @@ const std::vector<ShaderFeature>& ShaderConfig::getRequestedFeatures() const
 
 const std::unordered_map<ShaderFeature, std::vector<ShaderFeature>>& ShaderConfig::FeatureRequirements()
 {
-    static bool runOnce = false;
-    static std::unordered_map<ShaderFeature, std::vector<ShaderFeature>> map;
-
-    if (!runOnce)
-    {
-        map[ShaderFeature::VertexMVP]                       = {};
-        map[ShaderFeature::VertexNormalsToColor]            = {
+    static std::unordered_map<ShaderFeature, std::vector<ShaderFeature>> map = {
+        {ShaderFeature::VertexMVP,                       {}},
+        {ShaderFeature::VertexNormalsToColor,            {
             ShaderFeature::VertexMVP
-        };
-        // map[ShaderFeature::VertexFishEye]                   = {};   // IMPLEMENT VERT LENS
-        // map[ShaderFeature::GeometryShowNormals]             = {};   // IMPLEMENT GEOM NORMALS
-        map[ShaderFeature::FragmentFullLight]               = {};
-        map[ShaderFeature::FragmentViewDepthBuffer]         = {};
-        map[ShaderFeature::FragmentViewLightAttenuation]    = {};
-        map[ShaderFeature::FragmentMeshMaterial]            = {};
-        map[ShaderFeature::FragmentBypassVertexColor]       = {};
-        map[ShaderFeature::FragmentPhong]                   = {
+        }},
+        // {ShaderFeature::VertexFishEye,                   {}},   // IMPLEMENT VERT LENS
+        // {ShaderFeature::GeometryShowNormals,             {}},   // IMPLEMENT GEOM NORMALS
+        {ShaderFeature::FragmentFullLight,               {}},
+        {ShaderFeature::FragmentViewDepthBuffer,         {}},
+        {ShaderFeature::FragmentViewLightAttenuation,    {}},
+        {ShaderFeature::FragmentMeshMaterial,            {}},
+        {ShaderFeature::FragmentBypassVertexColor,       {}},
+        {ShaderFeature::FragmentPhong,                   {
             ShaderFeature::FragmentMeshMaterial
-        };
-        map[ShaderFeature::FragmentBlinnPhong]              = {
+        }},
+        {ShaderFeature::FragmentBlinnPhong,              {
             ShaderFeature::FragmentMeshMaterial
-        };
-        // map[ShaderFeature::FragmentFlatShading]             = {};   // IMPLEMENT FRAG FLAT
-        map[ShaderFeature::FragmentGammaCorrection]         = {};
-        // map[ShaderFeature::FragmentOutline]                 = {};   // IMPLEMENT FRAG OUTLINE
-        // map[ShaderFeature::FragmentCubemap]                 = {};   // IMPLEMENT FRAG CUBEMAP
-        // map[ShaderFeature::FragmentBlending]                = {};   // IMPLEMENT FRAG BLENDING
-        // map[ShaderFeature::FragmentShadows]                 = {};   // IMPLEMENT FRAG SHADOWS
-
-        runOnce = true;
-    }
+        }},
+        // {ShaderFeature::FragmentFlatShading,             {}},   // IMPLEMENT FRAG FLAT
+        {ShaderFeature::FragmentGammaCorrection,         {}},
+        // {ShaderFeature::FragmentOutline,                 {}},   // IMPLEMENT FRAG OUTLINE
+        // {ShaderFeature::FragmentCubemap,                 {}},   // IMPLEMENT FRAG CUBEMAP
+        // {ShaderFeature::FragmentBlending,                {}},   // IMPLEMENT FRAG BLENDING
+        // {ShaderFeature::FragmentShadows,                 {}},   // IMPLEMENT FRAG SHADOWS
+    };
 
     return map;
 }
 
 const std::unordered_map<ShaderFeature, std::vector<ShaderFeature>>& ShaderConfig::IncompatibleFeatures()
 {
-    static bool runOnce = false;
-    static std::unordered_map<ShaderFeature, std::vector<ShaderFeature>> map;
-
-    if (!runOnce)
-    {
-        map[ShaderFeature::VertexMVP]                       = {};
-        map[ShaderFeature::VertexNormalsToColor]            = {};
-        // map[ShaderFeature::VertexFishEye]                   = {};   // IMPLEMENT VERT LENS
-        // map[ShaderFeature::GeometryShowNormals]             = {};   // IMPLEMENT GEOM NORMALS
-        map[ShaderFeature::FragmentFullLight]               = {
+    static std::unordered_map<ShaderFeature, std::vector<ShaderFeature>> map = {
+        {ShaderFeature::VertexMVP,                       {}},
+        {ShaderFeature::VertexNormalsToColor,            {}},
+        // {ShaderFeature::VertexFishEye,                   {}},   // IMPLEMENT VERT LENS
+        // {ShaderFeature::GeometryShowNormals,             {}},   // IMPLEMENT GEOM NORMALS
+        {ShaderFeature::FragmentFullLight,               {
             ShaderFeature::FragmentViewDepthBuffer,
             ShaderFeature::FragmentViewLightAttenuation,
             ShaderFeature::FragmentPhong,
             ShaderFeature::FragmentBlinnPhong
             // ShaderFeature::FragmentFlatShading                  // IMPLEMENT FRAG FLAT
-        };
-        map[ShaderFeature::FragmentViewDepthBuffer]         = {
+        }},
+        {ShaderFeature::FragmentViewDepthBuffer,         {
             ShaderFeature::FragmentFullLight,
             ShaderFeature::FragmentViewLightAttenuation,
             ShaderFeature::FragmentPhong,
             ShaderFeature::FragmentBlinnPhong
             // ShaderFeature::FragmentFlatShading                  // IMPLEMENT FRAG FLAT
-        };
-        map[ShaderFeature::FragmentViewLightAttenuation]    = {
+        }},
+        {ShaderFeature::FragmentViewLightAttenuation,    {
             ShaderFeature::FragmentFullLight,
             ShaderFeature::FragmentViewDepthBuffer,
             ShaderFeature::FragmentPhong,
             ShaderFeature::FragmentBlinnPhong
             // ShaderFeature::FragmentFlatShading                  // IMPLEMENT FRAG FLAT
-        };
-        map[ShaderFeature::FragmentMeshMaterial]            = {};
-        map[ShaderFeature::FragmentBypassVertexColor]       = {};
-        map[ShaderFeature::FragmentPhong]                   = {
+        }},
+        {ShaderFeature::FragmentMeshMaterial,            {}},
+        {ShaderFeature::FragmentBypassVertexColor,       {}},
+        {ShaderFeature::FragmentPhong,                   {
             ShaderFeature::FragmentFullLight,
             ShaderFeature::FragmentViewDepthBuffer,
             ShaderFeature::FragmentViewLightAttenuation,
             ShaderFeature::FragmentBlinnPhong
-        };
-        map[ShaderFeature::FragmentBlinnPhong]              = {
+        }},
+        {ShaderFeature::FragmentBlinnPhong,              {
             ShaderFeature::FragmentFullLight,
             ShaderFeature::FragmentViewDepthBuffer,
             ShaderFeature::FragmentViewLightAttenuation,
             ShaderFeature::FragmentPhong
-        };
-        /* map[ShaderFeature::FragmentFlatShading]            = { // IMPLEMENT FRAG FLAT
+        }},
+        /* {ShaderFeature::FragmentFlatShading,            {       // IMPLEMENT FRAG FLAT
             ShaderFeature::FragmentFullLight,
             ShaderFeature::FragmentViewDepthBuffer
-        }; */
-        map[ShaderFeature::FragmentGammaCorrection]         = {};
-        // map[ShaderFeature::FragmentOutline]                 = {};   // IMPLEMENT FRAG OUTLINE
-        // map[ShaderFeature::FragmentCubemap]                 = {};   // IMPLEMENT FRAG CUBEMAP
-        // map[ShaderFeature::FragmentBlending]                = {};   // IMPLEMENT FRAG BLENDING
-        // map[ShaderFeature::FragmentShadows]                 = {};   // IMPLEMENT FRAG SHADOWS
-
-        runOnce = true;
-    }
+        }}, */
+        {ShaderFeature::FragmentGammaCorrection,         {}},
+        // {ShaderFeature::FragmentOutline,                 {}},   // IMPLEMENT FRAG OUTLINE
+        // {ShaderFeature::FragmentCubemap,                 {}},   // IMPLEMENT FRAG CUBEMAP
+        // {ShaderFeature::FragmentBlending,                {}},   // IMPLEMENT FRAG BLENDING
+        // {ShaderFeature::FragmentShadows,                 {}},   // IMPLEMENT FRAG SHADOWS
+    };
 
     return map;
 }
 
-}//namespace Renderboi
+} // namespace renderboi

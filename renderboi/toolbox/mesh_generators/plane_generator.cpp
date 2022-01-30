@@ -7,9 +7,9 @@
 #include <renderboi/core/mesh.hpp>
 #include <renderboi/core/vertex.hpp>
 
-#include "../common_macros.hpp"
+#include "../common.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 PlaneGenerator::PlaneGenerator() :
@@ -31,7 +31,7 @@ PlaneGenerator::PlaneGenerator() :
 
 }
 
-PlaneGenerator::PlaneGenerator(Parameters parameters) :
+PlaneGenerator::PlaneGenerator(const Parameters parameters) :
     parameters(parameters)
 {
     if (parameters.xTexSize <= 0.f)
@@ -117,7 +117,7 @@ MeshPtr PlaneGenerator::generateMesh() const
         primitiveOffsets[j] = (void*)(j * primitiveSize * sizeof(int));
     }
 
-    return std::make_shared<Mesh>(GL_TRIANGLE_STRIP, vertices, indices, primitiveSizes, primitiveOffsets);
+    return std::make_unique<Mesh>(GL_TRIANGLE_STRIP, vertices, indices, primitiveSizes, primitiveOffsets);
 }
 
-}//namespace Renderboi
+} // namespace renderboi

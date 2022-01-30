@@ -1,7 +1,7 @@
 #ifndef RENDERBOI__CORE__LIGHTS__TOOLS_HPP
 #define RENDERBOI__CORE__LIGHTS__TOOLS_HPP
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Get components for light attenuation computation from a given range.
@@ -15,6 +15,6 @@ namespace Renderboi
 /// light attenuation.
 void attenuationFromRange(const float range, float& quadraticFactor, float& linearFactor, float& constantFactor);
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__LIGHTS__TOOLS_HPP

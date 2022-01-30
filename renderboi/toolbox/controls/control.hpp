@@ -7,7 +7,7 @@
 
 #include <cpptools/utility/hash_combine.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Litterals describing the flavor of a control.
@@ -57,16 +57,16 @@ class ControlHash
 
 std::string to_string(const Control& control);
 
-}//namespace Renderboi
+} // namespace renderboi
 
 namespace std
 {
 
 template<>
-class less<Renderboi::Control>
+class less<renderboi::Control>
 {
     public:
-        bool operator()(const Renderboi::Control& left, const Renderboi::Control& right) const;
+        bool operator()(const renderboi::Control& left, const renderboi::Control& right) const;
 };
 
 }//namespace std

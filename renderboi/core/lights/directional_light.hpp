@@ -1,12 +1,12 @@
-#ifndef DIRECTIONAL_LIGHT_HPP
-#define DIRECTIONAL_LIGHT_HPP
+#ifndef RENDERBOI__CORE__LIGHTS__DIRECTIONAL_LIGHT_HPP
+#define RENDERBOI__CORE__LIGHTS__DIRECTIONAL_LIGHT_HPP
 
 #include <glm/glm.hpp>
 
 #include "light.hpp"
 #include "light_type.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Collection of parameters representing a directional light.
@@ -34,11 +34,11 @@ public:
     /// @brief RGB color of the specular component of the emitted light.
     glm::vec3 specular;
 
-    /////////////////////////////////////
-    ///                               ///
-    /// Methods overridden from Light ///
-    ///                               ///
-    /////////////////////////////////////
+    ////////////////////////////////////
+    ///                              ///
+    /// Methods inherited from Light ///
+    ///                              ///
+    ////////////////////////////////////
 
     /// @brief Get a raw pointer to a new directional light instance cloned from
     /// this one. Ownership and responsibility for the allocated resources are
@@ -60,6 +60,6 @@ public:
     virtual glm::mat4 _computeViewMatrix() const override;
 };
 
-}//namespace Renderboi
+} // namespace renderboi
 
-#endif//DIRECTIONAL_LIGHT_HPP
+#endif//RENDERBOI__CORE__LIGHTS__DIRECTIONAL_LIGHT_HPP

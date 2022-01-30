@@ -1,88 +1,86 @@
 #include "scene_object.hpp"
 
+#include <memory>
 #include <stdexcept>
 #include <unordered_map>
 
-#include "../scene.hpp"
+#include <renderboi/core/transform.hpp>
 
-namespace Renderboi
+#include "../scene.hpp"
+#include "component.hpp"
+
+namespace renderboi
 {
 
 unsigned int SceneObject::_count = 0;
 
-SceneObject::SceneObject(std::string name) :
+SceneObject::SceneObject(Scene& scene, const std::string name) :
     id(_count++),
+    scene(scene),
     enabled(true),
-    _name(name),
-    _components(),
-    _scene(std::shared_ptr<Scene>(nullptr)),
-    transform()
+    name(name),
+    _transform(*this),
+    _componentMap(*this),
+    _renderTraitConfigMap(*this)
+{
+
+}
+
+SceneObject::SceneObject(const SceneObject& other) :
+    id(_count++),
+    scene(other.scene),
+    enabled(other.enabled),
+    name(other.name),
+    _transform(*this),
+    _componentMap(*this),
+    _renderTraitConfigMap(*this)
 {
 
 }
 
 SceneObject::~SceneObject()
 {
-    clearComponents();
-    clearRenderTraitConfigs();
+
 }
 
-void SceneObject::_setScene(ScenePtr scene)
+ObjectTransform& SceneObject::transform()
 {
-    _scene = scene;
+    return _transform;
 }
 
-void SceneObject::init()
+const ObjectTransform& SceneObject::transform() const
 {
-    transform.setSceneObject(shared_from_this());
+    return _transform;
 }
 
-Transform SceneObject::getWorldTransform() const
+ComponentMap& SceneObject::componentMap()
 {
-    return _scene->getWorldTransform(id);
+    return _componentMap;
 }
 
-ScenePtr SceneObject::getScene() const
+const ComponentMap& SceneObject::componentMap() const
 {
-    return _scene;
+    return _componentMap;
+}
+
+RenderTraitConfigMap& SceneObject::renderTraitConfigMap()
+{
+    return _renderTraitConfigMap;
+}
+
+const RenderTraitConfigMap& SceneObject::renderTraitConfigMap() const
+{
+    return _renderTraitConfigMap;
+}
+
+Transform SceneObject::worldTransform() const
+{
+    return scene.getWorldTransform(id);
 }
 
 SceneObjectPtr SceneObject::clone() const
 {
-    SceneObjectPtr clonedObject = std::make_shared<SceneObject>();
-    clonedObject->enabled = enabled;
-    clonedObject->transform = transform;
-
-    for (const auto& component : _components)
-    {
-        ComponentPtr newComponent = ComponentPtr(component->clone(clonedObject));
-        clonedObject->_components.push_back(newComponent);
-    }
-
-    return clonedObject;
+    return SceneObjectPtr(new SceneObject(*this));
 }
 
-void SceneObject::clearComponents()
-{
-    for (const auto& component : _components)
-    {
-        component->_release();
-    }
-    _components = std::vector<ComponentPtr>();
-}
-
-void SceneObject::clearRenderTraitConfigs()
-{
-    for (const auto& [trait, config] : _renderTraitConfigs)
-    {
-        config->_release();
-    }
-    _renderTraitConfigs = std::unordered_map<RenderTrait, RenderTraitConfigPtr>();
-}
-
-std::vector<ComponentPtr> SceneObject::getAllComponents() const
-{
-    return _components;
-}
-
-}//namespace Renderboi
+} // namespace renderboi

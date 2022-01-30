@@ -1,7 +1,7 @@
 #ifndef RENDERBOI__CORE__SHADOW_MAP_HPP
 #define RENDERBOI__CORE__SHADOW_MAP_HPP
 
-namespace Renderboi
+namespace renderboi
 {
 
 class ShadowMap
@@ -21,6 +21,6 @@ private:
     void _GenerateShadowMap();
 };
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__SHADOW_MAP_HPP

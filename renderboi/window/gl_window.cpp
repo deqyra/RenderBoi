@@ -1,32 +1,30 @@
 #include "gl_window.hpp"
 
 #include <iostream>
+#include <memory>
 #include <string>
 
 #include "input_processor.hpp"
+#include "renderboi/window/event/gl_context_event_manager.hpp"
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
-const InputProcessorPtr GLWindow::_DefaultInputProcessor = std::make_shared<InputProcessor>();
+const InputProcessorPtr GLWindow::_DefaultInputProcessor = std::make_unique<InputProcessor>();
 
 GLWindow::GLWindow(std::string title) :
-    _inputProcessor(_DefaultInputProcessor),
+    _inputProcessor(_DefaultInputProcessor.get()),
     _title(title),
     _exitSignaled(false),
-    _gamepadManager(nullptr)
-{
-    glfwGetFramebufferSize(_w, &_width, &_height);
-}
-
-GLWindow::~GLWindow()
+    _gamepadManager(nullptr),
+    _glContextEventManager(std::make_unique<GLContextEventManager>(*this))
 {
 
 }
 
 void GLWindow::processFramebufferResize(const int width, const int height)
 {
-    _inputProcessor->processFramebufferResize(shared_from_this(), (unsigned int) width, (unsigned int) height);
+    _inputProcessor->processFramebufferResize(*this, (unsigned int) width, (unsigned int) height);
 }
 
 void GLWindow::processKeyboard(
@@ -36,7 +34,7 @@ void GLWindow::processKeyboard(
     const int mods
 )
 {
-    _inputProcessor->processKeyboard(shared_from_this(), key, scancode, action, mods);
+    _inputProcessor->processKeyboard(*this, key, scancode, action, mods);
 }
 
 void GLWindow::processMouseButton(
@@ -45,27 +43,12 @@ void GLWindow::processMouseButton(
     const int mods
 )
 {
-    _inputProcessor->processMouseButton(shared_from_this(), button, action, mods);
+    _inputProcessor->processMouseButton(*this, button, action, mods);
 }
 
 void GLWindow::processMouseCursor(const double xpos, const double ypos)
 {
-    _inputProcessor->processMouseCursor(shared_from_this(), xpos, ypos);
-}
-
-void GLWindow::registerInputProcessor(const InputProcessorPtr inputProcessor)
-{
-    if (!_inputProcessor)
-    {
-        throw std::runtime_error("GLWindow: cannot register null input processor.");
-    }
-    
-    _inputProcessor = inputProcessor;
-}
-
-void GLWindow::detachInputProcessor()
-{
-    _inputProcessor = _DefaultInputProcessor;
+    _inputProcessor->processMouseCursor(*this, xpos, ypos);
 }
 
 std::string GLWindow::getTitle() const
@@ -73,9 +56,59 @@ std::string GLWindow::getTitle() const
     return _title;
 }
 
-GLContextClientPtr GLWindow::getGlContextClient() const
+void GLWindow::signalExit(const bool value)
 {
-    return _glContextClient;
+    _exitSignaled = value;
+}
+
+bool GLWindow::exitSignaled()
+{
+    return _exitSignaled;
+}
+
+GamepadManager& GLWindow::getGamepadManager()
+{
+    return *_gamepadManager;
+}
+
+void GLWindow::registerContextEventManager(GLContextEventManagerPtr&& contextEventManager)
+{
+    if (!contextEventManager)
+    {
+        throw std::runtime_error("GLWindow: cannot register null context event manager.");
+    }
+    
+    _glContextEventManager = std::move(contextEventManager);
+}
+
+void GLWindow::detachContextEventManager()
+{
+    _glContextEventManager = std::make_unique<GLContextEventManager>(*this);
+}
+
+void GLWindow::forwardContextEvent(const GLContextEvent event)
+{
+    _glContextEventManager->queueEvent(event);
+}
+
+void GLWindow::registerInputProcessor(InputProcessor& inputProcessor)
+{
+    _inputProcessor = &inputProcessor;
+}
+
+const InputProcessor& GLWindow::getInputProcessor()
+{
+    return *_inputProcessor;
+}
+
+void GLWindow::detachInputProcessor()
+{
+    _inputProcessor = _DefaultInputProcessor.get();
+}
+
+void GLWindow::processPendingContextEvents()
+{
+    _glContextEventManager->processPendingEvents();
 }
 
 void GLWindow::pollAllEvents()
@@ -95,20 +128,4 @@ void GLWindow::startPollingLoop()
     }
 }
 
-void GLWindow::signalExit(bool value)
-{
-    _exitSignaled = value;
-}
-
-bool GLWindow::exitSignaled()
-{
-    return _exitSignaled;
-}
-
-GamepadManagerPtr GLWindow::getGamepadManager()
-{
-    return _gamepadManager;
-}
-
-
-}//namespace Renderboi::Window
+} // namespace renderboi::Window

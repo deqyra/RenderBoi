@@ -1,19 +1,20 @@
 #ifndef RENDERBOI__CORE__SHADER__SHADER_PROGRAM_HPP
 #define RENDERBOI__CORE__SHADER__SHADER_PROGRAM_HPP
 
-#include <glad/gl.h>
-#include <glm/glm.hpp>
-
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <unordered_map>
 
-#include "shader_feature.hpp"
-#include "../material.hpp"
+#include <glad/gl.h>
 
-namespace Renderboi
+#include <glm/glm.hpp>
+
+#include "../material.hpp"
+#include "shader_feature.hpp"
+
+namespace renderboi
 {
 
 class ShaderBuilder;
@@ -143,6 +144,6 @@ public:
     bool supports(const ShaderFeature feature) const;
 };
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__SHADER__SHADER_PROGRAM_HPP

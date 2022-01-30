@@ -6,25 +6,25 @@
 #include <glm/vec2.hpp>
 
 #include <renderboi/core/interfaces/basis_provider.hpp>
+
 #include <renderboi/window/gamepad/gamepad.hpp>
 #include <renderboi/window/gamepad/gamepad_input_processor.hpp>
 
 #include "../script.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Provides bindings to move an entity using a gamepad.
-class GamepadMovementScript : public Script,
-                              public GamepadInputProcessor
+class GamepadMovementScript : public Script, public GamepadInputProcessor
 {
 private:
     GamepadMovementScript(const GamepadMovementScript& other) = delete;
     GamepadMovementScript& operator=(const GamepadMovementScript& other) = delete;
 
-    /// @brief Pointer to the entity which will provide directional vectors,
+    /// @brief Reference to the entity which will provide directional vectors,
     /// used to move in the correct directions.
-    BasisProviderPtr _basisProvider;
+    BasisProvider& _basisProvider;
 
     /// @brief Vector telling the direction in which to go.
     glm::vec2 _direction;
@@ -52,7 +52,7 @@ public:
     /// @exception If the provided BasisProvider pointer is null, the 
     /// function will throw a std::runtime_error.
     GamepadMovementScript(
-        const BasisProviderPtr basisProvider,
+        BasisProvider& basisProvider,
         const float speed = DefaultMoveSpeed,
         const float sprintMultiplier = DefaultSprintMultiplier
     );
@@ -67,17 +67,17 @@ public:
     ///
     /// @param timeElapsed How much time passed (in seconds) since the last
     /// update.
-    void update(float timeElapsed) override;
+    void update(const float timeElapsed) override;
 
     /// @brief Set the scene object which the camera script is attached to.
     /// Will also attempt to retrieve a camera from the scene object.
     ///
-    /// @param sceneObject Pointer to the scene object the script should be
+    /// @param sceneObject Reference to the scene object the script should be
     /// attached to.
     ///
     /// @exception If the provided pointer is null, this function will throw
     /// a std::runtime_error.
-    void setSceneObject(const SceneObjectPtr sceneObject) override;
+    void setSceneObject(SceneObject* const sceneObject) override;
 
     /// @brief Get a raw pointer to a new keyboard script instance cloned 
     /// from this one. Ownership and responsibility for the allocated 
@@ -97,15 +97,15 @@ public:
     /// @param button Literal describing which key triggered the event.
     /// @param action Literal describing what action was performed on
     /// the button which triggered the event.
-    virtual void processButton(const GamepadPtr gamepad, const Window::Input::Gamepad::Button button, const Window::Input::Action action) override;
+    virtual void processButton(const Gamepad& gamepad, const Window::Input::Gamepad::Button button, const Window::Input::Action action) override;
 
     /// @brief Callback for a gamepad axis event.
     ///
     /// @param axis Literal describing which axis triggered the event.
     /// @param value Value at which the axis was polled.
-    virtual void processAxis(const GamepadPtr gamepad, const Window::Input::Gamepad::Axis axis, const float value) override;
+    virtual void processAxis(const Gamepad& gamepad, const Window::Input::Gamepad::Axis axis, const float value) override;
 };
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__RUNNABLES__GAMEPAD_MOVEMENT_SCRIPT_HPP

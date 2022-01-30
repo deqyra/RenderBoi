@@ -3,7 +3,7 @@
 
 #include "../enums.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 namespace Window
 {
@@ -114,31 +114,31 @@ public:
     /// @brief Quick access for a button in the array.
     ///
     /// @param button Litteral describing the button whose state to access.
-    bool& operator[](const Button& button);
+    bool& operator[](const Button button);
 
     /// @brief Quick access for a button in the array.
     ///
     /// @param button Litteral describing the button whose state to access.
-    const bool& operator[](const Button& button) const;
+    const bool& operator[](const Button button) const;
 
     /// @brief Quick access for an axis in the array.
     ///
     /// @param button Litteral describing the axis whose value to access.
-    float& operator[](const Axis& button);
+    float& operator[](const Axis button);
 
     /// @brief Quick access for an axis in the array.
     ///
     /// @param button Litteral describing the axis whose value to access.
-    const float& operator[](const Axis& button) const;
+    const float& operator[](const Axis button) const;
 
     /// @param other GamepadState to copy state from.
     GamepadState& operator=(GamepadState other);
 };
 
-}//namespace Window
+} // namespace Window
 
 using GamepadState = Window::GamepadState;
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__WINDOW__GAMEPAD__GAMEPAD_STATE_HPP

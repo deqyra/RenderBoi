@@ -11,19 +11,18 @@
 #include <numeric>
 #include <sstream>
 
-#include "shader_feature.hpp"
-#include "shader_stage.hpp"
-
 #include <glad/gl.h>
 
-#include <renderboi/utilities/to_string.hpp>
 #include <renderboi/utilities/resource_locator.hpp>
 
 #include <cpptools/utility/string_tools.hpp>
 
+#include "shader_feature.hpp"
+#include "shader_stage.hpp"
+
 #define INFO_BUFFER_SIZE 2048
 
-namespace Renderboi
+namespace renderboi
 {
 
 using ReLoc = ResourceLocator;
@@ -487,17 +486,11 @@ ShaderBuilder::_ShadingLanguageExtensions()
 const std::unordered_map<ShaderStage, std::string>&
 ShaderBuilder::_StageTemplatePaths()
 {
-    static bool runOnce = false;
-    static std::unordered_map<ShaderStage, std::string> map;
-
-    if (!runOnce)
-    {
-        map[ShaderStage::Vertex]    = ReLoc::locate(ReType::ShaderSource, "templates/vertex_shader.vert");
-        map[ShaderStage::Geometry]  = ReLoc::locate(ReType::ShaderSource, "templates/geometry_shader.geom");
-        map[ShaderStage::Fragment]  = ReLoc::locate(ReType::ShaderSource, "templates/fragment_shader.frag");
-
-        runOnce = true;
-    }
+    static std::unordered_map<ShaderStage, std::string> map = {
+        {ShaderStage::Vertex,   ReLoc::locate(ReType::ShaderSource, "templates/vertex_shader.vert")},
+        {ShaderStage::Geometry, ReLoc::locate(ReType::ShaderSource, "templates/geometry_shader.geom")},
+        {ShaderStage::Fragment, ReLoc::locate(ReType::ShaderSource, "templates/fragment_shader.frag")},
+    };
 
     return map;
 }
@@ -505,30 +498,24 @@ ShaderBuilder::_StageTemplatePaths()
 const std::unordered_map<ShaderFeature, std::string>&
 ShaderBuilder::_FeatureDefineMacros()
 {
-    static bool runOnce = false;
-    static std::unordered_map<ShaderFeature, std::string> map;
-
-    if (!runOnce)
-    {
-        map[ShaderFeature::VertexMVP]                       = "VERTEX_MVP";
-        // map[ShaderFeature::VertexFishEye]                   = "VERTEX_FISH_EYE";        // IMPLEMENT VERT LENS
-        // map[ShaderFeature::GeometryShowNormals]             = "GEOMETRY_SHOW_NORMALS";  // IMPLEMENT GEOM NORMALS
-        map[ShaderFeature::FragmentFullLight]               = "FRAGMENT_FULL_LIGHT";
-        map[ShaderFeature::FragmentViewDepthBuffer]         = "FRAGMENT_VIEW_DEPTH_BUFFER";
-        map[ShaderFeature::FragmentViewLightAttenuation]    = "FRAGMENT_VIEW_LIGHT_ATTENUATION";
-        map[ShaderFeature::FragmentMeshMaterial]            = "FRAGMENT_MESH_MATERIAL";
-        map[ShaderFeature::FragmentBypassVertexColor]       = "FRAGMENT_BYPASS_VERTEX_COLOR";
-        // map[ShaderFeature::FragmentFlatShading]             = "FRAGMENT_FLAT_SHADING";  // IMPLEMENT FRAG FLAT
-        map[ShaderFeature::FragmentPhong]                   = "FRAGMENT_PHONG";
-        map[ShaderFeature::FragmentBlinnPhong]              = "FRAGMENT_BLINN_PHONG";
-        map[ShaderFeature::FragmentGammaCorrection]         = "FRAGMENT_GAMMA_CORRECTION";
-        // map[ShaderFeature::FragmentOutline]                 = "FRAGMENT_OUTLINE";       // IMPLEMENT FRAG OUTLINE
-        // map[ShaderFeature::FragmentCubemap]                 = "FRAGMENT_CUBEMAP";       // IMPLEMENT FRAG CUBEMAP
-        // map[ShaderFeature::FragmentBlending]                = "FRAGMENT_BLENDING";      // IMPLEMENT FRAG BLENDING
-        // map[ShaderFeature::FragmentShadows]                 = "FRAGMENT_SHADOWS";       // IMPLEMENT FRAG SHADOWS
-
-        runOnce = true;
-    }
+    static std::unordered_map<ShaderFeature, std::string> map = {
+        {ShaderFeature::VertexMVP,                      "VERTEX_MVP"},
+        // {ShaderFeature::VertexFishEye,                  "VERTEX_FISH_EYE"},        // IMPLEMENT VERT LENS
+        // {ShaderFeature::GeometryShowNormals,            "GEOMETRY_SHOW_NORMALS"},  // IMPLEMENT GEOM NORMALS
+        {ShaderFeature::FragmentFullLight,              "FRAGMENT_FULL_LIGHT"},
+        {ShaderFeature::FragmentViewDepthBuffer,        "FRAGMENT_VIEW_DEPTH_BUFFER"},
+        {ShaderFeature::FragmentViewLightAttenuation,   "FRAGMENT_VIEW_LIGHT_ATTENUATION"},
+        {ShaderFeature::FragmentMeshMaterial,           "FRAGMENT_MESH_MATERIAL"},
+        {ShaderFeature::FragmentBypassVertexColor,      "FRAGMENT_BYPASS_VERTEX_COLOR"},
+        // {ShaderFeature::FragmentFlatShading,            "FRAGMENT_FLAT_SHADING"},  // IMPLEMENT FRAG FLAT
+        {ShaderFeature::FragmentPhong,                  "FRAGMENT_PHONG"},
+        {ShaderFeature::FragmentBlinnPhong,             "FRAGMENT_BLINN_PHONG"},
+        {ShaderFeature::FragmentGammaCorrection,        "FRAGMENT_GAMMA_CORRECTION"},
+        // {ShaderFeature::FragmentOutline,                "FRAGMENT_OUTLINE"},       // IMPLEMENT FRAG OUTLINE
+        // {ShaderFeature::FragmentCubemap,                "FRAGMENT_CUBEMAP"},       // IMPLEMENT FRAG CUBEMAP
+        // {ShaderFeature::FragmentBlending,               "FRAGMENT_BLENDING"},      // IMPLEMENT FRAG BLENDING
+        // {ShaderFeature::FragmentShadows,                "FRAGMENT_SHADOWS"},       // IMPLEMENT FRAG SHADOWS
+    };
 
     return map;
 }
@@ -536,23 +523,17 @@ ShaderBuilder::_FeatureDefineMacros()
 const std::unordered_map<std::string, std::string>&
 ShaderBuilder::_IncludeFilenames()
 {
-    static bool runOnce = false;
-    static std::unordered_map<std::string, std::string> map;
-
-    if (!runOnce)
-    {
-        map["/functional_blocks/gamma_correction"]  = ReLoc::locate(ReType::ShaderSource, "functional_blocks/gamma_correction.glsl");
-        map["/functional_blocks/light_attenuation"] = ReLoc::locate(ReType::ShaderSource, "functional_blocks/light_attenuation.glsl");
-        map["/interface_blocks/light_types"]        = ReLoc::locate(ReType::ShaderSource, "interface_blocks/light_types.glsl");
-        map["/interface_blocks/vertex_attributes"]  = ReLoc::locate(ReType::ShaderSource, "interface_blocks/vertex_attributes.glsl");
-        map["/interface_blocks/vertex_out"]         = ReLoc::locate(ReType::ShaderSource, "interface_blocks/vertex_out.glsl");
-        map["/templates/phong"]                     = ReLoc::locate(ReType::ShaderSource, "templates/phong.glsl");
-        map["/uniform_blocks/lights"]               = ReLoc::locate(ReType::ShaderSource, "uniform_blocks/lights.glsl");
-        map["/uniform_blocks/material"]             = ReLoc::locate(ReType::ShaderSource, "uniform_blocks/material.glsl");
-        map["/uniform_blocks/matrices"]             = ReLoc::locate(ReType::ShaderSource, "uniform_blocks/matrices.glsl");
-
-        runOnce = true;
-    }
+    static std::unordered_map<std::string, std::string> map = {
+        {"/functional_blocks/gamma_correction",     ReLoc::locate(ReType::ShaderSource, "functional_blocks/gamma_correction.glsl")},
+        {"/functional_blocks/light_attenuation",    ReLoc::locate(ReType::ShaderSource, "functional_blocks/light_attenuation.glsl")},
+        {"/interface_blocks/light_types",           ReLoc::locate(ReType::ShaderSource, "interface_blocks/light_types.glsl")},
+        {"/interface_blocks/vertex_attributes",     ReLoc::locate(ReType::ShaderSource, "interface_blocks/vertex_attributes.glsl")},
+        {"/interface_blocks/vertex_out",            ReLoc::locate(ReType::ShaderSource, "interface_blocks/vertex_out.glsl")},
+        {"/templates/phong",                        ReLoc::locate(ReType::ShaderSource, "templates/phong.glsl")},
+        {"/uniform_blocks/lights",                  ReLoc::locate(ReType::ShaderSource, "uniform_blocks/lights.glsl")},
+        {"/uniform_blocks/material",                ReLoc::locate(ReType::ShaderSource, "uniform_blocks/material.glsl")},
+        {"/uniform_blocks/matrices",                ReLoc::locate(ReType::ShaderSource, "uniform_blocks/matrices.glsl")},
+    };
 
     return map;
 }
@@ -560,28 +541,30 @@ ShaderBuilder::_IncludeFilenames()
 const std::unordered_map<std::string, std::vector<ShaderFeature>>&
 ShaderBuilder::_FeaturesSupportedByFile()
 {
-    static bool runOnce = false;
-    static std::unordered_map<std::string, std::vector<ShaderFeature>> map;
-
-    if (!runOnce)
-    {
-        map[ReLoc::locate(ReType::ShaderSource, "static/default.frag")]  = {
-            ShaderFeature::FragmentFullLight
-        };
-        map[ReLoc::locate(ReType::ShaderSource, "static/depth.frag")]  = {
-            ShaderFeature::FragmentViewDepthBuffer
-        };
-        map[ReLoc::locate(ReType::ShaderSource, "static/mvp.vert")]  = {
-            ShaderFeature::VertexMVP
-        };
-        map[ReLoc::locate(ReType::ShaderSource, "static/phong.frag")]    = {
-            ShaderFeature::FragmentMeshMaterial,
-            ShaderFeature::FragmentBlinnPhong,
-            ShaderFeature::FragmentGammaCorrection
-        };
-
-        runOnce = true;
-    }
+    static std::unordered_map<std::string, std::vector<ShaderFeature>> map = {
+        {
+            ReLoc::locate(ReType::ShaderSource, "static/default.frag"), {
+                ShaderFeature::FragmentFullLight
+            }
+        },
+        {
+            ReLoc::locate(ReType::ShaderSource, "static/depth.frag"), {
+                ShaderFeature::FragmentViewDepthBuffer
+            }
+        },
+        {
+            ReLoc::locate(ReType::ShaderSource, "static/mvp.vert"), {
+                ShaderFeature::VertexMVP
+            }
+        },
+        {
+            ReLoc::locate(ReType::ShaderSource, "static/phong.frag"), {
+                ShaderFeature::FragmentMeshMaterial,
+                ShaderFeature::FragmentBlinnPhong,
+                ShaderFeature::FragmentGammaCorrection
+            }
+        },
+    };
 
     return map;
 }
@@ -589,17 +572,11 @@ ShaderBuilder::_FeaturesSupportedByFile()
 const std::unordered_map<ShaderStage, unsigned int>&
 ShaderBuilder::_ShaderStageMacros()
 {
-    static bool runOnce = false;
-    static std::unordered_map<ShaderStage, unsigned int> map;
-
-    if (!runOnce)
-    {
-        map[ShaderStage::Vertex]    = GL_VERTEX_SHADER;
-        map[ShaderStage::Geometry]  = GL_GEOMETRY_SHADER;
-        map[ShaderStage::Fragment]  = GL_FRAGMENT_SHADER;
-
-        runOnce = true;
-    }
+    static std::unordered_map<ShaderStage, unsigned int> map = {
+        {ShaderStage::Vertex,   GL_VERTEX_SHADER},
+        {ShaderStage::Geometry, GL_GEOMETRY_SHADER},
+        {ShaderStage::Fragment, GL_FRAGMENT_SHADER},
+    };
 
     return map;
 }
@@ -607,17 +584,11 @@ ShaderBuilder::_ShaderStageMacros()
 const std::unordered_map<ShaderStage, std::string>&
 ShaderBuilder::_StageFileExtensions()
 {
-    static bool runOnce = false;
-    static std::unordered_map<ShaderStage, std::string> map;
-
-    if (!runOnce)
-    {
-        map[ShaderStage::Vertex]    = "vert";
-        map[ShaderStage::Geometry]  = "geom";
-        map[ShaderStage::Fragment]  = "frag";
-
-        runOnce = true;
-    }
+    static std::unordered_map<ShaderStage, std::string> map = {
+        {ShaderStage::Vertex,   "vert"},
+        {ShaderStage::Geometry, "geom"},
+        {ShaderStage::Fragment, "frag"},
+    };
 
     return map;
 }
@@ -651,4 +622,4 @@ ShaderBuilder::_GenerateDefineDirectives(const std::vector<ShaderFeature>& featu
     );
 }
 
-}//namespace Renderboi
+} // namespace renderboi

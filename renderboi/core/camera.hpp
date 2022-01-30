@@ -2,14 +2,15 @@
 #define RENDERBOI__CORE__CAMERA_HPP
 
 #include <memory>
+
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+#include "common/parent_dependent_vp_matrix_provider.hpp"
 #include "interfaces/basis_provider.hpp"
-#include "implementation/parent_dependent_vp_matrix_provider.hpp"
 #include "transform.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief A camera managing its own orientation and providing view and projection matrices.
@@ -178,9 +179,8 @@ protected:
     virtual glm::mat4 _computeViewMatrix() const override;
 };
 
-using CameraPtr = std::shared_ptr<Camera>;
-using CameraWPtr = std::weak_ptr<Camera>;
+using CameraPtr = std::unique_ptr<Camera>;
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__CAMERA_HPP

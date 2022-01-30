@@ -3,16 +3,16 @@
 #include <stdexcept>
 
 #include <glad/gl.h>
+
 #include <stb_image/stb_image.hpp>
-
-#include "pixel_space.hpp"
-
-#include <renderboi/utilities/to_string.hpp>
-#include <renderboi/utilities/resource_locator.hpp>
 
 #include <cpptools/exceptions/index_out_of_bounds_error.hpp>
 
-namespace Renderboi
+#include <renderboi/utilities/resource_locator.hpp>
+
+#include "pixel_space.hpp"
+
+namespace renderboi
 {
 
 using ReLoc = ResourceLocator;
@@ -156,4 +156,4 @@ void Texture2D::bind(unsigned int unit) const
     glBindTexture(GL_TEXTURE_2D, _location);
 }
 
-}//namespace Renderboi
+} // namespace renderboi

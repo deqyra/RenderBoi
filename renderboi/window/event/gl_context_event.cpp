@@ -2,30 +2,24 @@
 
 #include <unordered_map>
 
-namespace Renderboi
+namespace renderboi
 {
 
 using Window::GLContextEvent;
 
-std::string to_string(const GLContextEvent& event)
+std::string to_string(const GLContextEvent event)
 {
-    static bool runOnce = false;
-    static std::unordered_map<GLContextEvent, std::string> enumNames;
-
-    if (!runOnce)
-    {
-        enumNames[GLContextEvent::FitFramebufferToWindow] = "FitFramebufferToWindow";
-        enumNames[GLContextEvent::PolygonModeFill]        = "PolygonModeFill";
-        enumNames[GLContextEvent::PolygonModeLine]        = "PolygonModeLine";
-        enumNames[GLContextEvent::PolygonModePoint]       = "PolygonModePoint";
-
-        runOnce = true;
-    }
+    static std::unordered_map<GLContextEvent, std::string> enumNames = {
+        {GLContextEvent::FitFramebufferToWindow,    "FitFramebufferToWindow"},
+        {GLContextEvent::PolygonModeFill,           "PolygonModeFill"},
+        {GLContextEvent::PolygonModeLine,           "PolygonModeLine"},
+        {GLContextEvent::PolygonModePoint,          "PolygonModePoint"},
+    };
 
     auto it = enumNames.find(event);
-    if (it != enumNames.end()) return it->second;
-
-    return "Unknown";
+    return (it != enumNames.end())
+        ? it->second
+        : "Unknown";
 }
 
-} // namespace Renderboi
+} // namespace renderboi

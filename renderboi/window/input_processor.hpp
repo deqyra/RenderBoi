@@ -7,13 +7,12 @@
 
 #include "enums.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 namespace Window
 {
     class GLWindow;
-    using GLWindowPtr = std::shared_ptr<GLWindow>;
 
     /// @brief Callback manager to handle input from a GLWindow.
     class InputProcessor
@@ -46,15 +45,15 @@ namespace Window
 
         /// @brief Callback for a framebuffer resize event.
         ///
-        /// @param window Pointer to the GLWindow in which the event was
+        /// @param window Reference to the GLWindow in which the event was
         /// triggered.
         /// @param width New width (in pixels) of the framebuffer.
         /// @param height New height (in pixels) of the framebuffer.
-        virtual void processFramebufferResize(const GLWindowPtr window, const unsigned int width, const unsigned int height);
+        virtual void processFramebufferResize(GLWindow& window, const unsigned int width, const unsigned int height);
 
         /// @brief Callback for a keyboard event.
         ///
-        /// @param window Pointer to the GLWindow in which the event was
+        /// @param window Reference to the GLWindow in which the event was
         /// triggered.
         /// @param key Literal describing which key triggered the event.
         /// @param scancode Scancode of the key which triggered the event. 
@@ -64,7 +63,7 @@ namespace Window
         /// @param mods Bit field describing which modifiers were enabled 
         /// during the key event (Ctrl, Shift, etc).
         virtual void processKeyboard(
-            const GLWindowPtr window,
+            GLWindow& window,
             const Window::Input::Key key,
             const int scancode,
             const Window::Input::Action action,
@@ -73,7 +72,7 @@ namespace Window
 
         /// @brief Callback for a mouse button event.
         ///
-        /// @param window Pointer to the GLWindow in which the event was
+        /// @param window Reference to the GLWindow in which the event was
         /// triggered.
         /// @param button Literal describing which button triggered the
         /// event.
@@ -82,7 +81,7 @@ namespace Window
         /// @param mods Bit field describing which modifiers were enabled 
         /// during the button event (Ctrl, Shift, etc).
         virtual void processMouseButton(
-            const GLWindowPtr window,
+            GLWindow& window,
             const Window::Input::MouseButton button,
             const Window::Input::Action action,
             const int mods
@@ -90,22 +89,21 @@ namespace Window
 
         /// @brief Callback for a mouse cursor event.
         ///
-        /// @param window Pointer to the GLWindow in which the event was
+        /// @param window Reference to the GLWindow in which the event was
         /// triggered.
         /// @param xpos X coordinate of the new position of the mouse.
         /// @param ypos Y coordinate of the new position of the mouse.
-        virtual void processMouseCursor(const GLWindowPtr window, const double xpos, const double ypos);
+        virtual void processMouseCursor(GLWindow& window, const double xpos, const double ypos);
 
         /// @brief Unique ID of the input processor.
         const unsigned int id;
     };
 
-}//namespace Window
+} // namespace Window
 
 using InputProcessor = Window::InputProcessor;
-using InputProcessorPtr = std::shared_ptr<InputProcessor>;
-using InputProcessorWPtr = std::weak_ptr<InputProcessor>;
+using InputProcessorPtr = std::unique_ptr<InputProcessor>;
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__WINDOW__INPUT_PROCESSOR_HPP

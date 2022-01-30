@@ -1,5 +1,5 @@
-#ifndef LIGHT_UBO_HPP
-#define LIGHT_UBO_HPP
+#ifndef RENDERBOI__CORE__UBO__LIGHT_UBO_HPP
+#define RENDERBOI__CORE__UBO__LIGHT_UBO_HPP
 
 #include <glm/glm.hpp>
 
@@ -21,7 +21,7 @@
  * };                                                          // Size: 11532
  **/
 
-namespace Renderboi
+namespace renderboi
 {
 
 class LightUBO
@@ -105,6 +105,6 @@ public:
     void setDirectionalCount(const unsigned int count);
 };
 
-}//namespace Renderboi
+} // namespace renderboi
 
-#endif//LIGHT_UBO_HPP
+#endif//RENDERBOI__CORE__UBO__LIGHT_UBO_HPP

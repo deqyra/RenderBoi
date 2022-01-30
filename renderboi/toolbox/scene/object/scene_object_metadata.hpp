@@ -1,7 +1,7 @@
-#ifndef RENDERBOI__TOOLBOX__SCENE__SCENE_OBJECT_METADATA_HPP
-#define RENDERBOI__TOOLBOX__SCENE__SCENE_OBJECT_METADATA_HPP
+#ifndef RENDERBOI__TOOLBOX__SCENE__OBJECT__SCENE_OBJECT_METADATA_HPP
+#define RENDERBOI__TOOLBOX__SCENE__OBJECT__SCENE_OBJECT_METADATA_HPP
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Packs together information about the management of an object within
@@ -31,6 +31,6 @@ struct SceneObjectMetadata
     unsigned int transformSubscriberId;
 };
 
-}//namespace Renderboi
+} // namespace renderboi
 
-#endif//RENDERBOI__TOOLBOX__SCENE__SCENE_OBJECT_METADATA_HPP
+#endif//RENDERBOI__TOOLBOX__SCENE__OBJECT__SCENE_OBJECT_METADATA_HPP

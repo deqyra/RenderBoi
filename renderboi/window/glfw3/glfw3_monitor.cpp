@@ -1,15 +1,20 @@
 #include "glfw3_monitor.hpp"
 
 #include "../window_backend.hpp"
+#include "GLFW/glfw3.h"
 
 #include <cstring>
+#include <vector>
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 GLFW3Monitor::GLFW3Monitor(GLFWmonitor* monitor) :
-    Monitor(),
-    _m(monitor)
+    Monitor(glfwGetMonitorName(monitor)),
+    _m(monitor),
+    _supportedVideoModes(_ListVideoModes(monitor)),
+    _largestVideoMode(_LargestVideoMode(_supportedVideoModes)),
+    _currentVideoMode()
 {
     glfwSetMonitorUserPointer(_m, (void*)this);
 }
@@ -24,7 +29,7 @@ GLFWmonitor* GLFW3Monitor::getGlfwMonitorPointer() const
     return _m;
 }
 
-Monitor::VideoMode GLFW3Monitor::getCurrentVideoMode() const
+const Monitor::VideoMode GLFW3Monitor::getCurrentVideoMode() const
 {
     const GLFWvidmode* mode = glfwGetVideoMode(_m);
 
@@ -35,28 +40,11 @@ Monitor::VideoMode GLFW3Monitor::getCurrentVideoMode() const
         mode->greenBits,
         mode->blueBits,
         mode->refreshRate
-    };
-}
+    };}
 
-std::vector<Monitor::VideoMode> GLFW3Monitor::getVideoModes() const
+const std::vector<Monitor::VideoMode>& GLFW3Monitor::getVideoModes() const
 {
-    int count;
-    const GLFWvidmode* modes = glfwGetVideoModes(_m, &count);
-
-    std::vector<Monitor::VideoMode> videoModes = std::vector<Monitor::VideoMode>(count);
-    for (int i = 0; i < count; i++)
-    {
-        videoModes.push_back(Monitor::VideoMode{
-            modes[i].width,
-            modes[i].height,
-            modes[i].redBits,
-            modes[i].greenBits,
-            modes[i].blueBits,
-            modes[i].refreshRate
-        });
-    }
-
-    return videoModes;
+    return _supportedVideoModes;
 }
 
 void GLFW3Monitor::getPhysicalSize(int& width_mm, int& height_mm) const
@@ -79,11 +67,6 @@ void GLFW3Monitor::getWorkArea(int& xpos, int& ypos, int& width, int& height) co
     glfwGetMonitorWorkarea(_m, &xpos, &ypos, &width, &height);
 }
 
-std::string GLFW3Monitor::getName() const
-{
-    return std::string(glfwGetMonitorName(_m));
-}
-
 Monitor::GammaRamp GLFW3Monitor::getGammaRamp() const
 {
     const GLFWgammaramp* ramp = glfwGetGammaRamp(_m);
@@ -96,7 +79,7 @@ Monitor::GammaRamp GLFW3Monitor::getGammaRamp() const
     std::memcpy(green.data(), ramp->green, ramp->size);
     std::memcpy(blue.data(), ramp->blue, ramp->size);
 
-    return Monitor::GammaRamp(ramp->size, red, green, blue);
+    return GammaRamp(ramp->size, red, green, blue);
 }
 
 void GLFW3Monitor::setGammaRamp(const GammaRamp& gammaRamp) const
@@ -115,27 +98,50 @@ void GLFW3Monitor::setGammaRamp(const GammaRamp& gammaRamp) const
 
 Monitor::VideoMode GLFW3Monitor::getLargestVideoMode() const
 {
-    int count;
-    const GLFWvidmode* modes = glfwGetVideoModes(_m, &count);
+    return _largestVideoMode;
+}
 
+std::vector<Monitor::VideoMode> GLFW3Monitor::_ListVideoModes(GLFWmonitor* m)
+{
+    int count;
+    const GLFWvidmode* modes = glfwGetVideoModes(m, &count);
+
+    std::vector<VideoMode> videoModes = std::vector<VideoMode>(count);
+    for (int i = 0; i < count; i++)
+    {
+        videoModes.push_back(VideoMode{
+            modes[i].width,
+            modes[i].height,
+            modes[i].redBits,
+            modes[i].greenBits,
+            modes[i].blueBits,
+            modes[i].refreshRate
+        });
+    }
+
+    return videoModes;
+}
+
+GLFW3Monitor::VideoMode GLFW3Monitor::_LargestVideoMode(const std::vector<VideoMode>& modes)
+{
     int maxWidth = 0;
     int maxHeight = 0;
     int maxRefreshRate = 0;
     int maxColorBits[3] = {0, 0, 0};    
-    for (int i = 0; i < count; i++)
+    for (const VideoMode& mode : modes)
     {
-        if (modes[i].width > maxWidth)
-            maxWidth = modes[i].width;
-        if (modes[i].height > maxHeight)
-            maxHeight = modes[i].height;
-        if (modes[i].refreshRate > maxRefreshRate)
-            maxRefreshRate = modes[i].refreshRate;
-        if (modes[i].redBits > maxColorBits[0])
-            maxColorBits[0] = modes[i].redBits;
-        if (modes[i].greenBits > maxColorBits[1])
-            maxColorBits[1] = modes[i].greenBits;
-        if (modes[i].blueBits > maxColorBits[2])
-            maxColorBits[2] = modes[i].blueBits;
+        if (mode.width > maxWidth)
+            maxWidth = mode.width;
+        if (mode.height > maxHeight)
+            maxHeight = mode.height;
+        if (mode.refreshRate > maxRefreshRate)
+            maxRefreshRate = mode.refreshRate;
+        if (mode.redBits > maxColorBits[0])
+            maxColorBits[0] = mode.redBits;
+        if (mode.greenBits > maxColorBits[1])
+            maxColorBits[1] = mode.greenBits;
+        if (mode.blueBits > maxColorBits[2])
+            maxColorBits[2] = mode.blueBits;
     }
 
     Monitor::VideoMode v = {
@@ -150,4 +156,4 @@ Monitor::VideoMode GLFW3Monitor::getLargestVideoMode() const
     return v;
 }
 
-}//namespace Renderboi::Window
+} // namespace renderboi::Window

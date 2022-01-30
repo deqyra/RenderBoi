@@ -46,7 +46,7 @@
  *   which the transformation is about to be applied.
  */
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Manages the 3D-space properties of an object: position, orientation
@@ -271,6 +271,6 @@ class Transform : public BasisProvider
         glm::vec3 forward() const override;
 };
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__TRANSFORM_HPP

@@ -2,7 +2,7 @@
 
 #include <glad/gl.h>
 
-namespace Renderboi
+namespace renderboi
 {
 
 const std::unordered_map<Framebuffer::Mode, unsigned int> Framebuffer::_targetMap = {
@@ -32,4 +32,4 @@ void Framebuffer::Unbind(Framebuffer::Mode mode)
     glBindFramebuffer(_targetMap.at(mode), 0);
 }
 
-}//namespace Renderboi
+} // namespace renderboi

@@ -3,9 +3,9 @@
 
 #include <memory>
 
-#include "../controls/control_scheme_manager.hpp"
+#include "../controls/control_scheme.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 template<typename T>
@@ -15,9 +15,9 @@ public:
     /// @brief Get the default control scheme for the implementing entity.
     ///
     /// @return The default control scheme for the implementing entity.
-    virtual ControlSchemeManagerPtr<T> getDefaultControlScheme() const = 0;
+    virtual const ControlScheme<T>& getDefaultControlScheme() const = 0;
 };
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__INTERFACES__DEFAULT_CONTROL_SCHEME_PROVIDER_HPP

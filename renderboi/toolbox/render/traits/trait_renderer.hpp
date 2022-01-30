@@ -5,7 +5,7 @@
 
 #include "render_trait.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Abstract class for a renderer which focuses on rendering one single
@@ -14,11 +14,11 @@ class TraitRenderer
 {
 public:
     /// @brief Render something?
-    virtual void render() = 0;
+    virtual void render() const = 0;
 };
 
-using TraitRendererPtr = std::shared_ptr<TraitRenderer>;
+using TraitRendererPtr = std::unique_ptr<TraitRenderer>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__RENDER__TRAIT_RENDERER_HPP

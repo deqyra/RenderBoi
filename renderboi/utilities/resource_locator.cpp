@@ -2,7 +2,7 @@
 
 #include <filesystem>
 
-namespace Renderboi
+namespace renderboi
 {
 
 std::unordered_map<ResourceType, std::filesystem::path>
@@ -47,4 +47,4 @@ std::string ResourceLocator::locate(const ResourceType type, const std::string& 
 }
 
 
-}//namespace Renderboi
+} // namespace renderboi

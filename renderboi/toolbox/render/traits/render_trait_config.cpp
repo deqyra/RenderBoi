@@ -1,18 +1,23 @@
 #include "render_trait_config.hpp"
 #include "renderboi/toolbox/scene/object/object_transform.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
-RenderTraitConfig::RenderTraitConfig(SceneObjectPtr parentSceneObject) :
-    _parentSceneObject(parentSceneObject)
+RenderTraitConfig::RenderTraitConfig(SceneObject& sceneObject) :
+    _sceneObject(sceneObject)
 {
 
 }
 
-void RenderTraitConfig::_release()
+RenderTraitConfig::~RenderTraitConfig()
 {
-    _parentSceneObject.reset();
+    
 }
 
-} // namespace Renderboi
+SceneObject& RenderTraitConfig::sceneObject()
+{
+    return _sceneObject;
+}
+
+} // namespace renderboi

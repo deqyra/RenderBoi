@@ -5,9 +5,9 @@
 
 #include <renderboi/core/mesh.hpp>
 
-#include "../interfaces/mesh_generator.hpp"
+#include "mesh_generator.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Generates vertices for a multi- or single-colored cube.
@@ -36,14 +36,14 @@ public:
     CubeGenerator();
 
     /// @param size Size the cube will have (radius of encompassing sphere).
-    CubeGenerator(float size);
+    CubeGenerator(const float size);
 
     /// @param size Size the cube will have (radius of encompassing sphere).
     /// @param color RGB color of the generated vertices.
-    CubeGenerator(float size, glm::vec3 color);
+    CubeGenerator(const float size, const glm::vec3 color);
 
     /// @param parameters Parameters of the vertex generation.
-    CubeGenerator(Parameters parameters);
+    CubeGenerator(const Parameters parameters);
     
     /// @brief Parameters of the vertex generation.
     Parameters parameters;
@@ -61,6 +61,15 @@ public:
     MeshPtr generateMesh() const override;
 };
 
-}//namespace Renderboi
+template<>
+struct MeshTypeMeta<MeshType::Cube>
+{
+    struct Generator
+    {
+        using type = CubeGenerator;
+    };
+};
+
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__MESH_GENERATORS__CUBE_GENERATOR_HPP

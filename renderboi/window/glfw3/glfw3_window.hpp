@@ -8,7 +8,7 @@
 #include "../window_backend.hpp"
 #include "../gl_window.hpp"
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 template<WindowBackend W>
@@ -66,7 +66,10 @@ public:
     /// @param target Literal describing which aspect of the window whose
     /// input mode should be set.
     /// @param value Literal describing which input to set the target to.
-    void setInputMode(Window::Input::Mode::Target target, Window::Input::Mode::Value value) override;
+    void setInputMode(
+        const Window::Input::Mode::Target target,
+        const Window::Input::Mode::Value value
+    ) override;
 
     /// @brief Hide the window. May be called only from the main thread.
     void hide() override;
@@ -120,32 +123,49 @@ public:
     /// @param[out] height Will receive the height of the framebuffer.
     void getFramebufferSize(int& width, int& height) const override;
 
-    /// @brief Display the window in fullscreen on the specified monitor. The
-    /// primary monitor will be used if none is provided. May be called only
-    /// from the main thread.
+    /// @brief Display the window in fullscreen on the primary monitor. May be
+    /// called only from the main thread.
     ///
-    /// @param monitor Pointer to the monitor on which to make the window go
-    /// fullscreen.
     /// @param borderless Whether or not to go borderless fullscreen. When 
     /// enabled, this makes the window fit exactly the video mode of the monitor
     /// it is on. Otherwise, the attributes of the window are left untouched.
-    void goFullscreen(MonitorPtr monitor = nullptr, bool borderless = false) override;
+    void goFullscreen(const bool borderless = false) override;
 
-    /// @brief Display the window in fullscreen on the specified monitor. The
-    /// primary monitor will be used if none is provided. The window will switch
-    /// to the video mode which is the closest to the indicated parameters. May
-    /// be called only from the main thread.
+    /// @brief Display the window in fullscreen on the specified monitor. May be
+    /// called only from the main thread.
     ///
-    /// @param monitor Pointer to the monitor on which to make the window go
-    /// fullscreen.
+    /// @param monitor Monitor on which to make the window go fullscreen.
+    /// @param borderless Whether or not to go borderless fullscreen. When 
+    /// enabled, this makes the window fit exactly the video mode of the monitor
+    /// it is on. Otherwise, the attributes of the window are left untouched.
+    void goFullscreen(Monitor& monitor, const bool borderless = false) override;
+
+    /// @brief Display the window in fullscreen on the primary monitor. The
+    /// window will switch to the video mode which is the closest to the 
+    /// requested parameters. May be called only from the main thread.
+    ///
     /// @param width Desired width of the video mode.
     /// @param height Desired height of the video mode.
     /// @param refreshRate Desired refresh rate.
     void goFullscreen(
-        MonitorPtr monitor = nullptr,
-        int width = -1,
-        int height = -1,
-        int refreshRate = -1
+        const int width = -1,
+        const int height = -1,
+        const int refreshRate = -1
+    ) override;
+
+    /// @brief Display the window in fullscreen on the specified monitor. The
+    /// window will switch to the video mode which is the closest to the 
+    /// indicated parameters. May be called only from the main thread.
+    ///
+    /// @param monitor Monitor on which to make the window go fullscreen.
+    /// @param width Desired width of the video mode.
+    /// @param height Desired height of the video mode.
+    /// @param refreshRate Desired refresh rate.
+    void goFullscreen(
+        Monitor& monitor,
+        const int width = -1,
+        const int height = -1,
+        const int refreshRate = -1
     ) override;
 
     /// @brief Whether or not the window is displayed in fullscreen mode. May be
@@ -161,7 +181,7 @@ public:
     /// @brief Set the refresh rate of a fullscreen window. Has no effect on a
     /// window displayed in windowed mode. May be called only from the main 
     /// thread.
-    void setRefreshRate(int rate) override;
+    void setRefreshRate(const int rate) override;
 
     /// @brief Whether the window was flagged for closing.
     ///
@@ -171,7 +191,7 @@ public:
     /// @brief Set the window closing flag.
     ///
     /// @param value Whether or not the window should be flagged for closing.
-    void setShouldClose(bool value) override;
+    void setShouldClose(const bool value) override;
 
     /// @brief Swap the front and back buffers of the window.
     void swapBuffers() override;
@@ -192,7 +212,7 @@ public:
 
     /// @brief Make the GL context current for the calling thread. May be called
     /// from any thread.
-    void makeContextCurrent(GLContextClientPtr context) override;
+    void makeContextCurrent() override;
 
     /// @brief Make the GL context non- current for the calling thread. May be 
     /// called from any thread.
@@ -202,11 +222,11 @@ public:
     /// context must be current on the calling thread.
     ///
     /// @param extName String containing the name of the extension to query.
-    bool extensionSupported(std::string extName) override;
+    bool extensionSupported(const std::string extName) override;
 };
 
-using GLFW3WindowPtr = std::shared_ptr<GLFW3Window>;
+using GLFW3WindowPtr = std::unique_ptr<GLFW3Window>;
 
-}//namespace Renderboi::Window
+} // namespace renderboi::Window
 
 #endif//RENDERBOI__WINDOW__GLFW3__GLFW3_WINDOW_HPP

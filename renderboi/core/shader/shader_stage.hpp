@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace Renderboi
+namespace renderboi
 {
 
 enum class ShaderStage
@@ -16,6 +16,6 @@ enum class ShaderStage
 
 std::string to_string(const ShaderStage v);
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__SHADER__SHADER_STAGE_HPP

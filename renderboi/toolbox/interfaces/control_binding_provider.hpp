@@ -1,11 +1,18 @@
-#ifndef CONTROL_BINDING_PROVIDER_HPP
-#define CONTROL_BINDING_PROVIDER_HPP
+#ifndef RENDERBOI__TOOLBOX__INTERFACES__CONTROL_BINDING_PROVIDER_HPP
+#define RENDERBOI__TOOLBOX__INTERFACES__CONTROL_BINDING_PROVIDER_HPP
 
+#include <map>
 #include <memory>
 
-namespace Renderboi
+#include "../controls/control.hpp"
+
+namespace renderboi
 {
 
+/// @brief Interface for a class which provides bindings between controls
+/// and an enum describing actions.
+///
+/// @tparam T Enum whose literal describe the actions to be taken.
 template<typename T>
 class ControlBindingProvider
 {
@@ -17,7 +24,7 @@ public:
     /// binding to check.
     ///
     /// @return Whether or not the provided control is bound.
-    virtual bool controlIsBound(const Control& control) = 0;
+    virtual bool controlIsBound(const Control& control) const = 0;
 
     /// @brief Returns the action bound to the provided control.
     ///
@@ -29,7 +36,7 @@ public:
     /// @exception If the provided control is not bound in this control
     /// scheme, depending on how the concrete function is implemented, it 
     /// may throw an std::runtime_error.
-    virtual T getActionBoundToControl(const Control& control) = 0;
+    virtual T getActionBoundToControl(const Control& control) const = 0;
 
     /// @brief Tells whether or not an action has a control bound to it in 
     /// this control scheme.
@@ -37,7 +44,7 @@ public:
     /// @param action Object describing the action whose bindings to check.
     ///
     /// @return Whether or not the provided action has a binding.
-    virtual bool actionIsBound(const T& action) = 0;
+    virtual bool actionIsBound(const T action) const = 0;
 
     /// @brief Returns the array of controls which are bound to the provided
     /// action.
@@ -46,18 +53,24 @@ public:
     /// be retrieved.
     ///
     /// @return The array of controls bound to the provided action.
-    virtual std::vector<Control> getControlsBoundToAction(const T& action) = 0;
+    virtual std::vector<Control> getControlsBoundToAction(const T action) const = 0;
 
-    /// @brief Returns the array of all controls which are bound to an 
+    /// @brief Returns a container of all controls which are bound to an 
     /// action, paired with the action they are bound to.
     ///
-    /// @return The array of all controls bound to an action.
-    virtual std::vector<std::pair<Control, T>> getAllBoundControls() = 0;
+    /// @return A pointer to the container of all controls bound to an action.
+    virtual const std::multimap<T, Control>& getAllBoundControls() const = 0;
+
+    /// @brief Returns a container of all actions to which a control is bound,
+    /// paired with the bound control.
+    ///
+    /// @return A pointer to the container of all actions with a bound control.
+    virtual const std::unordered_map<Control, T, ControlHash>& getAllBoundActions() const = 0;
 };
 
 template<typename T>
-using ControlBindingProviderPtr = std::shared_ptr<ControlBindingProvider<T>>;
+using ControlBindingProviderPtr = std::unique_ptr<ControlBindingProvider<T>>;
 
-}//namespace Renderboi
+} // namespace renderboi
 
-#endif//CONTROL_BINDING_PROVIDER_HPP
+#endif//RENDERBOI__TOOLBOX__INTERFACES__CONTROL_BINDING_PROVIDER_HPP

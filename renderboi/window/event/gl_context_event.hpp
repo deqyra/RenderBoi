@@ -3,12 +3,14 @@
 
 #include <string>
 
-namespace Renderboi
+namespace renderboi
 {
 
 namespace Window
 {
 
+/// @brief Collection of literals describing different render events that can
+/// take place in the event polling thread.
 enum class GLContextEvent
 {
     FitFramebufferToWindow,
@@ -19,8 +21,8 @@ enum class GLContextEvent
 
 } // namespace Window
 
-std::string to_string(const Window::GLContextEvent& event);
+std::string to_string(const Window::GLContextEvent event);
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__WINDOW__EVENT__GL_CONTEXT_EVENT_HPP

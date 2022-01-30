@@ -1,6 +1,6 @@
 #include "gamepad_state.hpp"
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 GamepadState::GamepadState() :
@@ -48,22 +48,22 @@ GamepadState& GamepadState::operator=(GamepadState other)
     return *this;
 }
 
-bool& GamepadState::operator[](const Button& button)
+bool& GamepadState::operator[](const Button button)
 {
     return Buttons[(unsigned int)button];
 }
 
-const bool& GamepadState::operator[](const Button& button) const
+const bool& GamepadState::operator[](const Button button) const
 {
     return Buttons[(unsigned int)button];
 }
 
-float& GamepadState::operator[](const Axis& axis)
+float& GamepadState::operator[](const Axis axis)
 {
     return Axes[(unsigned int)axis];
 }
 
-const float& GamepadState::operator[](const Axis& axis) const
+const float& GamepadState::operator[](const Axis axis) const
 {
     return Axes[(unsigned int)axis];
 }
@@ -77,4 +77,4 @@ void swap(GamepadState& left, GamepadState& right)
     swap(left.Axes,    right.Axes);
 }
 
-}//namespace Renderboi::Window
+} // namespace renderboi::Window

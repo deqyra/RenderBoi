@@ -4,13 +4,13 @@
 
 #include "../gl_window.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 namespace Window
 {
 
-GLContextEventManager::GLContextEventManager(GLWindowPtr window) :
+GLContextEventManager::GLContextEventManager(GLWindow& window) :
     _window(window),
     _eventMutex(),
     _eventQueue()
@@ -20,19 +20,10 @@ GLContextEventManager::GLContextEventManager(GLWindowPtr window) :
 
 void GLContextEventManager::processPendingEvents()
 {
-    _eventMutex.lock();
-    bool empty = _eventQueue.empty();
-    _eventMutex.unlock();
-
-    if (empty)
-    {
-        return;
-    }
-
     // Process all awaiting events
+    _eventMutex.lock();
     while (!_eventQueue.empty())
     {
-        _eventMutex.lock();
         GLContextEvent e = _eventQueue.front();
         _eventMutex.unlock();
 
@@ -40,24 +31,24 @@ void GLContextEventManager::processPendingEvents()
 
         _eventMutex.lock();
         _eventQueue.pop();
-        _eventMutex.unlock();
     }
+    _eventMutex.unlock();
 }
 
-void GLContextEventManager::queueEvent(const GLContextEvent& event)
+void GLContextEventManager::queueEvent(const GLContextEvent event)
 {
     _eventMutex.lock();
     _eventQueue.push(event);
     _eventMutex.unlock();
 }
 
-void GLContextEventManager::_processEvent(const GLContextEvent& event)
+void GLContextEventManager::_processEvent(const GLContextEvent event)
 {
     switch (event)
     {
     case GLContextEvent::FitFramebufferToWindow:
         int w, h;
-        _window->getFramebufferSize(w, h);
+        _window.getFramebufferSize(w, h);
         glViewport(0, 0, w, h);
         break;
 
@@ -82,4 +73,4 @@ void GLContextEventManager::_processEvent(const GLContextEvent& event)
 
 }// namespace Window
 
-}// namespace Renderboi
+}// namespace renderboi

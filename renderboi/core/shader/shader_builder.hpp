@@ -11,7 +11,7 @@
 #include "shader_stage.hpp"
 #include "shader_config.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 class ShaderBuilder
@@ -272,6 +272,6 @@ private:
     static std::string _GenerateDefineDirectives(const std::vector<ShaderFeature>& features);
 };
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__SHADER__SHADER_BUILDER_HPP

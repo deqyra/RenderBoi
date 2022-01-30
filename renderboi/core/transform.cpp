@@ -15,7 +15,7 @@
  * ╚════════════════════════════════════╝
  */
 
-namespace Renderboi
+namespace renderboi
 {
 
 using Ref = FrameOfReference;
@@ -455,4 +455,4 @@ glm::vec3 Transform::forward() const
     return _forward;
 }
 
-}//namespace Renderboi
+} // namespace renderboi

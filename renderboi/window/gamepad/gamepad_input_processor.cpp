@@ -1,6 +1,6 @@
 #include "gamepad_input_processor.hpp"
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 unsigned int GamepadInputProcessor::_count = 0;
@@ -11,24 +11,24 @@ GamepadInputProcessor::GamepadInputProcessor() :
 
 }
 
-void GamepadInputProcessor::processConnected(const GamepadPtr gamepad)
+void GamepadInputProcessor::processConnected(const Gamepad& gamepad)
 {
 
 }
 
-void GamepadInputProcessor::processDisconnected(const GamepadPtr gamepad)
+void GamepadInputProcessor::processDisconnected(const Gamepad& gamepad)
 {
 
 }
 
-void GamepadInputProcessor::processButton(const GamepadPtr gamepad, const Window::Input::Gamepad::Button button, const Window::Input::Action action)
+void GamepadInputProcessor::processButton(const Gamepad& gamepad, const Window::Input::Gamepad::Button button, const Window::Input::Action action)
 {
 
 }
 
-void GamepadInputProcessor::processAxis(const GamepadPtr gamepad, const Window::Input::Gamepad::Axis axis, const float value)
+void GamepadInputProcessor::processAxis(const Gamepad& gamepad, const Window::Input::Gamepad::Axis axis, const float value)
 {
 
 }
 
-}//namespace Renderboi::Window
+} // namespace renderboi::Window

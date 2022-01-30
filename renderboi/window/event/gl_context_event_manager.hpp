@@ -10,14 +10,13 @@
 
 #include "gl_context_event.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 namespace Window
 {
 
 class GLWindow;
-using GLWindowPtr = std::shared_ptr<GLWindow>;
 
 /// @brief Implementation of a class able to receive render events which were
 /// queued to a thread running on a GL context.
@@ -26,9 +25,9 @@ using GLWindowPtr = std::shared_ptr<GLWindow>;
 class GLContextEventManager : public cpptools::EventReceiver<GLContextEvent>
 {
 public:
-    /// @param window Pointer to the window linked to the sandbox whose events
-    ///to manage.
-    GLContextEventManager(GLWindowPtr window);
+    /// @param window Window in charge of painting the context whose events will
+    /// be received.
+    GLContextEventManager(GLWindow& window);
 
     /// @brief Process all events that were registered, and clear the
     /// queue. May be called from the rendering thread only, as this may in 
@@ -44,16 +43,17 @@ public:
     /// @brief Register an event to the entity.
     ///
     /// @param event Literal describing the event to queue.
-    virtual void queueEvent(const GLContextEvent& event) override;
+    virtual void queueEvent(const GLContextEvent event) override;
 
 protected:
     /// @brief Process a single event in the queue.
     ///
     /// @param event Literal describing the event to process.
-    void _processEvent(const GLContextEvent& event);
+    void _processEvent(const GLContextEvent event);
 
-    /// @brief Pointer to the window whose events to manage.
-    GLWindowPtr _window;
+    /// @brief Window in charge of painting the context whose events will
+    /// be received.
+    GLWindow& _window;
 
     /// @brief Mutex for accessing the event queue.
     std::mutex _eventMutex;
@@ -62,11 +62,11 @@ protected:
     std::queue<GLContextEvent> _eventQueue;
 };
 
-using GLContextEventManagerPtr = std::shared_ptr<GLContextEventManager>;
+using GLContextEventManagerPtr = std::unique_ptr<GLContextEventManager>;
 
 }// namespace Window
 
-}// namespace Renderboi
+}// namespace renderboi
 
 
 #endif//RENDERBOI__WINDOW__EVENT__GL_CONTEXT_EVENT_MANAGER_HPP

@@ -2,14 +2,15 @@
 
 #include <vector>
 #include <memory>
+
 #include <glm/glm.hpp>
 
 #include <renderboi/core/mesh.hpp>
 #include <renderboi/core/vertex.hpp>
 
-#include "../common_macros.hpp"
+#include "../common.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 AxesGenerator::AxesGenerator() :
@@ -18,13 +19,13 @@ AxesGenerator::AxesGenerator() :
 
 }
 
-AxesGenerator::AxesGenerator(float length) : 
+AxesGenerator::AxesGenerator(const float length) : 
     parameters{ length }
 {
 
 }
 
-AxesGenerator::AxesGenerator(Parameters parameters) :
+AxesGenerator::AxesGenerator(const Parameters parameters) :
     parameters(parameters)
 {
 
@@ -32,16 +33,18 @@ AxesGenerator::AxesGenerator(Parameters parameters) :
 
 MeshPtr AxesGenerator::generateMesh() const
 {
+    using namespace common;
+
     float len = parameters.axisLength;
 
     std::vector<Vertex> vertices = {
-        // Position                     // Color            // Normal                       // Tex coord
-        {  glm::vec3(0.f, 0.f, 0.f),    glm::vec3(RED),     glm::vec3(0.f, -1.f,  0.f),     glm::vec2(0.f) },   // Vertex 1
-        {  glm::vec3(len, 0.f, 0.f),    glm::vec3(RED),     glm::vec3(0.f, -1.f,  0.f),     glm::vec2(0.f) },   // Vertex 2
-        {  glm::vec3(0.f, 0.f, 0.f),    glm::vec3(GREEN),   glm::vec3(0.f,  0.f, -1.f),     glm::vec2(0.f) },   // ...
-        {  glm::vec3(0.f, len, 0.f),    glm::vec3(GREEN),   glm::vec3(0.f,  0.f, -1.f),     glm::vec2(0.f) },
-        {  glm::vec3(0.f, 0.f, 0.f),    glm::vec3(BLUE),    glm::vec3(-1.f, 0.f,  0.f),     glm::vec2(0.f) },
-        {  glm::vec3(0.f, 0.f, len),    glm::vec3(BLUE),    glm::vec3(-1.f, 0.f,  0.f),     glm::vec2(0.f) }
+        // Position      // Color      // Normal      // Tex coord
+        {  vec(O3),      vec(Red),     vec(Y(-1.f)),  vec(O2) },   // Vertex 1
+        {  vec(X(len)),  vec(Red),     vec(Y(-1.f)),  vec(O2) },   // Vertex 2
+        {  vec(O3),      vec(Green),   vec(Z(-1.f)),  vec(O2) },   // ...
+        {  vec(Y(len)),  vec(Green),   vec(Z(-1.f)),  vec(O2) },
+        {  vec(O3),      vec(Blue),    vec(X(-1.f)),  vec(O2) },
+        {  vec(Z(len)),  vec(Blue),    vec(X(-1.f)),  vec(O2) }
     };
 
     std::vector<unsigned int> indices = {
@@ -50,7 +53,7 @@ MeshPtr AxesGenerator::generateMesh() const
         4, 5    // Z axis
     };
 
-    return std::make_shared<Mesh>(GL_LINES, vertices, indices);
+    return std::make_unique<Mesh>(GL_LINES, vertices, indices);
 }
 
-}//namespace Renderboi
+} // namespace renderboi

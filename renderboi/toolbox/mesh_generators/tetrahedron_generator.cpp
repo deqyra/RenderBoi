@@ -7,9 +7,9 @@
 #include <renderboi/core/mesh.hpp>
 #include <renderboi/core/vertex.hpp>
 
-#include "../common_macros.hpp"
+#include "../common.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 TetrahedronGenerator::TetrahedronGenerator() :
@@ -18,19 +18,19 @@ TetrahedronGenerator::TetrahedronGenerator() :
 
 }
 
-TetrahedronGenerator::TetrahedronGenerator(float size) :
+TetrahedronGenerator::TetrahedronGenerator(const float size) :
     parameters{ size, glm::vec3(0.f), false }
 {
     
 }
 
-TetrahedronGenerator::TetrahedronGenerator(float size, glm::vec3 color) :
+TetrahedronGenerator::TetrahedronGenerator(const float size, const glm::vec3 color) :
     parameters{ size, color, true}
 {
 
 }
 
-TetrahedronGenerator::TetrahedronGenerator(Parameters parameters) :
+TetrahedronGenerator::TetrahedronGenerator(const Parameters parameters) :
     parameters(parameters)
 {
     
@@ -38,30 +38,32 @@ TetrahedronGenerator::TetrahedronGenerator(Parameters parameters) :
 
 MeshPtr TetrahedronGenerator::generateMesh() const
 {
+    using namespace common;
+
     const unsigned int nVertices = 12;
 
-    glm::vec3 top           = glm::vec3( 0.f,               0.75f * sqrt(2.f),  0.f)                * parameters.size;
-    glm::vec3 baseBackLeft  = glm::vec3(-0.5f * sqrt(3.f), -0.25f * sqrt(2.f), -0.5f)               * parameters.size;
-    glm::vec3 baseBackRight = glm::vec3( 0.5f * sqrt(3.f), -0.25f * sqrt(2.f), -0.5f)               * parameters.size;
-    glm::vec3 baseFront     = glm::vec3( 0.f,              -0.25f * sqrt(2.f),  1.f)                * parameters.size;
+    glm::vec3 top           = glm::vec3( 0.f,           0.75f * Sqrt2,  0.f)  * parameters.size;
+    glm::vec3 baseBackLeft  = glm::vec3(-0.5f * Sqrt3, -0.25f * Sqrt2, -0.5f) * parameters.size;
+    glm::vec3 baseBackRight = glm::vec3( 0.5f * Sqrt3, -0.25f * Sqrt2, -0.5f) * parameters.size;
+    glm::vec3 baseFront     = glm::vec3( 0.f,          -0.25f * Sqrt2,  1.f)  * parameters.size;
 
     std::vector<Vertex> vertices = {
         // Position         // Color            // Normal       // Tex coord
-        { baseBackLeft,     glm::vec3(RED),     -top,           glm::vec2(0.f,  0.f) },     // Vertex 1     // Face 1
-        { baseBackRight,    glm::vec3(GREEN),   -top,           glm::vec2(1.f,  0.f) },     // Vertex 2     // -Y
-        { baseFront,        glm::vec3(BLUE),    -top,           glm::vec2(0.5f, 1.f) },     // ...
+        { baseBackLeft,     vec(Red),     -top,           glm::vec2(0.f,  0.f) },     // Vertex 1     // Face 1
+        { baseBackRight,    vec(Green),   -top,           glm::vec2(1.f,  0.f) },     // Vertex 2     // -Y
+        { baseFront,        vec(Blue),    -top,           glm::vec2(0.5f, 1.f) },     // ...
 
-        { baseBackRight,    glm::vec3(GREEN),   -baseFront,     glm::vec2(0.f,  0.f) },                     // Face 2
-        { baseBackLeft,     glm::vec3(RED),     -baseFront,     glm::vec2(1.f,  0.f) },                     // -Z
-        { top,              glm::vec3(WHITE),   -baseFront,     glm::vec2(0.5f, 1.f) },
+        { baseBackRight,    vec(Green),   -baseFront,     glm::vec2(0.f,  0.f) },                     // Face 2
+        { baseBackLeft,     vec(Red),     -baseFront,     glm::vec2(1.f,  0.f) },                     // -Z
+        { top,              vec(White),   -baseFront,     glm::vec2(0.5f, 1.f) },
 
-        { top,              glm::vec3(WHITE),   -baseBackRight, glm::vec2(0.5f, 1.f) },                     // Face 3
-        { baseBackLeft,     glm::vec3(RED),     -baseBackRight, glm::vec2(0.f,  0.f) },                     // -X
-        { baseFront,        glm::vec3(BLUE),    -baseBackRight, glm::vec2(0.f,  1.f) },
+        { top,              vec(White),   -baseBackRight, glm::vec2(0.5f, 1.f) },                     // Face 3
+        { baseBackLeft,     vec(Red),     -baseBackRight, glm::vec2(0.f,  0.f) },                     // -X
+        { baseFront,        vec(Blue),    -baseBackRight, glm::vec2(0.f,  1.f) },
 
-        { baseFront,        glm::vec3(BLUE),    -baseBackLeft,  glm::vec2(0.f,  0.f) },                     // Face 4
-        { baseBackRight,    glm::vec3(GREEN),   -baseBackLeft,  glm::vec2(1.f,  0.f) },                     //  X
-        { top,              glm::vec3(WHITE),   -baseBackLeft,  glm::vec2(0.5f, 1.f) }
+        { baseFront,        vec(Blue),    -baseBackLeft,  glm::vec2(0.f,  0.f) },                     // Face 4
+        { baseBackRight,    vec(Green),   -baseBackLeft,  glm::vec2(1.f,  0.f) },                     //  X
+        { top,              vec(White),   -baseBackLeft,  glm::vec2(0.5f, 1.f) }
     };
 
     if (parameters.useColor)
@@ -79,7 +81,7 @@ MeshPtr TetrahedronGenerator::generateMesh() const
         9, 10, 11
     };
 
-    return std::make_shared<Mesh>(GL_TRIANGLES, vertices, indices);
+    return std::make_unique<Mesh>(GL_TRIANGLES, vertices, indices);
 }
 
-}//namespace Renderboi
+} // namespace renderboi

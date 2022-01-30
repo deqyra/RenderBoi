@@ -1,17 +1,18 @@
-#ifndef RENDERBOI__TOOLBOX__SCENE__COMPONENT_HPP
-#define RENDERBOI__TOOLBOX__SCENE__COMPONENT_HPP
+#ifndef RENDERBOI__TOOLBOX__SCENE__OBJECT__COMPONENT_HPP
+#define RENDERBOI__TOOLBOX__SCENE__OBJECT__COMPONENT_HPP
 
 #include <memory>
 #include <string>
 
 #include "component_type.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 class SceneObject;
-using SceneObjectPtr = std::shared_ptr<SceneObject>;
-using SceneObjectWPtr = std::weak_ptr<SceneObject>;
+using SceneObjectPtr = std::unique_ptr<SceneObject>;
+
+class ComponentMap;
 
 /*         ╔════════════╗
  *         ║   README   ║
@@ -21,25 +22,37 @@ using SceneObjectWPtr = std::weak_ptr<SceneObject>;
  * ===============================
  *
  * - Write new component
- * - Add enum value to ComponentType
- * - Specialize the following static methods from Component like so:
- *     template<>
- *     ComponentType Component::componentType<MyNewComponent>()
- *     {
- *        return ComponentType::MyNewComponent;
- *     }
+ * - Add new enum value to ComponentType
+ * - Add corresponding case line in to_string (in component_type.cpp)
+ * - Add corresponding case line in Component::MultipleInstancesAllowed (in all_components.cpp)
+ * - Specialize ComponentMeta like so:
  *
  *     template<>
- *     std::string Component::componentTypeString<MyNewComponent>()
+ *     struct ComponentMeta<ComponentType::MyNewComponent>
  *     {
- *         return "MyNewComponent";
- *     }
- * 
+ *         struct MultipleInstancesAllowed
+ *         {
+ *             static constexpr bool value = (true or false);
+ *         };
+ *         struct ConcreteType
+ *         {
+ *             using type = MyNewComponent;
+ *         };
+ *         struct Name
+ *         {
+ *             static constexpr const char* value = "MyNewComponent";
+ *         };
+ *     };
+ *
+ * - Specialize ComponentTypeToEnum like so:
+ *
  *     template<>
- *     bool Component::multipleInstancesAllowed<MyNewComponent>()
+ *     struct ComponentTypeToEnum<MyNewComponent>
  *     {
- *         return (true or false);
- *     }
+ *         static constexpr ComponentType value = ComponentType::MyNewComponent;
+ *     };
+ *
+ * - Include header in all_components.hpp
  */
 
 /// @brief Abstract class meant to represent a certain aspect in a scene object
@@ -48,27 +61,22 @@ using SceneObjectWPtr = std::weak_ptr<SceneObject>;
 class Component
 {
 private:
-    friend SceneObject;
+    friend ComponentMap;
 
     Component() = delete;
     Component(const Component& other) = delete;
     Component& operator=(const Component& other) = delete;
 
 protected:
-    /// @param type Literal describing the concrete type of this component.
-    /// @param sceneObject Pointer to the SceneObject instance this 
+    /// @param sceneObject Reference to the SceneObject instance this 
     /// component belongs to.
     ///
-    /// @exception If the passed component type is Unknown, or if the 
-    /// provided scene object pointer is null, the constructor will throw a
-    /// std::runtime_error.
-    Component(const ComponentType type, const SceneObjectPtr sceneObject);
+    /// @exception If the provided scene object pointer is null, the constructor
+    /// will throw an std::runtime_error.
+    Component(SceneObject& sceneObject);
 
-    /// @brief Pointer to the SceneObject this component belongs to.
-    SceneObjectPtr _sceneObject;
-
-    /// @brief Release the parent scene object pointer.
-    virtual void _release();
+    /// @brief Reference to the SceneObject this component belongs to.
+    SceneObject& _sceneObject;
 
 public:
     virtual ~Component();
@@ -76,7 +84,7 @@ public:
     /// @brief Get a pointer to the parent scene object of this component.
     ///
     /// @return A pointer to the parent scene object of this component.
-    SceneObjectPtr getSceneObject() const;
+    SceneObject& sceneObject();
 
     /// @brief Get a raw pointer to a new component instance cloned 
     /// from this one. Ownership and responsibility for the allocated 
@@ -87,65 +95,45 @@ public:
     ///
     /// @return A raw pointer to the component instance cloned from this 
     /// one.
-    virtual Component* clone(const SceneObjectPtr newParent) const = 0;
+    virtual Component* clone(SceneObject& newParent) const = 0;
 
-    /// @brief Literal describing the concrete type of this component.
-    const ComponentType type;
-
-    /// @brief Get a literal describing the concrete type of a Component 
-    /// subclass.
-    ///
-    /// @tparam T Concrete component subclass whose describing literal is
-    /// to be returned.
-    ///
-    /// @return The literal describing the concrete component class provided
-    /// as the template parameter.
-    template<class T>
-    static ComponentType componentType();
-
-    /// @brief Get a descriptive string of the concrete type of a Component 
-    /// subclass.
-    ///
-    /// @tparam T Concrete component subclass whose describing string is
-    /// to be returned.
-    ///
-    /// @return A descriptive string of the concrete component class 
-    /// provided as the template parameter.
-    template<class T>
-    static std::string componentTypeString();
-
-    /// @brief Returns whether more than one instance of this component can
+    /// @brief Returns whether more than one instance of this component type can
     /// be present on a same scene object.
     ///
-    /// @tparam T Concrete component subclass to test.
+    /// @see See all_components.cpp for implementation (separate to keep
+    /// concrete stuff out).
     ///
-    /// @return Whether or not more than one instance of this component can
+    /// @param type Litteral describing the type of component subclass to test.
+    ///
+    /// @return Whether or not more than one instance of this component type can
     /// be present on a same scene object.
-    template<class T>
-    static bool multipleInstancesAllowed();
+    static bool MultipleInstancesAllowed(const ComponentType type);
 };
 
-using ComponentPtr = std::shared_ptr<Component>;
-using ComponentWPtr = std::weak_ptr<Component>;
-
-template<class T>
-ComponentType Component::componentType()
+/// @brief Templated meta data meant to be specialized by inheriting
+/// components.
+template<ComponentType T>
+struct ComponentMeta
 {
-    return ComponentType::Unknown;
-}
+    /// @brief Use ::value to tell whether multiple instances of the
+    /// component type described by T are allowed within one scene object.
+    struct MultipleInstancesAllowed {};
 
+    /// @brief Use ::type to get the concrete component type that corresponds to
+    /// T.
+    struct ConcreteType {};
+
+    /// @brief Use ::value to get the name of this component type.
+    struct Name {};
+};
+
+/// @brief Templated meta data meant to be specialized by inheriting
+/// components.
 template<class T>
-std::string Component::componentTypeString()
-{
-    return "Unknown";
-}
+struct ComponentTypeToEnum {};
 
-template<class T>
-bool Component::multipleInstancesAllowed()
-{
-    return false;
-}
+using ComponentPtr = std::unique_ptr<Component>;
 
-}//namespace Renderboi
+} // namespace renderboi
 
-#endif//RENDERBOI__TOOLBOX__SCENE__COMPONENT_HPP
+#endif//RENDERBOI__TOOLBOX__SCENE__OBJECT__COMPONENT_HPP

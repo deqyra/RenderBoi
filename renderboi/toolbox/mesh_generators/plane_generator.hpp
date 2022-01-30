@@ -5,9 +5,9 @@
 
 #include <renderboi/core/mesh.hpp>
 
-#include "../interfaces/mesh_generator.hpp"
+#include "mesh_generator.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Generates vertices for a tiled plane.
@@ -70,7 +70,7 @@ public:
     PlaneGenerator();
 
     /// @param parameters Parameters of the vertex generation.
-    PlaneGenerator(Parameters parameters);
+    PlaneGenerator(const Parameters parameters);
     
     /// @brief Parameters of the vertex generation.
     Parameters parameters;
@@ -88,6 +88,15 @@ public:
     MeshPtr generateMesh() const override;
 };
 
-}//namespace Renderboi
+template<>
+struct MeshTypeMeta<MeshType::Plane>
+{
+    struct Generator
+    {
+        using type = PlaneGenerator;
+    };
+};
+
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__MESH_GENERATORS__PLANE_GENERATOR_HPP

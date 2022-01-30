@@ -1,7 +1,7 @@
 #ifndef RENDERBOI__WINDOW__WINDOW_BACKEND_HPP
 #define RENDERBOI__WINDOW__WINDOW_BACKEND_HPP
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 /// @brief Collection of literals describing the available window backends.
@@ -11,6 +11,6 @@ enum class WindowBackend
     GLFW3
 };
 
-}//namespace Renderboi::Window
+} // namespace renderboi::Window
 
 #endif//RENDERBOI__WINDOW__WINDOW_BACKEND_HPP

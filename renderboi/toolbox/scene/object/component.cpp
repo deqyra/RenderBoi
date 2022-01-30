@@ -6,37 +6,23 @@
 #include "scene_object.hpp"
 #include "component_type.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
-Component::Component(const ComponentType type, const SceneObjectPtr sceneObject) :
-    type(type),
+Component::Component(SceneObject& sceneObject) :
     _sceneObject(sceneObject)
 {
-    if (type == ComponentType::Unknown)
-    {
-        throw std::runtime_error("Component: cannot create a component with type Unknown.");
-    }
 
-    if (!sceneObject)
-    {
-        throw std::runtime_error("Component: cannot create a component from a null scene object pointer.");
-    }
 }
 
 Component::~Component()
 {
-    _release();
+
 }
 
-SceneObjectPtr Component::getSceneObject() const
+SceneObject& Component::sceneObject()
 {
     return _sceneObject;
 }
 
-void Component::_release()
-{
-    _sceneObject.reset();
-}
-
-}//namespace Renderboi
+} // namespace renderboi

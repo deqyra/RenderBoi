@@ -2,10 +2,10 @@
 #define RENDERBOI__EXAMPLES__LIGHTING_EXAMPLE_HPP
 
 #include <string>
+
 #include <glm/glm.hpp>
 
-#include "gl_sandbox.hpp"
-#include "gl_sandbox_parameters.hpp"
+#include <cpptools/math/sine_generator.hpp>
 
 #include <renderboi/core/camera.hpp>
 #include <renderboi/core/lights/point_light.hpp>
@@ -16,9 +16,10 @@
 #include <renderboi/toolbox/script.hpp>
 #include <renderboi/toolbox/scene/object/scene_object.hpp>
 
-#include <cpptools/math/sine_generator.hpp>
+#include "gl_sandbox.hpp"
+#include "gl_sandbox_parameters.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Example class to display lit moving objects.
@@ -34,10 +35,10 @@ class LightingSandbox : public GLSandbox
         static constexpr glm::vec3 StartingCameraPosition = {5.f, 6.f, 5.f};
         static constexpr glm::vec3 StartingLightPosition = {-3.f, 3.f, 0.f};
 
-		/// @param window Pointer to the window on which the sandbox should run.
+		/// @param window Reference to the window on which the sandbox should run.
         /// @param params Strcture packing the parameters according to which the
         /// sandbox should run.
-        LightingSandbox(const GLWindowPtr window, const GLSandboxParameters params);
+        LightingSandbox(GLWindow& window, const GLSandboxParameters& params);
 
         /////////////////////////////////////////
         ///                                   ///
@@ -45,23 +46,17 @@ class LightingSandbox : public GLSandbox
         ///                                   ///
         /////////////////////////////////////////
 
-		/// @brief Set up the window prior to running the example. Will be
+		/// @brief Set up the window prior to running the example. Must be
 		/// called from the main thread.
-		///
-		/// @param window Pointer to the window to initialize.
 		virtual void setUp() override;
 
-        /// @brief Run something in the provided GL window. To be executed by
-		/// a separate thread.
-		///
-		/// @param window Pointer to the window to run stuff in.
+        /// @brief Run something in the provided GL window. Must be run by a
+		/// separate thread.
 		virtual void run() override;
 
 		/// @brief Restore the window back to how it was before the example ran.
 		/// The contents of this function should be the opposite from those in
-		/// setUp(). Will be called from the main thread once run() has returned.
-		///
-		/// @param window Pointer to the window to detach from.
+		/// setUp(). Must be called from the main thread once run() has returned.
 		virtual void tearDown() override;
 };
 
@@ -69,23 +64,23 @@ class LightingSandbox : public GLSandbox
 class LightingSandboxScript : public InputProcessor, public Script
 {
     private:
-        /// @brief Pointer to the cube of the LightingSandbox.
-        SceneObjectPtr _cubeObj;
+        /// @brief Reference to the cube of the LightingSandbox.
+        SceneObject& _cubeObj;
 
-        /// @brief Pointer to the big torus of the LightingSandbox.
-        SceneObjectPtr _bigTorusObj;
+        /// @brief Reference to the big torus of the LightingSandbox.
+        SceneObject& _bigTorusObj;
 
-        /// @brief Pointer to the small torus of the LightingSandbox.
-        SceneObjectPtr _smallTorusObj;
+        /// @brief Reference to the small torus of the LightingSandbox.
+        SceneObject& _smallTorusObj;
 
-        /// @brief Pointer to the tetrahedron of the LightingSandbox.
-        SceneObjectPtr _tetrahedronObj;
+        /// @brief Reference to the tetrahedron of the LightingSandbox.
+        SceneObject& _tetrahedronObj;
 
-        /// @brief Pointer to the camera of the LightingSandbox.
-        SceneObjectPtr _cameraObj;
+        /// @brief Reference to the camera of the LightingSandbox.
+        SceneObject& _cameraObj;
 
-        /// @brief Pointer to the light whose range to vary.
-        std::shared_ptr<PointLight> _light;
+        /// @brief Reference to the light whose range to vary.
+        PointLight& _light;
 
         /// @brief Whether objects should move.
         bool _autoRotate;
@@ -108,7 +103,22 @@ class LightingSandboxScript : public InputProcessor, public Script
         static constexpr float LightVariationAmplitude = 50.f;
         static constexpr float LightVariationFrequency = 0.f;
 
-        LightingSandboxScript(SceneObjectPtr cubeObj, SceneObjectPtr bigTorusObj, SceneObjectPtr smallTorusObj, SceneObjectPtr tetrahedronObj, SceneObjectPtr cameraObj, std::shared_ptr<PointLight> light, float baseLightRange);
+        /// @param cubeObj Reference to the cube of the LightingSandbox.
+        /// @param bigTorusObj Reference to the big torus of the LightingSandbox.
+        /// @param smallTorusObj Reference to the small torus of the LightingSandbox.
+        /// @param tetrahedronObj Reference to the tetrahedron of the LightingSandbox.
+        /// @param cameraObj Reference to the camera of the LightingSandbox.
+        /// @param light Reference to the light whose range to vary.
+        /// @param baseLightRange Base range of the light
+        LightingSandboxScript(
+            SceneObject& cubeObj,
+            SceneObject& bigTorusObj,
+            SceneObject& smallTorusObj,
+            SceneObject& tetrahedronObj,
+            SceneObject& cameraObj,
+            PointLight& light,
+            float baseLightRange
+        );
 
         //////////////////////////////////////
         ///                                ///
@@ -137,7 +147,7 @@ class LightingSandboxScript : public InputProcessor, public Script
 
         /// @brief Callback for a keyboard event.
         ///
-        /// @param window Pointer to the GLWindow in which the event was
+        /// @param window Reference to the GLWindow in which the event was
         /// triggered.
         /// @param key Literal describing which key triggered the event.
         /// @param scancode Scancode of the key which triggered the event. 
@@ -147,7 +157,7 @@ class LightingSandboxScript : public InputProcessor, public Script
         /// @param mods Bit field describing which modifiers were enabled 
         /// during the key event (Ctrl, Shift, etc).
         void processKeyboard(
-            const GLWindowPtr window,
+            GLWindow& window,
             const Window::Input::Key key,
             const int scancode,
             const Window::Input::Action action,
@@ -155,6 +165,6 @@ class LightingSandboxScript : public InputProcessor, public Script
         ) override;
 };
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__EXAMPLES__LIGHTING_EXAMPLE_HPP

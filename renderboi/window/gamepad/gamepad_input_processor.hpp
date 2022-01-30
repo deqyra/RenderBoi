@@ -6,13 +6,12 @@
 
 #include "../enums.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 namespace Window
 {
 
 class Gamepad;
-using GamepadPtr = std::shared_ptr<Gamepad>;
 
 /// @brief Callback manager to handle input from a gamepad.
 class GamepadInputProcessor
@@ -49,33 +48,33 @@ public:
     GamepadInputProcessor();
 
     /// @brief Callback for when the gamepad is connected.
-    virtual void processConnected(const GamepadPtr gamepad);
+    virtual void processConnected(const Gamepad& gamepad);
 
     /// @brief Callback for when the gamepad is disconnected.
-    virtual void processDisconnected(const GamepadPtr gamepad);
+    virtual void processDisconnected(const Gamepad& gamepad);
 
     /// @brief Callback for a gamepad button event.
     ///
     /// @param button Literal describing which key triggered the event.
     /// @param action Literal describing what action was performed on
     /// the button which triggered the event.
-    virtual void processButton(const GamepadPtr gamepad, const Input::Gamepad::Button button, const Input::Action action);
+    virtual void processButton(const Gamepad& gamepad, const Input::Gamepad::Button button, const Input::Action action);
 
     /// @brief Callback for a gamepad axis event.
     ///
     /// @param axis Literal describing which axis triggered the event.
     /// @param value Value at which the axis was polled.
-    virtual void processAxis(const GamepadPtr gamepad, const Input::Gamepad::Axis axis, const float value);
+    virtual void processAxis(const Gamepad& gamepad, const Input::Gamepad::Axis axis, const float value);
 
     /// @brief Unique identifier of the gamepad input processor.
     const unsigned int id;
 };
 
-}//namespace Window
+} // namespace Window
 
 using GamepadInputProcessor = Window::GamepadInputProcessor;
-using GamepadInputProcessorPtr = std::shared_ptr<GamepadInputProcessor>;
+using GamepadInputProcessorPtr = std::unique_ptr<GamepadInputProcessor>;
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__WINDOW__GAMEPAD__GAMEPAD_INPUT_PROCESSOR_HPP

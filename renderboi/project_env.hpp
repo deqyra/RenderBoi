@@ -15,7 +15,7 @@
 
 #define PROJECT_NAME "RenderBoi"
 #define PROJECT_VERSION "1.0"
-#define COPYRIGHT_NOTICE "2019-2021 © François Brachais <deqyra@gmail.com>"
+#define COPYRIGHT_NOTICE "2019-2022 © François Brachais <deqyra@gmail.com>"
 #define MIT_LICENSE_NOTICE "This software and its source code are subject to the "\
       "MIT license.\nSee file LICENSE.md at https://github.com/deqyra/RenderBoi. "
 #define GL_CONTEXT_VERSION_MAJOR 4
@@ -23,7 +23,7 @@
 
 #include <renderboi/window/env_info.hpp>
 
-namespace rb = Renderboi;
+namespace rb = renderboi;
 namespace rbw = rb::Window;
 
 using AppWindowFactory = rbw::WindowFactory<AppBackend>;

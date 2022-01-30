@@ -3,14 +3,17 @@
 
 #include <string>
 
+#include <cpptools/oo/interfaces/action_event_receiver.hpp>
+
 #include <renderboi/core/interfaces/basis_provider.hpp>
 
+#include <renderboi/window/gl_window.hpp>
+
 #include "../script.hpp"
-#include "../controls/control_scheme_manager.hpp"
-#include "../interfaces/action_event_receiver.hpp"
+#include "../controls/control_scheme.hpp"
 #include "../interfaces/default_control_scheme_provider.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Litterals describing the actions which can be performed by the
@@ -25,9 +28,10 @@ enum class KeyboardMovementAction
 };
 
 /// @brief Provides bindings to move an entity using the keyboard.
-class KeyboardMovementScript : public Script,
-                               public ActionEventReceiver<KeyboardMovementAction>,
-                               public DefaultControlSchemeProvider<KeyboardMovementAction>
+class KeyboardMovementScript :
+    public Script,
+    public cpptools::ActionEventReceiver<KeyboardMovementAction>,
+    public DefaultControlSchemeProvider<KeyboardMovementAction>
 {
 private:
     /// @brief Index of a bool array which flags a forward keypress.
@@ -45,9 +49,9 @@ private:
     KeyboardMovementScript(const KeyboardMovementScript& other) = delete;
     KeyboardMovementScript& operator=(const KeyboardMovementScript& other) = delete;
 
-    /// @brief Pointer to the entity which will provide directional vectors,
+    /// @brief Reference to the entity which will provide directional vectors,
     /// used to move in the correct directions.
-    BasisProviderPtr _basisProvider;
+    BasisProvider& _basisProvider;
 
     /// @brief Speed of the movement induced by keypresses.
     float _moveSpeed;
@@ -80,7 +84,7 @@ public:
     /// @exception If the provided BasisProvider pointer is null, the 
     /// function will throw a std::runtime_error.
     KeyboardMovementScript(
-        const BasisProviderPtr basisProvider,
+        BasisProvider& basisProvider,
         const float speed = DefaultMoveSpeed,
         const float sprintMultiplier = DefaultSprintMultiplier
     );
@@ -95,17 +99,17 @@ public:
     ///
     /// @param timeElapsed How much time passed (in seconds) since the last
     /// update.
-    void update(float timeElapsed) override;
+    void update(const float timeElapsed) override;
 
     /// @brief Set the scene object which the camera script is attached to.
     /// Will also attempt to retrieve a camera from the scene object.
     ///
-    /// @param sceneObject Pointer to the scene object the script should be
+    /// @param sceneObject Reference to the scene object the script should be
     /// attached to.
     ///
     /// @exception If the provided pointer is null, this function will throw
     /// a std::runtime_error.
-    void setSceneObject(const SceneObjectPtr sceneObject) override;
+    void setSceneObject(SceneObject* const sceneObject) override;
 
     /// @brief Get a raw pointer to a new keyboard script instance cloned 
     /// from this one. Ownership and responsibility for the allocated 
@@ -123,12 +127,12 @@ public:
     /// @brief Start the processing for an action.
     ///
     /// @param action Object describing the action to start processing.
-    void triggerAction(const GLWindowPtr window, const KeyboardMovementAction& action) override;
+    void triggerAction(const KeyboardMovementAction& action) override;
 
     /// @brief Stop the processing for an action.
     ///
     /// @param action Object describing the action to stop processing.
-    void stopAction(const GLWindowPtr window, const KeyboardMovementAction& action) override;
+    void stopAction(const KeyboardMovementAction& action) override;
 
     ////////////////////////////////////////////////////////////////////////////////////
     ///                                                                              ///
@@ -140,11 +144,11 @@ public:
     /// script.
     ///
     /// @return The default control scheme for the keyboard movement script.
-    ControlSchemeManagerPtr<KeyboardMovementAction> getDefaultControlScheme() const override;
+    const ControlScheme<KeyboardMovementAction>& getDefaultControlScheme() const override;
 };
 
-std::string to_string(const KeyboardMovementAction& action);
+std::string to_string(const KeyboardMovementAction action);
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__RUNNABLES__KEYBOARD_MOVEMENT_SCRIPT_HPP

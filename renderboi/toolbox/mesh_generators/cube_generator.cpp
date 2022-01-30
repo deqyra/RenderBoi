@@ -2,14 +2,15 @@
 
 #include <vector>
 #include <memory>
+
 #include <glm/glm.hpp>
 
 #include <renderboi/core/mesh.hpp>
 #include <renderboi/core/vertex.hpp>
 
-#include "../common_macros.hpp"
+#include "../common.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 CubeGenerator::CubeGenerator() :
@@ -18,19 +19,19 @@ CubeGenerator::CubeGenerator() :
 
 }
 
-CubeGenerator::CubeGenerator(float size) :
+CubeGenerator::CubeGenerator(const float size) :
     parameters{ size, glm::vec3(0.f), false }
 {
     
 }
 
-CubeGenerator::CubeGenerator(float size, glm::vec3 color) :
+CubeGenerator::CubeGenerator(const float size, const glm::vec3 color) :
     parameters{ size, color, true}
 {
 
 }
 
-CubeGenerator::CubeGenerator(Parameters parameters) :
+CubeGenerator::CubeGenerator(const Parameters parameters) :
     parameters(parameters)
 {
     
@@ -38,41 +39,43 @@ CubeGenerator::CubeGenerator(Parameters parameters) :
 
 MeshPtr CubeGenerator::generateMesh() const
 {
+    using namespace common;
+
     float len = glm::sqrt(2 * parameters.size * parameters.size);
 
     const unsigned int nVertices = 24;
 
     std::vector<Vertex> vertices = {
-        // Position                         // Color                // Normal                       // Tex coord
-        {  glm::vec3( len,  len,  len),     glm::vec3(WHITE),       glm::vec3( 1.f,  0.f,  0.f),    glm::vec2(0.f, 1.f) },  // Vertex 1     // Face 1
-        {  glm::vec3( len,  len, -len),     glm::vec3(RED),         glm::vec3( 1.f,  0.f,  0.f),    glm::vec2(1.f, 1.f) },  // Vertex 2     // +X
-        {  glm::vec3( len, -len,  len),     glm::vec3(GREEN),       glm::vec3( 1.f,  0.f,  0.f),    glm::vec2(0.f, 0.f) },  // ...
-        {  glm::vec3( len, -len, -len),     glm::vec3(YELLOW),      glm::vec3( 1.f,  0.f,  0.f),    glm::vec2(1.f, 0.f) },
+        // Position                         // Color        // Normal       // Tex coord
+        {  glm::vec3( len,  len,  len),     vec(White),     vec(x),         glm::vec2(0.f, 1.f) },  // Vertex 1     // Face 1
+        {  glm::vec3( len,  len, -len),     vec(Red),       vec(x),         glm::vec2(1.f, 1.f) },  // Vertex 2     // +X
+        {  glm::vec3( len, -len,  len),     vec(Green),     vec(x),         glm::vec2(0.f, 0.f) },  // ...
+        {  glm::vec3( len, -len, -len),     vec(Yellow),    vec(x),         glm::vec2(1.f, 0.f) },
 
-        {  glm::vec3( len, -len,  len),     glm::vec3(GREEN),       glm::vec3( 0.f, -1.f,  0.f),    glm::vec2(1.f, 1.f) },                  // Face 2
-        {  glm::vec3( len, -len, -len),     glm::vec3(YELLOW),      glm::vec3( 0.f, -1.f,  0.f),    glm::vec2(1.f, 0.f) },                  // -Y
-        {  glm::vec3(-len, -len,  len),     glm::vec3(CYAN),        glm::vec3( 0.f, -1.f,  0.f),    glm::vec2(0.f, 1.f) },
-        {  glm::vec3(-len, -len, -len),     glm::vec3(BLACK),       glm::vec3( 0.f, -1.f,  0.f),    glm::vec2(0.f, 0.f) },
+        {  glm::vec3( len, -len,  len),     vec(Green),     vec(Y(-1.f)),   glm::vec2(1.f, 1.f) },                  // Face 2
+        {  glm::vec3( len, -len, -len),     vec(Yellow),    vec(Y(-1.f)),   glm::vec2(1.f, 0.f) },                  // -Y
+        {  glm::vec3(-len, -len,  len),     vec(Cyan),      vec(Y(-1.f)),   glm::vec2(0.f, 1.f) },
+        {  glm::vec3(-len, -len, -len),     vec(Black),     vec(Y(-1.f)),   glm::vec2(0.f, 0.f) },
 
-        {  glm::vec3(-len, -len,  len),     glm::vec3(CYAN),        glm::vec3(-1.f,  0.f,  0.f),    glm::vec2(1.f, 0.f) },                  // Face 3
-        {  glm::vec3(-len, -len, -len),     glm::vec3(BLACK),       glm::vec3(-1.f,  0.f,  0.f),    glm::vec2(0.f, 0.f) },                  // -X
-        {  glm::vec3(-len,  len,  len),     glm::vec3(BLUE),        glm::vec3(-1.f,  0.f,  0.f),    glm::vec2(1.f, 1.f) },
-        {  glm::vec3(-len,  len, -len),     glm::vec3(MAGENTA),     glm::vec3(-1.f,  0.f,  0.f),    glm::vec2(0.f, 1.f) },
+        {  glm::vec3(-len, -len,  len),     vec(Cyan),      vec(X(-1.f)),   glm::vec2(1.f, 0.f) },                  // Face 3
+        {  glm::vec3(-len, -len, -len),     vec(Black),     vec(X(-1.f)),   glm::vec2(0.f, 0.f) },                  // -X
+        {  glm::vec3(-len,  len,  len),     vec(Blue),      vec(X(-1.f)),   glm::vec2(1.f, 1.f) },
+        {  glm::vec3(-len,  len, -len),     vec(Magenta),   vec(X(-1.f)),   glm::vec2(0.f, 1.f) },
 
-        {  glm::vec3(-len,  len,  len),     glm::vec3(BLUE),        glm::vec3( 0.f,  1.f,  0.f),    glm::vec2(1.f, 0.f) },                  // Face 4
-        {  glm::vec3(-len,  len, -len),     glm::vec3(MAGENTA),     glm::vec3( 0.f,  1.f,  0.f),    glm::vec2(1.f, 1.f) },                  // +Y
-        {  glm::vec3( len,  len,  len),     glm::vec3(WHITE),       glm::vec3( 0.f,  1.f,  0.f),    glm::vec2(1.f, 1.f) },
-        {  glm::vec3( len,  len, -len),     glm::vec3(RED),         glm::vec3( 0.f,  1.f,  0.f),    glm::vec2(0.f, 1.f) },
+        {  glm::vec3(-len,  len,  len),     vec(Blue),      vec(y),         glm::vec2(1.f, 0.f) },                  // Face 4
+        {  glm::vec3(-len,  len, -len),     vec(Magenta),   vec(y),         glm::vec2(1.f, 1.f) },                  // +Y
+        {  glm::vec3( len,  len,  len),     vec(White),     vec(y),         glm::vec2(1.f, 1.f) },
+        {  glm::vec3( len,  len, -len),     vec(Red),       vec(y),         glm::vec2(0.f, 1.f) },
 
-        {  glm::vec3(-len,  len, -len),     glm::vec3(MAGENTA),     glm::vec3( 0.f,  0.f, -1.f),    glm::vec2(1.f, 1.f) },                  // Face 5
-        {  glm::vec3(-len, -len, -len),     glm::vec3(BLACK),       glm::vec3( 0.f,  0.f, -1.f),    glm::vec2(1.f, 0.f) },                  // -Z
-        {  glm::vec3( len,  len, -len),     glm::vec3(RED),         glm::vec3( 0.f,  0.f, -1.f),    glm::vec2(0.f, 1.f) },
-        {  glm::vec3( len, -len, -len),     glm::vec3(YELLOW),      glm::vec3( 0.f,  0.f, -1.f),    glm::vec2(0.f, 0.f) },
+        {  glm::vec3(-len,  len, -len),     vec(Magenta),   vec(Z(-1.f)),   glm::vec2(1.f, 1.f) },                  // Face 5
+        {  glm::vec3(-len, -len, -len),     vec(Black),     vec(Z(-1.f)),   glm::vec2(1.f, 0.f) },                  // -Z
+        {  glm::vec3( len,  len, -len),     vec(Red),       vec(Z(-1.f)),   glm::vec2(0.f, 1.f) },
+        {  glm::vec3( len, -len, -len),     vec(Yellow),    vec(Z(-1.f)),   glm::vec2(0.f, 0.f) },
 
-        {  glm::vec3(-len, -len,  len),     glm::vec3(CYAN),        glm::vec3( 0.f,  0.f,  1.f),    glm::vec2(0.f, 0.f) },                  // Face 6
-        {  glm::vec3(-len,  len,  len),     glm::vec3(BLUE),        glm::vec3( 0.f,  0.f,  1.f),    glm::vec2(0.f, 1.f) },                  // +Z
-        {  glm::vec3( len, -len,  len),     glm::vec3(GREEN),       glm::vec3( 0.f,  0.f,  1.f),    glm::vec2(1.f, 0.f) },
-        {  glm::vec3( len,  len,  len),     glm::vec3(WHITE),       glm::vec3( 0.f,  0.f,  1.f),    glm::vec2(1.f, 1.f) }
+        {  glm::vec3(-len, -len,  len),     vec(Cyan),      vec(z),         glm::vec2(0.f, 0.f) },                  // Face 6
+        {  glm::vec3(-len,  len,  len),     vec(Blue),      vec(z),         glm::vec2(0.f, 1.f) },                  // +Z
+        {  glm::vec3( len, -len,  len),     vec(Green),     vec(z),         glm::vec2(1.f, 0.f) },
+        {  glm::vec3( len,  len,  len),     vec(White),     vec(z),         glm::vec2(1.f, 1.f) }
     };
 
     if (parameters.useColor)
@@ -100,7 +103,7 @@ MeshPtr CubeGenerator::generateMesh() const
         primitiveOffsets[i] = (void*)(i * 4 * sizeof(unsigned int));
     }
 
-    return std::make_shared<Mesh>(GL_TRIANGLE_STRIP, vertices, indices, primitiveSizes, primitiveOffsets);
+    return std::make_unique<Mesh>(GL_TRIANGLE_STRIP, vertices, indices, primitiveSizes, primitiveOffsets);
 }
 
-}//namespace Renderboi
+} // namespace renderboi

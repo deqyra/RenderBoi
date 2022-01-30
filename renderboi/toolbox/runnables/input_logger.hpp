@@ -1,5 +1,5 @@
-#ifndef RENDERBOI__TOOLBOX__INPUT_LOGGER_HPP
-#define RENDERBOI__TOOLBOX__INPUT_LOGGER_HPP
+#ifndef RENDERBOI__TOOLBOX__RUNNABLES__INPUT_LOGGER_HPP
+#define RENDERBOI__TOOLBOX__RUNNABLES__INPUT_LOGGER_HPP
 
 #include <iostream>
 #include <memory>
@@ -9,7 +9,7 @@
 #include <renderboi/window/gl_window.hpp>
 #include <renderboi/window/gamepad/gamepad_input_processor.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 class InputLogger : public InputProcessor, public GamepadInputProcessor
@@ -44,25 +44,25 @@ public:
     ///
     /// @param eventType Litteral describing the type of the event for which
     /// to enable logging.
-    void enableEventLog(IEventType eventType);
+    void enableEventLog(const IEventType eventType);
 
     /// @brief Disables logging for a certain type of input event.
     ///
     /// @param eventType Litteral describing the type of the event for which
     /// to disable logging.
-    void disableEventLog(IEventType eventType);
+    void disableEventLog(const IEventType eventType);
 
     /// @brief Enables logging for a certain type of input event.
     ///
     /// @param eventType Litteral describing the type of the event for which
     /// to enable logging.
-    void enableEventLog(GEventType eventType);
+    void enableEventLog(const GEventType eventType);
 
     /// @brief Disables logging for a certain type of input event.
     ///
     /// @param eventType Litteral describing the type of the event for which
     /// to disable logging.
-    void disableEventLog(GEventType eventType);
+    void disableEventLog(const GEventType eventType);
 
     /// @brief Set the logging status for a certain type of input event: 
     /// enabled or disabled.
@@ -71,7 +71,7 @@ public:
     /// to set the logging status.
     /// @param enable Whether to enable or disable logging for the event 
     /// type.
-    void setEventLoggingStatus(IEventType eventType, bool enable);
+    void setEventLoggingStatus(const IEventType eventType, const bool enable);
 
     /// @brief Set the logging status for a certain type of input event: 
     /// enabled or disabled.
@@ -80,7 +80,7 @@ public:
     /// to set the logging status.
     /// @param enable Whether to enable or disable logging for the event 
     /// type.
-    void setEventLoggingStatus(GEventType eventType, bool enable);
+    void setEventLoggingStatus(const GEventType eventType, const bool enable);
 
     //////////////////////////////////////////////
     ///                                        ///
@@ -90,15 +90,19 @@ public:
 
     /// @brief Callback for a framebuffer resize event.
     ///
-    /// @param window Pointer to the GLWindow in which the event was
+    /// @param window Reference to the GLWindow in which the event was
     /// triggered.
     /// @param width New width (in pixels) of the framebuffer.
     /// @param height New height (in pixels) of the framebuffer.
-    void processFramebufferResize(const GLWindowPtr window, const unsigned int width, const unsigned int height) override;
+    void processFramebufferResize(
+        GLWindow& window,
+        const unsigned int width,
+        const unsigned int height
+    ) override;
 
     /// @brief Callback for a keyboard event.
     ///
-    /// @param window Pointer to the GLWindow in which the event was
+    /// @param window Reference to the GLWindow in which the event was
     /// triggered.
     /// @param key Literal describing which key triggered the event.
     /// @param scancode Scancode of the key which triggered the event. 
@@ -108,7 +112,7 @@ public:
     /// @param mods Bit field describing which modifiers were enabled 
     /// during the key event (Ctrl, Shift, etc).
     void processKeyboard(
-        const GLWindowPtr window,
+        GLWindow& window,
         const Key key,
         const int scancode,
         const Action action,
@@ -117,7 +121,7 @@ public:
 
     /// @brief Callback for a mouse button event.
     ///
-    /// @param window Pointer to the GLWindow in which the event was
+    /// @param window Reference to the GLWindow in which the event was
     /// triggered.
     /// @param button Literal describing which button triggered the
     /// event.
@@ -126,7 +130,7 @@ public:
     /// @param mods Bit field describing which modifiers were enabled 
     /// during the button event (Ctrl, Shift, etc).
     void processMouseButton(
-        const GLWindowPtr window,
+        GLWindow& window,
         const MButton button,
         const Action action,
         const int mods
@@ -134,11 +138,15 @@ public:
 
     /// @brief Callback for a mouse cursor event.
     ///
-    /// @param window Pointer to the GLWindow in which the event was
+    /// @param window Reference to the GLWindow in which the event was
     /// triggered.
     /// @param xpos X coordinate of the new position of the mouse.
     /// @param ypos Y coordinate of the new position of the mouse.
-    void processMouseCursor(const GLWindowPtr window, const double xpos, const double ypos) override;
+    void processMouseCursor(
+        GLWindow& window,
+        const double xpos,
+        const double ypos
+    ) override;
 
     /////////////////////////////////////////////////////
     ///                                               ///
@@ -147,27 +155,27 @@ public:
     /////////////////////////////////////////////////////
 
     /// @brief Callback for when the gamepad is connected.
-    void processConnected(const GamepadPtr gamepad) override;
+    void processConnected(const Gamepad& gamepad) override;
 
     /// @brief Callback for when the gamepad is disconnected.
-    void processDisconnected(const GamepadPtr gamepad) override;
+    void processDisconnected(const Gamepad& gamepad) override;
 
     /// @brief Callback for a gamepad button event.
     ///
     /// @param button Literal describing which key triggered the event.
     /// @param action Literal describing what action was performed on
     /// the button which triggered the event.
-    void processButton(const GamepadPtr gamepad, const GButton button, const Action action) override;
+    void processButton(const Gamepad& gamepad, const GButton button, const Action action) override;
 
     /// @brief Callback for a gamepad axis event.
     ///
     /// @param axis Literal describing which axis triggered the event.
     /// @param value Value at which the axis was polled.
-    void processAxis(const GamepadPtr gamepad, const Axis axis, const float value) override;
+    void processAxis(const Gamepad& gamepad, const Axis axis, const float value) override;
 };
 
-using InputLoggerPtr = std::shared_ptr<InputLogger>;
+using InputLoggerPtr = std::unique_ptr<InputLogger>;
 
-}//namespace Renderboi
+} // namespace renderboi
 
-#endif//RENDERBOI__TOOLBOX__INPUT_LOGGER_HPP
+#endif//RENDERBOI__TOOLBOX__RUNNABLES__INPUT_LOGGER_HPP

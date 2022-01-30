@@ -1,5 +1,5 @@
-#ifndef RENDERBOI__TOOLBOX__CONTROLS__CONTROL_SCHEME_MANAGER_HPP
-#define RENDERBOI__TOOLBOX__CONTROLS__CONTROL_SCHEME_MANAGER_HPP
+#ifndef RENDERBOI__TOOLBOX__CONTROLS__CONTROL_SCHEME_HPP
+#define RENDERBOI__TOOLBOX__CONTROLS__CONTROL_SCHEME_HPP
 
 #include <algorithm>
 #include <functional>
@@ -11,27 +11,24 @@
 #include <utility>
 #include <vector>
 
-#include <renderboi/utilities/to_string.hpp>
-
 #include <cpptools/utility/map_tools.hpp>
 
 #include "control.hpp"
 #include "../interfaces/control_binding_provider.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Given an enum of actions, this class allows easy management of
 /// controls bound to these actions.
 ///
 /// @tparam T Class representing the action to which a control can be bound. 
-/// @tparam U Class responsible for hashing T.
 template<typename T>
-class ControlSchemeManager : public ControlBindingProvider<T>
+class ControlScheme : public ControlBindingProvider<T>
 {
 protected:
     /// @brief Maximum number of controls bound to a single action in the
-    /// ControlSchemeManager.
+    /// ControlScheme.
     const unsigned int _MaxControlsPerAction;
 
     /// @brief Structure mapping controls to the actions they are bound to
@@ -44,12 +41,12 @@ protected:
 
 public:
     /// @brief The default maximum number of controls bound to a single
-    /// action in the ControlSchemeManager.
+    /// action in the ControlScheme.
     static constexpr unsigned int DefaultMaxControlsPerAction = 4;
 
     /// @param maxControlsPerAction Maximum number of controls bound to a
-    /// single action in the ControlSchemeManager.
-    ControlSchemeManager(const unsigned int maxControlsPerAction = DefaultMaxControlsPerAction);
+    /// single action in the ControlScheme.
+    ControlScheme(const unsigned int maxControlsPerAction = DefaultMaxControlsPerAction);
 
     /// @brief Bind a control to an action. A control cannot be bound to
     /// several actions, and a binding of the provided control to another
@@ -79,7 +76,7 @@ public:
     /// from.
     ///
     /// @return The amount of controls that were unbound.
-    unsigned int unbindAllControlsFromAction(const T& action);
+    unsigned int unbindAllControlsFromAction(const T action);
 
     /////////////////////////////////////////////////////////
     ///                                                   ///
@@ -94,7 +91,7 @@ public:
     /// binding to check.
     ///
     /// @return Whether or not the provided control is bound.
-    bool controlIsBound(const Control& control) override;
+    bool controlIsBound(const Control& control) const override;
 
     /// @brief Returns the action bound to the provided control.
     ///
@@ -105,7 +102,7 @@ public:
     ///
     /// @exception If the provided control is not bound in this control 
     /// scheme, the function will throw an std::runtime_error.
-    T getActionBoundToControl(const Control& control) override;
+    T getActionBoundToControl(const Control& control) const override;
 
     /// @brief Tells whether or not an action has a control bound to it in 
     /// this control scheme.
@@ -113,7 +110,7 @@ public:
     /// @param action Object describing the action whose bindings to check.
     ///
     /// @return Whether or not the provided action has a binding.
-    bool actionIsBound(const T& action) override;
+    bool actionIsBound(const T action) const override;
 
     /// @brief Returns the array of controls which are bound to the provided
     /// action.
@@ -122,17 +119,23 @@ public:
     /// be retrieved.
     ///
     /// @return The array of controls bound to the provided action.
-    std::vector<Control> getControlsBoundToAction(const T& action) override;
+    std::vector<Control> getControlsBoundToAction(const T action) const override;
 
     /// @brief Returns the array of all controls which are bound to an 
     /// action, paired with the action they are bound to.
     ///
     /// @return The array of all controls bound to an action.
-    std::vector<std::pair<Control, T>> getAllBoundControls() override;
+    const std::multimap<T, Control>& getAllBoundControls() const override;
+
+    /// @brief Returns the array of all controls which are bound to an 
+    /// action, paired with the action they are bound to.
+    ///
+    /// @return The array of all controls bound to an action.
+    const std::unordered_map<Control, T, ControlHash>& getAllBoundActions() const override;
 };
 
 template<typename T>
-ControlSchemeManager<T>::ControlSchemeManager(unsigned int maxControlsPerAction) :
+ControlScheme<T>::ControlScheme(unsigned int maxControlsPerAction) :
     _MaxControlsPerAction(maxControlsPerAction),
     _controlsBoundToAction(),
     _actionBoundToControl()
@@ -141,7 +144,7 @@ ControlSchemeManager<T>::ControlSchemeManager(unsigned int maxControlsPerAction)
 }
 
 template<typename T>
-void ControlSchemeManager<T>::bindControl(const Control control, const T action)
+void ControlScheme<T>::bindControl(const Control control, const T action)
 {
     const unsigned int actionBindingCount = (unsigned int)_controlsBoundToAction.count(action);
     const bool alreadyPresent = cpptools::mapContainsPair(_actionBoundToControl, {control, action});
@@ -150,7 +153,7 @@ void ControlSchemeManager<T>::bindControl(const Control control, const T action)
     {
         if (!alreadyPresent)
         {
-            const std::string s = "ControlSchemeManager: cannot bind control " + to_string(control)
+            const std::string s = "ControlScheme: cannot bind control " + to_string(control)
                         + " to action " + to_string(action) + ", as it already has "
                         "the max number of bindings (" + std::to_string(_MaxControlsPerAction) + ").";
 
@@ -167,12 +170,12 @@ void ControlSchemeManager<T>::bindControl(const Control control, const T action)
 }
 
 template<typename T>
-void ControlSchemeManager<T>::unbindControl(const Control& control)
+void ControlScheme<T>::unbindControl(const Control& control)
 {
     auto it = _actionBoundToControl.find(control);
 
     if (it == _actionBoundToControl.end()) return;
-    const T& action = it->second;
+    const T action = it->second;
 
     _actionBoundToControl.erase(control);
 
@@ -189,7 +192,7 @@ void ControlSchemeManager<T>::unbindControl(const Control& control)
 }
 
 template<typename T>
-unsigned int ControlSchemeManager<T>::unbindAllControlsFromAction(const T& action)
+unsigned int ControlScheme<T>::unbindAllControlsFromAction(const T action)
 {
     if (_controlsBoundToAction.count(action) == 0) return 0;
 
@@ -204,17 +207,17 @@ unsigned int ControlSchemeManager<T>::unbindAllControlsFromAction(const T& actio
 }
 
 template<typename T>
-bool ControlSchemeManager<T>::controlIsBound(const Control& control)
+bool ControlScheme<T>::controlIsBound(const Control& control) const
 {
     return _actionBoundToControl.contains(control);
 }
 
 template<typename T>
-T ControlSchemeManager<T>::getActionBoundToControl(const Control& control)
+T ControlScheme<T>::getActionBoundToControl(const Control& control) const
 {
     if (!_actionBoundToControl.contains(control))
     {
-        const std::string s = "ControlSchemeManager: "
+        const std::string s = "ControlScheme: "
             "control " + to_string(control) + " is not bound, cannot retrieve action.";
 
         throw std::runtime_error(s.c_str());
@@ -224,16 +227,15 @@ T ControlSchemeManager<T>::getActionBoundToControl(const Control& control)
 }
 
 template<typename T>
-bool ControlSchemeManager<T>::actionIsBound(const T& action)
+bool ControlScheme<T>::actionIsBound(const T action) const
 {
     return _controlsBoundToAction.contains(action);
 }
 
 template<typename T>
-std::vector<Control> ControlSchemeManager<T>::getControlsBoundToAction(const T& action)
+std::vector<Control> ControlScheme<T>::getControlsBoundToAction(const T action) const
 {
-    using Iter = typename std::multimap<T, Control>::iterator;
-    std::pair<Iter, Iter> range = _controlsBoundToAction.equal_range(action);
+    auto range = _controlsBoundToAction.equal_range(action);
 
     std::function<Control(std::pair<const T, Control>)> controlFromPair = [](const std::pair<const T, Control>& p) -> Control
     {
@@ -247,17 +249,20 @@ std::vector<Control> ControlSchemeManager<T>::getControlsBoundToAction(const T& 
 }
 
 template<typename T>
-std::vector<std::pair<Control, T>> ControlSchemeManager<T>::getAllBoundControls()
+const std::multimap<T, Control>& ControlScheme<T>::getAllBoundControls() const
 {
-    std::vector<std::pair<Control, T>> boundControls;
-    std::copy(_actionBoundToControl.begin(), _actionBoundToControl.end(), std::back_inserter(boundControls));
-
-    return boundControls;
+    return _controlsBoundToAction;
 }
 
 template<typename T>
-using ControlSchemeManagerPtr = std::shared_ptr<ControlSchemeManager<T>>;
+const std::unordered_map<Control, T, ControlHash>& ControlScheme<T>::getAllBoundActions() const
+{
+    return _actionBoundToControl;
+}
 
-}//namespace Renderboi
+template<typename T>
+using ControlSchemePtr = std::unique_ptr<ControlScheme<T>>;
 
-#endif//RENDERBOI__TOOLBOX__CONTROLS__CONTROL_SCHEME_MANAGER_HPP
+} // namespace renderboi
+
+#endif//RENDERBOI__TOOLBOX__CONTROLS__CONTROL_SCHEME_HPP

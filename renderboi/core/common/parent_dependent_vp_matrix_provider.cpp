@@ -1,6 +1,6 @@
 #include "parent_dependent_vp_matrix_provider.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 ParentDependentVPMatrixProvider::ParentDependentVPMatrixProvider(Transform parentWorldTransform) :
@@ -21,24 +21,17 @@ ParentDependentVPMatrixProvider::ParentDependentVPMatrixProvider(const ParentDep
 
 }
 
-Transform ParentDependentVPMatrixProvider::getParentWorldTransform() const
-{
-    return _parentWorldTransform;
-}
-
-void ParentDependentVPMatrixProvider::setParentWorldTransform(Transform parentWorldTransform)
-{
-    _parentWorldTransform = parentWorldTransform;
-
-    _viewMatrixOutdated = true;
-    _vpMatrixOutdated = true;
-}
-
 glm::mat4 ParentDependentVPMatrixProvider::getViewMatrix() const
 {
     _updateViewMatrix();
 
     return _viewMatrix;
+}
+
+glm::vec3 ParentDependentVPMatrixProvider::worldPositionToViewSpace(const glm::vec3& worldPosition) const
+{
+    glm::vec4 transformedPosition = getViewMatrix() * glm::vec4(worldPosition, 1.f);
+    return glm::vec3(transformedPosition);
 }
 
 glm::mat4 ParentDependentVPMatrixProvider::getProjectionMatrix() const
@@ -55,11 +48,17 @@ glm::mat4 ParentDependentVPMatrixProvider::getViewProjectionMatrix() const
     return _vpMatrix;
 }
 
-
-glm::vec3 ParentDependentVPMatrixProvider::worldPositionToViewSpace(const glm::vec3& worldPosition) const
+Transform ParentDependentVPMatrixProvider::getParentWorldTransform() const
 {
-    glm::vec4 transformedPosition = getViewMatrix() * glm::vec4(worldPosition, 1.f);
-    return glm::vec3(transformedPosition);
+    return _parentWorldTransform;
+}
+
+void ParentDependentVPMatrixProvider::setParentWorldTransform(Transform parentWorldTransform)
+{
+    _parentWorldTransform = parentWorldTransform;
+
+    _viewMatrixOutdated = true;
+    _vpMatrixOutdated = true;
 }
 
 void ParentDependentVPMatrixProvider::_updateProjectionMatrix() const

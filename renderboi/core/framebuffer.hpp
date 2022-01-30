@@ -3,7 +3,7 @@
 
 #include <unordered_map>
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Handler for a framebuffer resource on the GPU.
@@ -45,6 +45,6 @@ public:
     static void Unbind(Mode mode = Mode::ReadWrite);
 };
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__FRAMEBUFFER_HPP

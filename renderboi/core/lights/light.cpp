@@ -1,6 +1,6 @@
 #include "light.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 unsigned int Light::_count = 0;
@@ -13,4 +13,4 @@ Light::Light(const LightType type) :
 
 }
 
-}//namespace Renderboi
+} // namespace renderboi

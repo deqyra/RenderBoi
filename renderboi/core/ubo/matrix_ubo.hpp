@@ -15,7 +15,7 @@
  * };						// Size: 240
  **/
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Manager for a UBO resource on the GPU, meant for vertex 
@@ -62,6 +62,6 @@ public:
     void setNormal(const glm::mat4& normal);
 };
 
-}//namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__UBO__MATRIX_UBO_HPP

@@ -2,9 +2,7 @@
 
 #include <string>
 
-#include <renderboi/utilities/to_string.hpp>
-
-namespace Renderboi
+namespace renderboi
 {
 
 namespace Window::Input
@@ -44,351 +42,297 @@ bool any(Window::Input::Modifier value)
     return value != Window::Input::Modifier::None;
 }
 
-std::string to_string(const Window::Input::Mode::Target& target)
+std::string to_string(const Window::Input::Mode::Target target)
 {
-    static bool runOnce = false;
-    static std::unordered_map<Window::Input::Mode::Target, std::string> enumNames;
-
-    if (!runOnce)
-    {
-        enumNames[Window::Input::Mode::Target::Cursor]              = "Cursor";
-        enumNames[Window::Input::Mode::Target::StickyKeys]          = "StickyKeys";
-        enumNames[Window::Input::Mode::Target::StickyMouseButtons]  = "StickyMouseButtons";
-        enumNames[Window::Input::Mode::Target::LockKeyMods]         = "LockKeyMods";
-        enumNames[Window::Input::Mode::Target::RawMouseMotion]      = "RawMouseMotion";
-
-        runOnce = true;
-    }
+    static std::unordered_map<Window::Input::Mode::Target, std::string> enumNames = {
+        {Window::Input::Mode::Target::Cursor,              "Cursor"},
+        {Window::Input::Mode::Target::StickyKeys,          "StickyKeys"},
+        {Window::Input::Mode::Target::StickyMouseButtons,  "StickyMouseButtons"},
+        {Window::Input::Mode::Target::LockKeyMods,         "LockKeyMods"},
+        {Window::Input::Mode::Target::RawMouseMotion,      "RawMouseMotion"},
+    };
 
     auto it = enumNames.find(target);
-    if (it != enumNames.end()) return it->second;
-
-    return "Unknown window input mode target";
+    return (it != enumNames.end())
+        ? it->second
+        : "Unknown window input mode target";
 }
 
-std::string to_string(const Window::Input::Mode::Value& value)
+std::string to_string(const Window::Input::Mode::Value value)
 {
-    static bool runOnce = false;
-    static std::unordered_map<Window::Input::Mode::Value, std::string> enumNames;
-
-    if (!runOnce)
-    {
-        enumNames[Window::Input::Mode::Value::True]             = "True";
-        enumNames[Window::Input::Mode::Value::False]            = "False";
-        enumNames[Window::Input::Mode::Value::NormalCursor]     = "NormalCursor";
-        enumNames[Window::Input::Mode::Value::HiddenCursor]     = "HiddenCursor";
-        enumNames[Window::Input::Mode::Value::DisabledCursor]   = "DisabledCursor";
-
-        runOnce = true;
-    }
+    static std::unordered_map<Window::Input::Mode::Value, std::string> enumNames = {
+        {Window::Input::Mode::Value::True,             "True"},
+        {Window::Input::Mode::Value::False,            "False"},
+        {Window::Input::Mode::Value::NormalCursor,     "NormalCursor"},
+        {Window::Input::Mode::Value::HiddenCursor,     "HiddenCursor"},
+        {Window::Input::Mode::Value::DisabledCursor,   "DisabledCursor"},
+    };
 
     auto it = enumNames.find(value);
-    if (it != enumNames.end()) return it->second;
-
-    return "Unknown window input mode value";
+    return (it != enumNames.end())
+        ? it->second
+        : "Unknown window input mode value";
 }
 
-std::string to_string(const Window::Input::Action& action)
+std::string to_string(const Window::Input::Action action)
 {
-    static bool runOnce = false;
-    static std::unordered_map<Window::Input::Action, std::string> enumNames;
-
-    if (!runOnce)
-    {
-        enumNames[Window::Input::Action::Release]   = "Release";
-        enumNames[Window::Input::Action::Press]     = "Press";
-        // enumNames[Window::Input::Action::Repeat]    = "Repeat";      // FIX ME IF REPEAT KEYS MUST BE HANDLED
-
-        runOnce = true;
-    }
+    static std::unordered_map<Window::Input::Action, std::string> enumNames = {
+        {Window::Input::Action::Release,   "Release"},
+        {Window::Input::Action::Press,     "Press"},
+        // {Window::Input::Action::Repeat,    "Repeat"},      // FIX ME IF REPEAT KEYS MUST BE HANDLED
+    };
 
     auto it = enumNames.find(action);
-    if (it != enumNames.end()) return it->second;
-
-    return "Unknown input action";
+    return (it != enumNames.end())
+        ? it->second
+        : "Unknown input action";
 }
 
-std::string to_string(const Window::Input::Key& key)
+std::string to_string(const Window::Input::Key key)
 {
-    static bool runOnce = false;
-    static std::unordered_map<Window::Input::Key, std::string> enumNames;
-
-    if (!runOnce)
-    {
-        enumNames[Window::Input::Key::Unknown]          = "Unknown";
-        enumNames[Window::Input::Key::Space]            = "Space";
-        enumNames[Window::Input::Key::Apostrophe]       = "Apostrophe";
-        enumNames[Window::Input::Key::Comma]            = "Comma";
-        enumNames[Window::Input::Key::Minus]            = "Minus";
-        enumNames[Window::Input::Key::Period]           = "Period";
-        enumNames[Window::Input::Key::Slash]            = "Slash";
-        enumNames[Window::Input::Key::Key0]             = "Key0";
-        enumNames[Window::Input::Key::Key1]             = "Key1";
-        enumNames[Window::Input::Key::Key2]             = "Key2";
-        enumNames[Window::Input::Key::Key3]             = "Key3";
-        enumNames[Window::Input::Key::Key4]             = "Key4";
-        enumNames[Window::Input::Key::Key5]             = "Key5";
-        enumNames[Window::Input::Key::Key6]             = "Key6";
-        enumNames[Window::Input::Key::Key7]             = "Key7";
-        enumNames[Window::Input::Key::Key8]             = "Key8";
-        enumNames[Window::Input::Key::Key9]             = "Key9";
-        enumNames[Window::Input::Key::Semicolon]        = "Semicolon";
-        enumNames[Window::Input::Key::Equal]            = "Equal";
-        enumNames[Window::Input::Key::A]                = "A";
-        enumNames[Window::Input::Key::B]                = "B";
-        enumNames[Window::Input::Key::C]                = "C";
-        enumNames[Window::Input::Key::D]                = "D";
-        enumNames[Window::Input::Key::E]                = "E";
-        enumNames[Window::Input::Key::F]                = "F";
-        enumNames[Window::Input::Key::G]                = "G";
-        enumNames[Window::Input::Key::H]                = "H";
-        enumNames[Window::Input::Key::I]                = "I";
-        enumNames[Window::Input::Key::J]                = "J";
-        enumNames[Window::Input::Key::K]                = "K";
-        enumNames[Window::Input::Key::L]                = "L";
-        enumNames[Window::Input::Key::M]                = "M";
-        enumNames[Window::Input::Key::N]                = "N";
-        enumNames[Window::Input::Key::O]                = "O";
-        enumNames[Window::Input::Key::P]                = "P";
-        enumNames[Window::Input::Key::Q]                = "Q";
-        enumNames[Window::Input::Key::R]                = "R";
-        enumNames[Window::Input::Key::S]                = "S";
-        enumNames[Window::Input::Key::T]                = "T";
-        enumNames[Window::Input::Key::U]                = "U";
-        enumNames[Window::Input::Key::V]                = "V";
-        enumNames[Window::Input::Key::W]                = "W";
-        enumNames[Window::Input::Key::X]                = "X";
-        enumNames[Window::Input::Key::Y]                = "Y";
-        enumNames[Window::Input::Key::Z]                = "Z";
-        enumNames[Window::Input::Key::LeftBracket]      = "LeftBracket";
-        enumNames[Window::Input::Key::Backslash]        = "Backslash";
-        enumNames[Window::Input::Key::RightBracket]     = "RightBracket";
-        enumNames[Window::Input::Key::GraveAccent]      = "GraveAccent";
-        enumNames[Window::Input::Key::World1]           = "World1";
-        enumNames[Window::Input::Key::World2]           = "World2";
-        enumNames[Window::Input::Key::Escape]           = "Escape";
-        enumNames[Window::Input::Key::Enter]            = "Enter";
-        enumNames[Window::Input::Key::Tab]              = "Tab";
-        enumNames[Window::Input::Key::Backspace]        = "Backspace";
-        enumNames[Window::Input::Key::Insert]           = "Insert";
-        enumNames[Window::Input::Key::Delete]           = "Delete";
-        enumNames[Window::Input::Key::Right]            = "Right";
-        enumNames[Window::Input::Key::Left]             = "Left";
-        enumNames[Window::Input::Key::Down]             = "Down";
-        enumNames[Window::Input::Key::Up]               = "Up";
-        enumNames[Window::Input::Key::PageUp]           = "PageUp";
-        enumNames[Window::Input::Key::PageDown]         = "PageDown";
-        enumNames[Window::Input::Key::Home]             = "Home";
-        enumNames[Window::Input::Key::End]              = "End";
-        enumNames[Window::Input::Key::CapsLock]         = "CapsLock";
-        enumNames[Window::Input::Key::ScrollLock]       = "ScrollLock";
-        enumNames[Window::Input::Key::NumLock]          = "NumLock";
-        enumNames[Window::Input::Key::PrintScreen]      = "PrintScreen";
-        enumNames[Window::Input::Key::Pause]            = "Pause";
-        enumNames[Window::Input::Key::F1]               = "F1";
-        enumNames[Window::Input::Key::F2]               = "F2";
-        enumNames[Window::Input::Key::F3]               = "F3";
-        enumNames[Window::Input::Key::F4]               = "F4";
-        enumNames[Window::Input::Key::F5]               = "F5";
-        enumNames[Window::Input::Key::F6]               = "F6";
-        enumNames[Window::Input::Key::F7]               = "F7";
-        enumNames[Window::Input::Key::F8]               = "F8";
-        enumNames[Window::Input::Key::F9]               = "F9";
-        enumNames[Window::Input::Key::F10]              = "F10";
-        enumNames[Window::Input::Key::F11]              = "F11";
-        enumNames[Window::Input::Key::F12]              = "F12";
-        enumNames[Window::Input::Key::F13]              = "F13";
-        enumNames[Window::Input::Key::F14]              = "F14";
-        enumNames[Window::Input::Key::F15]              = "F15";
-        enumNames[Window::Input::Key::F16]              = "F16";
-        enumNames[Window::Input::Key::F17]              = "F17";
-        enumNames[Window::Input::Key::F18]              = "F18";
-        enumNames[Window::Input::Key::F19]              = "F19";
-        enumNames[Window::Input::Key::F20]              = "F20";
-        enumNames[Window::Input::Key::F21]              = "F21";
-        enumNames[Window::Input::Key::F22]              = "F22";
-        enumNames[Window::Input::Key::F23]              = "F23";
-        enumNames[Window::Input::Key::F24]              = "F24";
-        enumNames[Window::Input::Key::F25]              = "F25";
-        enumNames[Window::Input::Key::Keypad0]          = "Keypad0";
-        enumNames[Window::Input::Key::Keypad1]          = "Keypad1";
-        enumNames[Window::Input::Key::Keypad2]          = "Keypad2";
-        enumNames[Window::Input::Key::Keypad3]          = "Keypad3";
-        enumNames[Window::Input::Key::Keypad4]          = "Keypad4";
-        enumNames[Window::Input::Key::Keypad5]          = "Keypad5";
-        enumNames[Window::Input::Key::Keypad6]          = "Keypad6";
-        enumNames[Window::Input::Key::Keypad7]          = "Keypad7";
-        enumNames[Window::Input::Key::Keypad8]          = "Keypad8";
-        enumNames[Window::Input::Key::Keypad9]          = "Keypad9";
-        enumNames[Window::Input::Key::KeypadDecimal]    = "KeypadDecimal";
-        enumNames[Window::Input::Key::KeypadDivide]     = "KeypadDivide";
-        enumNames[Window::Input::Key::KeypadMultiply]   = "KeypadMultiply";
-        enumNames[Window::Input::Key::KeypadSubtract]   = "KeypadSubtract";
-        enumNames[Window::Input::Key::KeypadAdd]        = "KeypadAdd";
-        enumNames[Window::Input::Key::KeypadEnter]      = "KeypadEnter";
-        enumNames[Window::Input::Key::KeypadEqual]      = "KeypadEqual";
-        enumNames[Window::Input::Key::LeftShift]        = "LeftShift";
-        enumNames[Window::Input::Key::LeftControl]      = "LeftControl";
-        enumNames[Window::Input::Key::LeftAlt]          = "LeftAlt";
-        enumNames[Window::Input::Key::LeftSuper]        = "LeftSuper";
-        enumNames[Window::Input::Key::RightShift]       = "RightShift";
-        enumNames[Window::Input::Key::RightControl]     = "RightControl";
-        enumNames[Window::Input::Key::RightAlt]         = "RightAlt";
-        enumNames[Window::Input::Key::RightSuper]       = "RightSuper";
-        enumNames[Window::Input::Key::Menu]             = "Menu";
-
-        runOnce = true;
-    }
+    static std::unordered_map<Window::Input::Key, std::string> enumNames = {
+        {Window::Input::Key::Unknown,          "Unknown"},
+        {Window::Input::Key::Space,            "Space"},
+        {Window::Input::Key::Apostrophe,       "Apostrophe"},
+        {Window::Input::Key::Comma,            "Comma"},
+        {Window::Input::Key::Minus,            "Minus"},
+        {Window::Input::Key::Period,           "Period"},
+        {Window::Input::Key::Slash,            "Slash"},
+        {Window::Input::Key::Key0,             "Key0"},
+        {Window::Input::Key::Key1,             "Key1"},
+        {Window::Input::Key::Key2,             "Key2"},
+        {Window::Input::Key::Key3,             "Key3"},
+        {Window::Input::Key::Key4,             "Key4"},
+        {Window::Input::Key::Key5,             "Key5"},
+        {Window::Input::Key::Key6,             "Key6"},
+        {Window::Input::Key::Key7,             "Key7"},
+        {Window::Input::Key::Key8,             "Key8"},
+        {Window::Input::Key::Key9,             "Key9"},
+        {Window::Input::Key::Semicolon,        "Semicolon"},
+        {Window::Input::Key::Equal,            "Equal"},
+        {Window::Input::Key::A,                "A"},
+        {Window::Input::Key::B,                "B"},
+        {Window::Input::Key::C,                "C"},
+        {Window::Input::Key::D,                "D"},
+        {Window::Input::Key::E,                "E"},
+        {Window::Input::Key::F,                "F"},
+        {Window::Input::Key::G,                "G"},
+        {Window::Input::Key::H,                "H"},
+        {Window::Input::Key::I,                "I"},
+        {Window::Input::Key::J,                "J"},
+        {Window::Input::Key::K,                "K"},
+        {Window::Input::Key::L,                "L"},
+        {Window::Input::Key::M,                "M"},
+        {Window::Input::Key::N,                "N"},
+        {Window::Input::Key::O,                "O"},
+        {Window::Input::Key::P,                "P"},
+        {Window::Input::Key::Q,                "Q"},
+        {Window::Input::Key::R,                "R"},
+        {Window::Input::Key::S,                "S"},
+        {Window::Input::Key::T,                "T"},
+        {Window::Input::Key::U,                "U"},
+        {Window::Input::Key::V,                "V"},
+        {Window::Input::Key::W,                "W"},
+        {Window::Input::Key::X,                "X"},
+        {Window::Input::Key::Y,                "Y"},
+        {Window::Input::Key::Z,                "Z"},
+        {Window::Input::Key::LeftBracket,      "LeftBracket"},
+        {Window::Input::Key::Backslash,        "Backslash"},
+        {Window::Input::Key::RightBracket,     "RightBracket"},
+        {Window::Input::Key::GraveAccent,      "GraveAccent"},
+        {Window::Input::Key::World1,           "World1"},
+        {Window::Input::Key::World2,           "World2"},
+        {Window::Input::Key::Escape,           "Escape"},
+        {Window::Input::Key::Enter,            "Enter"},
+        {Window::Input::Key::Tab,              "Tab"},
+        {Window::Input::Key::Backspace,        "Backspace"},
+        {Window::Input::Key::Insert,           "Insert"},
+        {Window::Input::Key::Delete,           "Delete"},
+        {Window::Input::Key::Right,            "Right"},
+        {Window::Input::Key::Left,             "Left"},
+        {Window::Input::Key::Down,             "Down"},
+        {Window::Input::Key::Up,               "Up"},
+        {Window::Input::Key::PageUp,           "PageUp"},
+        {Window::Input::Key::PageDown,         "PageDown"},
+        {Window::Input::Key::Home,             "Home"},
+        {Window::Input::Key::End,              "End"},
+        {Window::Input::Key::CapsLock,         "CapsLock"},
+        {Window::Input::Key::ScrollLock,       "ScrollLock"},
+        {Window::Input::Key::NumLock,          "NumLock"},
+        {Window::Input::Key::PrintScreen,      "PrintScreen"},
+        {Window::Input::Key::Pause,            "Pause"},
+        {Window::Input::Key::F1,               "F1"},
+        {Window::Input::Key::F2,               "F2"},
+        {Window::Input::Key::F3,               "F3"},
+        {Window::Input::Key::F4,               "F4"},
+        {Window::Input::Key::F5,               "F5"},
+        {Window::Input::Key::F6,               "F6"},
+        {Window::Input::Key::F7,               "F7"},
+        {Window::Input::Key::F8,               "F8"},
+        {Window::Input::Key::F9,               "F9"},
+        {Window::Input::Key::F10,              "F10"},
+        {Window::Input::Key::F11,              "F11"},
+        {Window::Input::Key::F12,              "F12"},
+        {Window::Input::Key::F13,              "F13"},
+        {Window::Input::Key::F14,              "F14"},
+        {Window::Input::Key::F15,              "F15"},
+        {Window::Input::Key::F16,              "F16"},
+        {Window::Input::Key::F17,              "F17"},
+        {Window::Input::Key::F18,              "F18"},
+        {Window::Input::Key::F19,              "F19"},
+        {Window::Input::Key::F20,              "F20"},
+        {Window::Input::Key::F21,              "F21"},
+        {Window::Input::Key::F22,              "F22"},
+        {Window::Input::Key::F23,              "F23"},
+        {Window::Input::Key::F24,              "F24"},
+        {Window::Input::Key::F25,              "F25"},
+        {Window::Input::Key::Keypad0,          "Keypad0"},
+        {Window::Input::Key::Keypad1,          "Keypad1"},
+        {Window::Input::Key::Keypad2,          "Keypad2"},
+        {Window::Input::Key::Keypad3,          "Keypad3"},
+        {Window::Input::Key::Keypad4,          "Keypad4"},
+        {Window::Input::Key::Keypad5,          "Keypad5"},
+        {Window::Input::Key::Keypad6,          "Keypad6"},
+        {Window::Input::Key::Keypad7,          "Keypad7"},
+        {Window::Input::Key::Keypad8,          "Keypad8"},
+        {Window::Input::Key::Keypad9,          "Keypad9"},
+        {Window::Input::Key::KeypadDecimal,    "KeypadDecimal"},
+        {Window::Input::Key::KeypadDivide,     "KeypadDivide"},
+        {Window::Input::Key::KeypadMultiply,   "KeypadMultiply"},
+        {Window::Input::Key::KeypadSubtract,   "KeypadSubtract"},
+        {Window::Input::Key::KeypadAdd,        "KeypadAdd"},
+        {Window::Input::Key::KeypadEnter,      "KeypadEnter"},
+        {Window::Input::Key::KeypadEqual,      "KeypadEqual"},
+        {Window::Input::Key::LeftShift,        "LeftShift"},
+        {Window::Input::Key::LeftControl,      "LeftControl"},
+        {Window::Input::Key::LeftAlt,          "LeftAlt"},
+        {Window::Input::Key::LeftSuper,        "LeftSuper"},
+        {Window::Input::Key::RightShift,       "RightShift"},
+        {Window::Input::Key::RightControl,     "RightControl"},
+        {Window::Input::Key::RightAlt,         "RightAlt"},
+        {Window::Input::Key::RightSuper,       "RightSuper"},
+        {Window::Input::Key::Menu,             "Menu"},
+    };
 
     auto it = enumNames.find(key);
-    if (it != enumNames.end()) return it->second;
-
-    return "Unknown keyboard key";
+    return (it != enumNames.end())
+        ? it->second
+        : "Unknown keyboard key";
 }
 
-std::string to_string(const Window::Input::Modifier& mod)
+std::string to_string(const Window::Input::Modifier mod)
 {
-    static bool runOnce = false;
-    static std::unordered_map<Window::Input::Modifier, std::string> enumNames;
-
-    if (!runOnce)
-    {
-        enumNames[Window::Input::Modifier::None]        = "None";
-        enumNames[Window::Input::Modifier::Shift]       = "Shift";
-        enumNames[Window::Input::Modifier::Control]     = "Control";
-        enumNames[Window::Input::Modifier::Alt]         = "Alt";
-        enumNames[Window::Input::Modifier::Super]       = "Super";
-        enumNames[Window::Input::Modifier::CapsLock]    = "CapsLock";
-        enumNames[Window::Input::Modifier::NumLock]     = "NumLock";
-
-        runOnce = true;
-    }
+    static std::unordered_map<Window::Input::Modifier, std::string> enumNames = {
+        {Window::Input::Modifier::None,        "None"},
+        {Window::Input::Modifier::Shift,       "Shift"},
+        {Window::Input::Modifier::Control,     "Control"},
+        {Window::Input::Modifier::Alt,         "Alt"},
+        {Window::Input::Modifier::Super,       "Super"},
+        {Window::Input::Modifier::CapsLock,    "CapsLock"},
+        {Window::Input::Modifier::NumLock,     "NumLock"},
+    };
 
     auto it = enumNames.find(mod);
-    if (it != enumNames.end()) return it->second;
-
-    return "Unknown keyboard modifier";
+    return (it != enumNames.end())
+        ? it->second
+        : "Unknown keyboard modifier";
 }
 
-std::string to_string(const Window::Input::MouseButton& mouseButton)
+std::string to_string(const Window::Input::MouseButton mouseButton)
 {
-    static bool runOnce = false;
-    static std::unordered_map<Window::Input::MouseButton, std::string> enumNames;
-    static std::unordered_map<Window::Input::MouseButton, std::string> specialNames;
-
-    if (!runOnce)
-    {
-        enumNames[Window::Input::MouseButton::B1]   = "B1";
-        enumNames[Window::Input::MouseButton::B2]   = "B2";
-        enumNames[Window::Input::MouseButton::B3]   = "B3";
-        enumNames[Window::Input::MouseButton::B4]   = "B4";
-        enumNames[Window::Input::MouseButton::B5]   = "B5";
-        enumNames[Window::Input::MouseButton::B6]   = "B6";
-        enumNames[Window::Input::MouseButton::B7]   = "B7";
-        enumNames[Window::Input::MouseButton::B8]   = "B8";
-
-        specialNames[Window::Input::MouseButton::Left]      = "Left";
-        specialNames[Window::Input::MouseButton::Right]     = "Right";
-        specialNames[Window::Input::MouseButton::Middle]    = "Middle";
-
-        runOnce = true;
-    }
+    static std::unordered_map<Window::Input::MouseButton, std::string> enumNames = {
+        {Window::Input::MouseButton::B1,   "B1"},
+        {Window::Input::MouseButton::B2,   "B2"},
+        {Window::Input::MouseButton::B3,   "B3"},
+        {Window::Input::MouseButton::B4,   "B4"},
+        {Window::Input::MouseButton::B5,   "B5"},
+        {Window::Input::MouseButton::B6,   "B6"},
+        {Window::Input::MouseButton::B7,   "B7"},
+        {Window::Input::MouseButton::B8,   "B8"},
+    };
+    static std::unordered_map<Window::Input::MouseButton, std::string> specialNames = {
+        {Window::Input::MouseButton::Left,      "Left"},
+        {Window::Input::MouseButton::Right,     "Right"},
+        {Window::Input::MouseButton::Middle,    "Middle"},
+    };
 
     auto it = specialNames.find(mouseButton);
     if (it != specialNames.end()) return it->second;
 
     it = enumNames.find(mouseButton);
-    if (it != enumNames.end()) return it->second;
-
-    return "Unknown mouse button";
+    return (it != enumNames.end())
+        ? it->second
+        : "Unknown mouse button";
 }
 
-std::string to_string(const Window::Input::Joystick& joystick)
+std::string to_string(const Window::Input::Joystick joystick)
 {
-    static bool runOnce = false;
-    static std::unordered_map<Window::Input::Joystick, std::string> enumNames;
-
-    if (!runOnce)
-    {
-        enumNames[Window::Input::Joystick::J1]  = "J1";
-        enumNames[Window::Input::Joystick::J2]  = "J2";
-        enumNames[Window::Input::Joystick::J3]  = "J3";
-        enumNames[Window::Input::Joystick::J4]  = "J4";
-        enumNames[Window::Input::Joystick::J5]  = "J5";
-        enumNames[Window::Input::Joystick::J6]  = "J6";
-        enumNames[Window::Input::Joystick::J7]  = "J7";
-        enumNames[Window::Input::Joystick::J8]  = "J8";
-        enumNames[Window::Input::Joystick::J9]  = "J9";
-        enumNames[Window::Input::Joystick::J10] = "J10";
-        enumNames[Window::Input::Joystick::J11] = "J11";
-        enumNames[Window::Input::Joystick::J12] = "J12";
-        enumNames[Window::Input::Joystick::J13] = "J13";
-        enumNames[Window::Input::Joystick::J14] = "J14";
-        enumNames[Window::Input::Joystick::J15] = "J15";
-        enumNames[Window::Input::Joystick::J16] = "J16";
-
-        runOnce = true;
-    }
+    static std::unordered_map<Window::Input::Joystick, std::string> enumNames = {
+        {Window::Input::Joystick::J1,  "J1"},
+        {Window::Input::Joystick::J2,  "J2"},
+        {Window::Input::Joystick::J3,  "J3"},
+        {Window::Input::Joystick::J4,  "J4"},
+        {Window::Input::Joystick::J5,  "J5"},
+        {Window::Input::Joystick::J6,  "J6"},
+        {Window::Input::Joystick::J7,  "J7"},
+        {Window::Input::Joystick::J8,  "J8"},
+        {Window::Input::Joystick::J9,  "J9"},
+        {Window::Input::Joystick::J10, "J10"},
+        {Window::Input::Joystick::J11, "J11"},
+        {Window::Input::Joystick::J12, "J12"},
+        {Window::Input::Joystick::J13, "J13"},
+        {Window::Input::Joystick::J14, "J14"},
+        {Window::Input::Joystick::J15, "J15"},
+        {Window::Input::Joystick::J16, "J16"},
+    };
 
     auto it = enumNames.find(joystick);
-    if (it != enumNames.end()) return it->second;
-
-    return "Unknown joystick";
+    return (it != enumNames.end())
+        ? it->second
+        : "Unknown joystick";
 }
 
-std::string to_string(const Window::Input::Gamepad::Button& gamepadButton)
+std::string to_string(const Window::Input::Gamepad::Button gamepadButton)
 {
-    static bool runOnce = false;
-    static std::unordered_map<Window::Input::Gamepad::Button, std::string> enumNames;
-
-    if (!runOnce)
-    {
-        enumNames[Window::Input::Gamepad::Button::A]            = "A";
-        enumNames[Window::Input::Gamepad::Button::B]            = "B";
-        enumNames[Window::Input::Gamepad::Button::X]            = "X";
-        enumNames[Window::Input::Gamepad::Button::Y]            = "Y";
-        enumNames[Window::Input::Gamepad::Button::LeftBumper]   = "LeftBumper";
-        enumNames[Window::Input::Gamepad::Button::RightBumper]  = "RightBumper";
-        enumNames[Window::Input::Gamepad::Button::Select]       = "Select";
-        enumNames[Window::Input::Gamepad::Button::Start]        = "Start";
-        enumNames[Window::Input::Gamepad::Button::Home]         = "Home";
-        enumNames[Window::Input::Gamepad::Button::LeftThumb]    = "LeftThumb";
-        enumNames[Window::Input::Gamepad::Button::RightThumb]   = "RightThumb";
-        enumNames[Window::Input::Gamepad::Button::DPadUp]       = "DPadUp";
-        enumNames[Window::Input::Gamepad::Button::DPadRight]    = "DPadRight";
-        enumNames[Window::Input::Gamepad::Button::DPadDown]     = "DPadDown";
-        enumNames[Window::Input::Gamepad::Button::DPadLeft]     = "DPadLeft";
-
-        runOnce = true;
-    }
+    static std::unordered_map<Window::Input::Gamepad::Button, std::string> enumNames = {
+        {Window::Input::Gamepad::Button::A,             "A"},
+        {Window::Input::Gamepad::Button::B,             "B"},
+        {Window::Input::Gamepad::Button::X,             "X"},
+        {Window::Input::Gamepad::Button::Y,             "Y"},
+        {Window::Input::Gamepad::Button::LeftBumper,    "LeftBumper"},
+        {Window::Input::Gamepad::Button::RightBumper,   "RightBumper"},
+        {Window::Input::Gamepad::Button::Select,        "Select"},
+        {Window::Input::Gamepad::Button::Start,         "Start"},
+        {Window::Input::Gamepad::Button::Home,          "Home"},
+        {Window::Input::Gamepad::Button::LeftThumb,     "LeftThumb"},
+        {Window::Input::Gamepad::Button::RightThumb,    "RightThumb"},
+        {Window::Input::Gamepad::Button::DPadUp,        "DPadUp"},
+        {Window::Input::Gamepad::Button::DPadRight,     "DPadRight"},
+        {Window::Input::Gamepad::Button::DPadDown,      "DPadDown"},
+        {Window::Input::Gamepad::Button::DPadLeft,      "DPadLeft"},
+    };
 
     auto it = enumNames.find(gamepadButton);
-    if (it != enumNames.end()) return it->second;
-
-    return "Unknown gamepad button";
+    return (it != enumNames.end())
+        ? it->second
+        : "Unknown gamepad button";
 }
 
-std::string to_string(const Window::Input::Gamepad::Axis& gamepadAxis)
+std::string to_string(const Window::Input::Gamepad::Axis gamepadAxis)
 {
-    static bool runOnce = false;
-    static std::unordered_map<Window::Input::Gamepad::Axis, std::string> enumNames;
-
-    if (!runOnce)
-    {
-        enumNames[Window::Input::Gamepad::Axis::LeftX]          = "LeftX";
-        enumNames[Window::Input::Gamepad::Axis::LeftY]          = "LeftY";
-        enumNames[Window::Input::Gamepad::Axis::RightX]         = "RightX";
-        enumNames[Window::Input::Gamepad::Axis::RightY]         = "RightY";
-        enumNames[Window::Input::Gamepad::Axis::LeftTrigger]    = "LeftTrigger";
-        enumNames[Window::Input::Gamepad::Axis::RightTrigger]   = "RightTrigger";
-
-        runOnce = true;
-    }
+    static std::unordered_map<Window::Input::Gamepad::Axis, std::string> enumNames = {
+        {Window::Input::Gamepad::Axis::LeftX,           "LeftX"},
+        {Window::Input::Gamepad::Axis::LeftY,           "LeftY"},
+        {Window::Input::Gamepad::Axis::RightX,          "RightX"},
+        {Window::Input::Gamepad::Axis::RightY,          "RightY"},
+        {Window::Input::Gamepad::Axis::LeftTrigger,     "LeftTrigger"},
+        {Window::Input::Gamepad::Axis::RightTrigger,    "RightTrigger"},
+    };
 
     auto it = enumNames.find(gamepadAxis);
-    if (it != enumNames.end()) return it->second;
-
-    return "Unknown gamepad axis";
+    return (it != enumNames.end())
+        ? it->second
+        : "Unknown gamepad axis";
 }
 
-}//namespace Renderboi
+} // namespace renderboi
