@@ -2,13 +2,13 @@
 #define RENDERBOI__TOOLBOX__SCENE__COMPONENTS__MESH_COMPONENT_HPP
 
 #include <string>
+#include <type_traits>
 
 #include <cpptools/utility/bitwise_enum_ops.hpp>
 
 #include <renderboi/core/mesh.hpp>
 #include <renderboi/core/material.hpp>
 #include <renderboi/core/shader/shader_program.hpp>
-#include <type_traits>
 
 #include "../component.hpp"
 #include "../component_type.hpp"
@@ -167,14 +167,31 @@ class MeshComponent : public Component
         MeshComponent* clone(const SceneObjectPtr newParent) const override;
 };
 
-template<>
-ComponentType Component::componentType<MeshComponent>();
 
 template<>
-std::string Component::componentTypeString<MeshComponent>();
+struct ComponentMeta<ComponentType::Mesh>
+{
+    struct MultipleInstancesAllowed
+    {
+        static constexpr bool value = false;
+    };
+
+    struct ConcreteType
+    {
+        using type = MeshComponent;
+    };
+
+    struct Name
+    {
+        static constexpr const char* value = "MeshComponent";
+    };
+};
 
 template<>
-bool Component::multipleInstancesAllowed<MeshComponent>();
+struct ComponentTypeToEnum<MeshComponent>
+{
+    static constexpr ComponentType value = ComponentType::Camera;
+};
 
 }//namespace Renderboi
 

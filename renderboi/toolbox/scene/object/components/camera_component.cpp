@@ -8,7 +8,7 @@ namespace Renderboi
 {
 
 CameraComponent::CameraComponent(const SceneObjectPtr sceneObject, const CameraPtr camera) :
-    Component(ComponentType::Camera, sceneObject)
+    Component(sceneObject)
 {
     setCamera(camera);
 }
@@ -35,7 +35,7 @@ void CameraComponent::setCamera(const CameraPtr camera)
 
 glm::mat4 CameraComponent::getViewMatrix() const
 {
-    Transform worldTransform = _sceneObject->getWorldTransform();
+    Transform worldTransform = _sceneObject->worldTransform();
 
     // Update camera and compute view matrix
     _camera->setParentWorldTransform(worldTransform);
@@ -55,7 +55,7 @@ glm::mat4 CameraComponent::getProjectionMatrix() const
 
 glm::mat4 CameraComponent::getViewProjectionMatrix() const
 {
-    glm::vec3 worldPosition = _sceneObject->getWorldTransform().getPosition();
+    glm::vec3 worldPosition = _sceneObject->worldTransform().getPosition();
     return _camera->getViewProjectionMatrix();
 }
 
@@ -66,24 +66,6 @@ CameraComponent* CameraComponent::clone(const SceneObjectPtr newParent) const
     CameraPtr cameraClone = std::make_shared<Camera>(*_camera);
 
     return new CameraComponent(newParent, cameraClone);
-}
-
-template<>
-ComponentType Component::componentType<CameraComponent>()
-{
-    return ComponentType::Camera;
-}
-
-template<>
-std::string Component::componentTypeString<CameraComponent>()
-{
-    return "Camera";
-}
-
-template<>
-bool Component::multipleInstancesAllowed<CameraComponent>()
-{
-    return false;
 }
 
 }//namespace Renderboi

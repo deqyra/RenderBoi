@@ -65,6 +65,8 @@ using SceneObjectWPtr = std::weak_ptr<SceneObject>;
 /// README section at the top of the .hpp file for more info.
 class ObjectTransform : public Transform
 {
+friend SceneObject;
+
 public:
     using TransformNotifier = cpptools::Notifier<const unsigned int>;
 
@@ -77,26 +79,34 @@ protected:
     unsigned int _objectId;
 
     /// @brief Notify all subscribers that the transform was updated.
-    void notifyChange() const;
+    void _notifyChange() const;
+
+    /// @brief Release held references to shared resources.
+    virtual void _release();
 
 public:
-    /// @param transform Base state of the object transform.
-    ObjectTransform(const Transform transform);
-
+    /// @param sceneObject Pointer to the scene object of the object transform.
     /// @param position Base position of the transform.
     /// @param rotation Base orientation of the transform.
     /// @param scale Base scale of the transform.
     ObjectTransform(
+        const SceneObjectPtr sceneObject,
         const glm::vec3 position = glm::vec3(0.f), 
         const glm::quat orientation = glm::quat(1.f, glm::vec3(0.f)), 
         const glm::vec3 scale = glm::vec3(1.f)
     );
 
-    ObjectTransform(const ObjectTransform& other) = delete;
+    /// @param sceneObject Pointer to the scene object of the object transform.
+    /// @param transform Base state of the object transform.
+    ObjectTransform(const SceneObjectPtr sceneObject, const Transform transform);
 
+    /// @param other Instance to assign to this.
     ObjectTransform& operator=(const ObjectTransform& other);
 
+    /// @param other Transform instance to assign to this.
     ObjectTransform& operator=(const Transform& other);
+
+    ObjectTransform(const ObjectTransform& other) = delete;
 
     /// @brief Get the object the transform is attached to.
     ///
@@ -236,6 +246,8 @@ public:
     /// @return The resulting transform.
     Transform compoundFrom(const ObjectTransform& other) const;
 };
+
+using ObjectTransformPtr = std::shared_ptr<ObjectTransform>;
 
 }//namespace Renderboi
 

@@ -4,15 +4,25 @@
 namespace Renderboi
 {
 
-RenderTraitConfig::RenderTraitConfig(SceneObjectPtr parentSceneObject) :
-    _parentSceneObject(parentSceneObject)
+RenderTraitConfig::RenderTraitConfig(SceneObjectPtr sceneObject) :
+    _sceneObject(sceneObject)
 {
 
 }
 
+RenderTraitConfig::~RenderTraitConfig()
+{
+    
+}
+
 void RenderTraitConfig::_release()
 {
-    _parentSceneObject.reset();
+    _sceneObject.reset();
+}
+
+SceneObjectPtr RenderTraitConfig::sceneObject()
+{
+    return _sceneObject;
 }
 
 } // namespace Renderboi

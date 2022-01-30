@@ -33,7 +33,7 @@ void KeyboardMovementScript::update(float timeElapsed)
         velocity *= _sprintMultiplier;
 
     // Retrieve the linked scene object.
-    glm::vec3 position = _sceneObject->transform.getPosition();
+    glm::vec3 position = _sceneObject->transform()->getPosition();
 
     // Compute velocity across basis vectors
     float forwardVelocity = 0.f;
@@ -53,7 +53,7 @@ void KeyboardMovementScript::update(float timeElapsed)
     position += _basisProvider->left() * leftVelocity;
 
     // Update parent position
-    _sceneObject->transform.setPosition<Ref::Parent>(position);
+    _sceneObject->transform()->setPosition<Ref::Parent>(position);
 }
 
 void KeyboardMovementScript::setSceneObject(const SceneObjectPtr sceneObject)

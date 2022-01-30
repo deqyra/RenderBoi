@@ -9,15 +9,9 @@
 namespace Renderboi
 {
 
-Component::Component(const ComponentType type, const SceneObjectPtr sceneObject) :
-    type(type),
+Component::Component(const SceneObjectPtr sceneObject) :
     _sceneObject(sceneObject)
 {
-    if (type == ComponentType::Unknown)
-    {
-        throw std::runtime_error("Component: cannot create a component with type Unknown.");
-    }
-
     if (!sceneObject)
     {
         throw std::runtime_error("Component: cannot create a component from a null scene object pointer.");

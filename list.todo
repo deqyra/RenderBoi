@@ -30,6 +30,9 @@ RenderBoi:
             ✔ Use glMultiDrawElements, adapt mesh generators @done(20-11-05 08:59)
             ☐ Star mesh generator (branch count, inset, hollow)
             ☐ Meshed curve generator, using cpptools::Curve
+            ☐ Use `glVertexAttribFormat` to describe vertex layout in memory (instead of `glVertexAttribPointer`)
+            See https://stackoverflow.com/questions/37972229/glvertexattribpointer-and-glvertexattribformat-whats-the-difference
+            ☐ Rename the template meta classes they ugly AF
         Shaders:
             ✔ Use GL_ARB_shader_language_include @done(20-10-24 17:30)
             ✔ Declare uniform blocks in their own file @done(20-10-24 17:30)
@@ -55,6 +58,7 @@ RenderBoi:
         VertexDataManager:
             ☐ A VertexDataManager holds actual vertex data and takes care of memory management
             ☐ Meshes now only keep handles to vertex content held in a VertexDataManager
+            ☐ !!!!! REQUIRED for proper cloning of mesh render trait config
             ☐ Investigate better buffering methods
         ☐ Dynamic meshes
         ☐ Unity-like prefab system?
@@ -73,14 +77,22 @@ RenderBoi:
             ✘ Add InputProcessorComponent @cancelled(20-12-31 14:44)
             ✘ Rethink InputProcessingScriptComponent @cancelled(20-12-31 14:20)
             ☐ Serialisation
+            ☐ Make a concept out of components, simplify template usage in SceneObject
+            ✔ Implement template meta to have componentMap.addComponent<Camera> instead of componentMap.addComponent<CameraComponent> @done(22-01-29 18:13)
         Factory:
             ✔ Method to attach camera and scripts to scene object@done(20-10-26 02:40)
             ☐ Forwarding methods to ShaderBuilder
         InputSplitter:
             ☐ Async dispatch of events
-            /!\ The above may disrupt the update flow of HEAVY scenes bit delaying some updates too much
+            /!\ The above may disrupt the update flow of HEAVY scenes by delaying some updates too much
         Logger:
             ☐ Write a real logger, have the input logger use it
+        Object transform:
+            ☐ Keep a shared pointer to the scene object
+        Render traits:
+            ☐ The copy constructor of the RenderTraitConfigMap is WRONG - it should clone configs
+            ☐ When cloned as part of SceneObject cloning, the MeshRenderTraitConfig needs to reference its new parent SceneObject
+            VERTEX DATA MANAGER IS REQUIRED FOR THAT
         Scene:
             ✔ In `moveObject`, add possibility to keep world position of moved object @done(20-10-13 14:49)
             ☐ Add something like `registerObjectTree(ScenePtr)` to import complex objects into a scene
@@ -102,7 +114,10 @@ RenderBoi:
             ☐ Remove component
             ☐ Add object tags (bitfield enum)
             ☐ Move Shader and Material from MeshComponent to MeshRenderTraitConfig?
+            ☐ Make `enabled` notify scene on change
+            ☐ Make component collection public, notify scene as needed
             ☐ Serialisation
+            ☐ `setSceneObject` might not be useful anymore
         SceneRenderer:
             ✔ Implement a framerate limiter @done(20-10-19 21:49)
             ☐ Mesh rendering order based on distance to camera

@@ -1,13 +1,14 @@
 #ifndef RENDERBOI__TOOLBOX__SCENE__COMPONENT_TYPE_HPP
 #define RENDERBOI__TOOLBOX__SCENE__COMPONENT_TYPE_HPP
 
+#include <string>
+
 namespace Renderboi
 {
 
 /// @brief Literals describing types of available components.
 enum class ComponentType
 {
-    Unknown,
     /// @brief Literal representing a MeshComponent.
     Mesh,
     /// @brief Literal representing a LightComponent.
@@ -17,6 +18,8 @@ enum class ComponentType
     /// @brief Literal representing a ScriptComponent.
     Script
 };
+
+std::string to_string(const ComponentType& type);
 
 }//namespace Renderboi
 

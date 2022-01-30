@@ -297,12 +297,16 @@ set(RB_TOOLBOX_SOURCE_FILES
     scene/scene.hpp 
     scene/object/component.cpp
     scene/object/component.hpp 
+    scene/object/component_map.cpp
+    scene/object/component_map.hpp 
+    scene/object/component_type.cpp 
     scene/object/component_type.hpp 
     scene/object/object_transform.cpp
     scene/object/object_transform.hpp
     scene/object/scene_object_metadata.hpp 
     scene/object/scene_object.cpp
     scene/object/scene_object.hpp 
+    scene/object/components/all_components.cpp 
     scene/object/components/all_components.hpp 
     scene/object/components/camera_component.cpp
     scene/object/components/camera_component.hpp 
@@ -312,8 +316,19 @@ set(RB_TOOLBOX_SOURCE_FILES
     scene/object/components/mesh_component.hpp 
     scene/object/components/script_component.cpp
     scene/object/components/script_component.hpp 
-    scene/renderer/scene_renderer.cpp
-    scene/renderer/scene_renderer.hpp 
+    render/scene_renderer.cpp
+    render/scene_renderer.hpp 
+    render/composite_renderer.hpp
+    render/traits/render_trait.hpp
+    render/traits/render_trait_config.cpp
+    render/traits/render_trait_config.hpp
+    render/traits/render_trait_config_map.cpp
+    render/traits/render_trait_config_map.hpp
+    render/traits/trait_renderer.hpp
+    render/traits/config/mesh_render_trait_config.cpp
+    render/traits/config/mesh_render_trait_config.hpp
+    render/traits/renderers/mesh_trait_renderer.cpp
+    render/traits/renderers/mesh_trait_renderer.hpp
     runnables/basic_window_manager.cpp
     runnables/basic_window_manager.hpp 
     runnables/camera_aspect_ratio_manager.cpp

@@ -16,7 +16,7 @@
 #include <renderboi/toolbox/input_splitter.hpp>
 #include <renderboi/toolbox/scene/scene.hpp>
 #include <renderboi/toolbox/scene/object/scene_object.hpp>
-#include <renderboi/toolbox/scene/renderer/scene_renderer.hpp>
+#include <renderboi/toolbox/render/scene_renderer.hpp>
 
 #include <renderboi/window/gl_window.hpp>
 #include <renderboi/window/input_processor.hpp>

@@ -8,7 +8,7 @@ namespace Renderboi
 {
 
 LightComponent::LightComponent(const SceneObjectPtr sceneObject, const LightPtr light) :
-    Component(ComponentType::Light, sceneObject),
+    Component(sceneObject),
     _light(light)
 {
     if (!light)
@@ -41,24 +41,6 @@ LightComponent* LightComponent::clone(const SceneObjectPtr newParent) const
 {
     LightPtr clonedLight = LightPtr(_light->clone());
     return new LightComponent(newParent, clonedLight);
-}
-
-template<>
-ComponentType Component::componentType<LightComponent>()
-{
-    return ComponentType::Light;
-}
-
-template<>
-std::string Component::componentTypeString<LightComponent>()
-{
-    return "Light";
-}
-
-template<>
-bool Component::multipleInstancesAllowed<LightComponent>()
-{
-    return false;
 }
 
 }//namespace Renderboi

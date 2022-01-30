@@ -32,7 +32,7 @@ MeshComponent::MeshComponent(
     const Material material,
     const ShaderProgram shader
 ) :
-    Component(ComponentType::Mesh, sceneObject),
+    Component(sceneObject),
     _mesh(mesh),
     _material(material),
     _shader(shader)
@@ -117,24 +117,6 @@ MeshComponent* MeshComponent::clone(const SceneObjectPtr newParent) const
     MeshPtr clonedMesh = std::make_shared<Mesh>(*_mesh);
     // Material and shader clones are automatically copy-constructed by the following call
     return new MeshComponent(newParent, clonedMesh, _material, _shader);
-}
-
-template<>
-ComponentType Component::componentType<MeshComponent>()
-{
-    return ComponentType::Mesh;
-}
-
-template<>
-std::string Component::componentTypeString<MeshComponent>()
-{
-    return "Mesh";
-}
-
-template<>
-bool Component::multipleInstancesAllowed<MeshComponent>()
-{
-    return false;
 }
 
 }//namespace Renderboi

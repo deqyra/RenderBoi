@@ -61,14 +61,31 @@ class LightComponent : public Component
         LightComponent* clone(const SceneObjectPtr newParent) const override;
 };
 
-template<>
-ComponentType Component::componentType<LightComponent>();
 
 template<>
-std::string Component::componentTypeString<LightComponent>();
+struct ComponentMeta<ComponentType::Light>
+{
+    struct MultipleInstancesAllowed
+    {
+        static constexpr bool value = false;
+    };
+
+    struct ConcreteType
+    {
+        using type = LightComponent;
+    };
+
+    struct Name
+    {
+        static constexpr const char* value = "LightComponent";
+    };
+};
 
 template<>
-bool Component::multipleInstancesAllowed<LightComponent>();
+struct ComponentTypeToEnum<LightComponent>
+{
+    static constexpr ComponentType value = ComponentType::Camera;
+};
 
 }//namespace Renderboi
 

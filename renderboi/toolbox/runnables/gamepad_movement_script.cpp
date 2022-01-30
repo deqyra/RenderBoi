@@ -33,14 +33,14 @@ void GamepadMovementScript::update(float timeElapsed)
         velocity *= _sprintMultiplier;
 
     // Retrieve the linked scene object.
-    glm::vec3 position = _sceneObject->transform.getPosition();
+    glm::vec3 position = _sceneObject->transform()->getPosition();
 
     glm::vec2 movement = velocity * _direction;
     position += _basisProvider->left() * movement.x;
     position += _basisProvider->forward() * movement.y;
 
     // Update parent position
-    _sceneObject->transform.setPosition<Ref::Parent>(position);
+    _sceneObject->transform()->setPosition<Ref::Parent>(position);
 }
 
 void GamepadMovementScript::setSceneObject(const SceneObjectPtr sceneObject)

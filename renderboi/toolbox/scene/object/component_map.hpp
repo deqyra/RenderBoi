@@ -1,0 +1,333 @@
+#ifndef RENDERBOI__TOOLBOX__SCENE__OBJECT__COMPONENT_MAP_HPP
+#define RENDERBOI__TOOLBOX__SCENE__OBJECT__COMPONENT_MAP_HPP
+
+#include <initializer_list>
+#include <map>
+#include <memory>
+#include <stdexcept>
+#include <type_traits>
+#include <utility>
+
+#include "component.hpp"
+#include "component_type.hpp"
+
+namespace Renderboi
+{
+
+class SceneObject;
+using SceneObjectPtr = std::shared_ptr<SceneObject>;
+
+class ComponentMap
+{
+friend SceneObject;
+
+private:
+    using MapType = std::map<ComponentType, ComponentPtr>;
+    using MultimapType = std::multimap<ComponentType, ComponentPtr>;
+
+public:
+    using ComponentEntry = std::pair<const ComponentType, ComponentPtr>;
+
+private:
+    ComponentMap& operator=(const ComponentMap& right) = delete;
+
+    /// @param sceneObject Pointer to the parent scene object of this instance.
+    /// @param other Instance to copy-construct from.
+    ComponentMap(const SceneObjectPtr sceneObject, const ComponentMap& other);
+
+    /// @brief Map to store pointers to components for which only single
+    /// instances are allowed on a single scene object.
+    MapType _singleComponentMap;
+
+    /// @brief Multimap to store pointers to components for which multiple
+    /// instances are allowed on a single scene object.
+    MultimapType _multiComponentMap;
+
+    /// @brief Pointer to the parent scene object.
+    SceneObjectPtr _sceneObject;
+
+    /// @brief Release held references to shared resources.
+    void _release();
+
+public:
+    /// @param sceneObject Pointer to the parent scene object of this instance.
+    ComponentMap(const SceneObjectPtr sceneObject);
+
+    /// @brief Get a pointer to the parent scene object of this instance.
+    ///
+    /// @return A pointer to the parent scene object of this instance.
+    SceneObjectPtr sceneObject();
+
+    /// @brief Get the component pointer of the given component type (single 
+    /// instance variant).
+    /// @tparam K Required. Litteral describing the type of component to get a
+    /// pointer to.
+    /// @return Pointer to the component for the given type (can be null).
+    template<
+        ComponentType K,
+        typename T = typename ComponentMeta<K>::ConcreteType::type,
+        std::enable_if_t<!ComponentMeta<K>::MultipleInstancesAllowed::value, bool> = true
+    >
+    std::shared_ptr<T> getComponent();
+
+    /// @brief Get an iterator range to component pointers of the given
+    /// component type (multi instance variant).
+    /// @tparam K Required. Litteral describing the type of component to get a
+    /// range of pointers to.
+    /// @return Iterator range to pointers to the components for the given type.
+    template<
+        ComponentType K,
+        std::enable_if_t<ComponentMeta<K>::MultipleInstancesAllowed::value, bool> = true
+    >
+    std::pair<MultimapType::iterator, MultimapType::iterator> getComponents();
+
+    /// @brief Return whether there are registered components for the given
+    /// component type (multi instance variant).
+    /// @tparam K Required. Component type to test components for.
+    /// @return Whether there are registered components for the given component
+    /// type.
+    template<
+        ComponentType K,
+        std::enable_if_t<!ComponentMeta<K>::MultipleInstancesAllowed::value, bool> = true
+    >
+    bool hasComponent();
+
+    /// @brief Return whether there are registered components for the given
+    /// component type (single instance variant).
+    /// @tparam K Required. Component type to test components for.
+    /// @return Whether there are registered components for the given component
+    /// type.
+    template<
+        ComponentType K,
+        std::enable_if_t<ComponentMeta<K>::MultipleInstancesAllowed::value, bool> = true
+    >
+    bool hasComponent();
+
+    /// @brief Construct a component in place (single instance variant).
+    /// @tparam K Required. Litteral describing the type of the component.
+    /// @tparam T Concrete type of the component. Leave for deduction.
+    /// @tparam ArgTypes... Types of the arguments that are to be forwarded to 
+    /// the constructor of the component. Leave for deduction.
+    /// @param args Arguments to be passed to the constructor of the component.
+    /// @return A shared pointer to the newly constructed component.
+    template<
+        ComponentType K,
+        class T = typename ComponentMeta<K>::ConcreteType::type,
+        class... ArgTypes,
+        std::enable_if_t<!ComponentMeta<K>::MultipleInstancesAllowed::value, bool> = true
+    >
+    std::shared_ptr<T> addComponent(ArgTypes&&... args);
+
+    /// @brief Construct a component in place (single instance variant).
+    /// @tparam K Required. Litteral describing the type of the component.
+    /// @tparam T Concrete type of the component. Leave for deduction.
+    /// @tparam ArgTypes... Types of the arguments that are to be forwarded to 
+    /// the constructor of the component. Leave for deduction.
+    /// @param args Arguments to be passed to the constructor of the component.
+    /// @return A shared pointer to the newly constructed component.
+    template<
+        ComponentType K,
+        class T = typename ComponentMeta<K>::ConcreteType::type,
+        class... ArgTypes,
+        std::enable_if_t<ComponentMeta<K>::MultipleInstancesAllowed::value, bool> = true
+    >
+    std::shared_ptr<T> addComponent(ArgTypes&&... args);
+
+    /// @brief Register a component (single instance variant).
+    /// @tparam T Concrete type of the component. Leave for deduction.
+    /// @tparam K Litteral describing the type of the component. Leave for
+    /// deduction.
+    /// @param type Type to set the component for.
+    /// @param component Pointer to the component to set for that type.
+    template<
+        class T,
+        ComponentType K = ComponentTypeToEnum<T>::value,
+        std::enable_if_t<!ComponentMeta<K>::MultipleInstancesAllowed::value, bool> = true
+    >
+    void putComponent(const T component);
+
+    /// @brief Register a component (multi instance variant).
+    /// @tparam T Concrete type of the component. Leave for deduction.
+    /// @tparam K Litteral describing the type of the component. Leave for
+    /// deduction.
+    /// @param type Type to set the component for.
+    /// @param component Pointer to the component to set for that type.
+    template<
+        class T,
+        ComponentType K = ComponentTypeToEnum<T>::value,
+        std::enable_if_t<ComponentMeta<K>::MultipleInstancesAllowed::value, bool> = true
+    >
+    void putComponent(const T component);
+
+    /// @brief Remove the component pointer for the given component type (single
+    /// instance variant).
+    /// @tparam K Required. Type whose component is to be cleared.
+    template<
+        ComponentType K,
+        std::enable_if_t<!ComponentMeta<K>::MultipleInstancesAllowed::value, bool> = true
+    >
+    void clear();
+
+    /// @brief Remove the component pointers for the given component type (multi
+    /// instance variant).
+    /// @tparam K Required. Type whose components are to be cleared.
+    template<
+        ComponentType K,
+        std::enable_if_t<ComponentMeta<K>::MultipleInstancesAllowed::value, bool> = true
+    >
+    void clear();
+
+    /// @brief Clear all component entries from the component map.
+    void clear();
+};
+
+using ComponentMapPtr = std::shared_ptr<ComponentMap>;
+
+template<
+    ComponentType K,
+    typename T,
+    std::enable_if_t<!ComponentMeta<K>::MultipleInstancesAllowed::value, bool>
+>
+std::shared_ptr<T> ComponentMap::getComponent()
+{
+    auto it = _singleComponentMap.find(K);
+
+    if (it == _singleComponentMap.end()) return nullptr;
+
+    return static_pointer_cast<T>(it->second);
+}
+
+template<
+    ComponentType K,
+    std::enable_if_t<ComponentMeta<K>::MultipleInstancesAllowed::value, bool>
+>
+std::pair<ComponentMap::MultimapType::iterator, ComponentMap::MultimapType::iterator> ComponentMap::getComponents()
+{
+    return _multiComponentMap.equal_range(K);
+}
+
+template<
+    ComponentType K,
+    std::enable_if_t<!ComponentMeta<K>::MultipleInstancesAllowed::value, bool>
+>
+bool ComponentMap::hasComponent()
+{
+    return _singleComponentMap.contains(K);
+}
+
+template<
+    ComponentType K,
+    std::enable_if_t<ComponentMeta<K>::MultipleInstancesAllowed::value, bool>
+>
+bool ComponentMap::hasComponent()
+{
+    return _multiComponentMap.contains(K);
+}
+
+template<
+    ComponentType K,
+    class T,
+    class... ArgTypes,
+    std::enable_if_t<!ComponentMeta<K>::MultipleInstancesAllowed::value, bool>
+>
+std::shared_ptr<T> ComponentMap::addComponent(ArgTypes&&... args)
+{
+    if (hasComponentOfType<K>())
+    {
+        using std::to_string;
+
+        std::string s = "ComponentMap: cannot construct another instance of "
+        "component of type \"" + to_string(K) + "\" into single component map";
+
+        throw std::runtime_error(s.c_str());
+    }
+
+    // Construct component from passed arguments
+    const std::shared_ptr<T> realComponent = std::make_shared<T>(_sceneObject, std::forward<ArgTypes>(args)...);
+
+    // std::shared_ptr<Component> and std::shared_ptr<MyComponent> are not covariant types, even if Component and MyComponent are.
+    // Cast to base Component in order to add to collection.
+    const ComponentPtr baseComponent = std::static_pointer_cast<Component>(realComponent);
+    _singleComponentMap[K] = baseComponent;
+
+    return realComponent;
+}
+
+template<
+    ComponentType K,
+    class T,
+    class... ArgTypes,
+    std::enable_if_t<ComponentMeta<K>::MultipleInstancesAllowed::value, bool>
+>
+std::shared_ptr<T> ComponentMap::addComponent(ArgTypes&&... args)
+{
+    // Construct component from passed arguments
+    const std::shared_ptr<T> realComponent = std::make_shared<T>(_sceneObject, std::forward<ArgTypes>(args)...);
+
+    // std::shared_ptr<Component> and std::shared_ptr<MyComponent> are not covariant types, even if Component and MyComponent are.
+    // Cast to base Component in order to add to collection.
+    const ComponentPtr baseComponent = std::static_pointer_cast<Component>(realComponent);
+    _multiComponentMap.insert({K, baseComponent});
+
+    return realComponent;
+}
+
+template<
+    class T,
+    ComponentType K,
+    std::enable_if_t<!ComponentMeta<K>::MultipleInstancesAllowed::value, bool>
+>
+void ComponentMap::putComponent(const T component)
+{
+    auto it = _singleComponentMap.find(K);
+
+    if (it != _singleComponentMap.end())
+    {
+        using std::to_string;
+
+        std::string s = "ComponentMap: cannot insert several instances of "
+        "component of type \"" + to_string(K) + "\" into single component map";
+
+        throw std::runtime_error(s.c_str());
+    }
+
+    _singleComponentMap[K] = component;
+}
+
+template<
+    class T,
+    ComponentType K,
+    std::enable_if_t<ComponentMeta<K>::MultipleInstancesAllowed::value, bool>
+>
+void ComponentMap::putComponent(const T component)
+{
+    _multiComponentMap.insert({K, component});
+}
+
+template<
+    ComponentType K,
+    std::enable_if_t<!ComponentMeta<K>::MultipleInstancesAllowed::value, bool>
+>
+void ComponentMap::clear()
+{
+    auto it = _singleComponentMap.find(K);
+    if (it == _singleComponentMap.end()) return;
+
+    it->second->_release();
+    _singleComponentMap.erase(it);
+}
+
+template<
+    ComponentType K,
+    std::enable_if_t<ComponentMeta<K>::MultipleInstancesAllowed::value, bool>
+>
+void ComponentMap::clear()
+{
+    auto [first, last] = _multiComponentMap.equal_range(K);
+    _multiComponentMap.erase(first, last);
+}
+
+
+} // namespace Renderboi
+
+#endif//RENDERBOI__TOOLBOX__SCENE__OBJECT__COMPONENT_MAP_HPP

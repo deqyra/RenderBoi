@@ -35,10 +35,11 @@ class Factory
 
         /// @brief Instantiate and initialize a new scene object.
         ///
+        /// @param scene Pointer to the parent of the newly created object.
         /// @param name Name to give to the scene object.
         ///
         /// @return Pointer to the instantiated scene object.
-        static SceneObjectPtr MakeSceneObject(std::string name = "");
+        static SceneObjectPtr MakeSceneObject(const ScenePtr scene, std::string name = "");
 
         /// @brief Create a mesh with vertices arranged in a certain shape.
         ///
@@ -56,6 +57,7 @@ class Factory
         ///
         /// @tparam T Literal describing which mesh generator to use.
         ///
+        /// @param scene Pointer to the parent of the newly created object.
         /// @param parameters Parameters of the mesh generation.
         /// @param mat Material to render the mesh in.
         /// @param shader Shader program to render the mesh with.
@@ -63,6 +65,7 @@ class Factory
         /// @return Pointer to the instantiated scene object.
         template<MeshType T>
         static SceneObjectPtr MakeSceneObjectWithMesh(
+            const ScenePtr scene,
             typename TypeToGenMapping<T>::GenType::Parameters parameters,
             Material mat = Material(Materials::Default),
             ShaderProgram shader = ShaderBuilder::MinimalShaderProgram()
@@ -73,6 +76,7 @@ class Factory
         ///
         /// @tparam T Literal describing which mesh generator to use.
         ///
+        /// @param scene Pointer to the parent of the newly created object.
         /// @param name Name to give to the scene object.
         /// @param parameters Parameters of the mesh generation.
         /// @param mat Material to render the mesh in.
@@ -81,6 +85,7 @@ class Factory
         /// @return Pointer to the instantiated scene object.
         template<MeshType T>
         static SceneObjectPtr MakeSceneObjectWithMesh(
+            const ScenePtr scene,
             std::string name,
             typename TypeToGenMapping<T>::GenType::Parameters parameters,
             Material mat = Materials::Default,
@@ -116,16 +121,18 @@ MeshPtr Factory::MakeMesh(typename TypeToGenMapping<T>::GenType::Parameters para
 
 template<MeshType T>
 SceneObjectPtr Factory::MakeSceneObjectWithMesh(
+    const ScenePtr scene,
     typename TypeToGenMapping<T>::GenType::Parameters parameters,
     Material mat,
     ShaderProgram shader
 )
 {
-    return MakeSceneObjectWithMesh("", parameters, mat, shader);
+    return MakeSceneObjectWithMesh(scene, "", parameters, mat, shader);
 }
 
 template<MeshType T>
 SceneObjectPtr Factory::MakeSceneObjectWithMesh(
+    const ScenePtr scene,
     std::string name,
     typename TypeToGenMapping<T>::GenType::Parameters parameters,
     Material mat,
@@ -133,8 +140,8 @@ SceneObjectPtr Factory::MakeSceneObjectWithMesh(
 )
 {
     MeshPtr mesh = Factory::MakeMesh<T>(parameters);
-    SceneObjectPtr obj = Factory::MakeSceneObject(name);
-    obj->addComponent<MeshComponent>(mesh, mat, shader);
+    SceneObjectPtr obj = Factory::MakeSceneObject(scene, name);
+    obj->componentMap()->addComponent<ComponentType::Mesh>(mesh, mat, shader);
     return obj;
 }
 
@@ -143,7 +150,7 @@ std::shared_ptr<T> Factory::CreateScriptAndAttachToObject(SceneObjectPtr object,
 {
     std::shared_ptr<T> script = std::make_shared<T>(std::forward<ArgTypes>(args)...);
     ScriptPtr baseScript = std::static_pointer_cast<Script>(script);
-    object->addComponent<ScriptComponent>(baseScript);
+    object->componentMap()->addComponent<ComponentType::Script>(baseScript);
 
     return script;
 }

@@ -38,9 +38,9 @@ void SceneRenderer::renderScene(const ScenePtr scene) const
     scene->updateAllTransforms();
 
     // Get pointers to meshes, lights, and the scene camera
-    const std::vector<SceneObjectPtr> meshObjects = scene->getObjectsWithComponent<MeshComponent>();
-    const std::vector<SceneObjectPtr> lightObjects = scene->getObjectsWithComponent<LightComponent>();
-    const std::vector<SceneObjectPtr> cameraObjects = scene->getObjectsWithComponent<CameraComponent>();
+    const std::vector<SceneObjectPtr> meshObjects = scene->getObjectsWithComponent<ComponentType::Mesh>();
+    const std::vector<SceneObjectPtr> lightObjects = scene->getObjectsWithComponent<ComponentType::Light>();
+    const std::vector<SceneObjectPtr> cameraObjects = scene->getObjectsWithComponent<ComponentType::Camera>();
 
     if (cameraObjects.size() == 0)
     {
@@ -55,7 +55,7 @@ void SceneRenderer::renderScene(const ScenePtr scene) const
 
     // Get the actual camera
     const SceneObjectPtr cameraObj = cameraObjects[0];
-    const std::shared_ptr<CameraComponent> cameraComp = cameraObj->getComponent<CameraComponent>();
+    const std::shared_ptr<CameraComponent> cameraComp = cameraObj->componentMap()->getComponent<ComponentType::Camera>();
 
     // Set up matrices in their UBO
     const glm::mat4 view = cameraComp->getViewMatrix();
@@ -68,7 +68,7 @@ void SceneRenderer::renderScene(const ScenePtr scene) const
     std::vector<Transform> worldTransforms;
     for (const auto& lightObj : lightObjects)
     {
-        std::shared_ptr<LightComponent> lightComp = lightObj->getComponent<LightComponent>();
+        std::shared_ptr<LightComponent> lightComp = lightObj->componentMap()->getComponent<ComponentType::Light>();
         // Get the actual light and its world model matrix (needed to compute its world position)
         lights.push_back(lightComp->getLight());
         worldTransforms.push_back(scene->getWorldTransform(lightObj->id));
@@ -165,7 +165,7 @@ void SceneRenderer::_sendLightData(
 
 void SceneRenderer::drawMesh(const SceneObjectPtr meshObject, const glm::mat4& viewMatrix) const
 {
-    const Transform objectTransform = meshObject->getWorldTransform();
+    const Transform objectTransform = meshObject->worldTransform();
     const glm::mat4 modelMatrix = objectTransform.getModelMatrix();
 
     // Detect non uniform scaling: compute the dot product of the world scale
@@ -186,7 +186,7 @@ void SceneRenderer::drawMesh(const SceneObjectPtr meshObject, const glm::mat4& v
     _matrixUbo.setModel(modelMatrix);
     _matrixUbo.setNormal(normalMatrix);
 
-    const std::shared_ptr<MeshComponent> meshComponent = meshObject->getComponent<MeshComponent>();
+    const std::shared_ptr<MeshComponent> meshComponent = meshObject->componentMap()->getComponent<ComponentType::Mesh>();
     
     // Set up shader and material
     const Material material = meshComponent->getMaterial();

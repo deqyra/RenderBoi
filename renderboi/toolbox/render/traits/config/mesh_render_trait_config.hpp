@@ -5,7 +5,7 @@
 
 #include <memory>
 
-#include "renderboi/toolbox/scene/object/components/mesh_component.hpp"
+#include "../../../scene/object/components/mesh_component.hpp"
 
 namespace Renderboi
 {
@@ -28,6 +28,12 @@ public:
     /// @brief Constant reference to the MeshComponent which is to be used for
     /// rendering.
     const std::shared_ptr<MeshComponent>& Mesh = _mesh;
+};
+
+template<>
+struct RenderTraitMeta<RenderTrait::Mesh>
+{
+    using ConfigType = MeshRenderTraitConfig;
 };
 
 } // namespace Renderboi

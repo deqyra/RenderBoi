@@ -88,13 +88,29 @@ class CameraComponent : public Component
 };
 
 template<>
-ComponentType Component::componentType<CameraComponent>();
+struct ComponentMeta<ComponentType::Camera>
+{
+    struct MultipleInstancesAllowed
+    {
+        static constexpr bool value = false;
+    };
+
+    struct ConcreteType
+    {
+        using type = CameraComponent;
+    };
+
+    struct Name
+    {
+        static constexpr const char* value = "CameraComponent";
+    };
+};
 
 template<>
-std::string Component::componentTypeString<CameraComponent>();
-
-template<>
-bool Component::multipleInstancesAllowed<CameraComponent>();
+struct ComponentTypeToEnum<CameraComponent>
+{
+    static constexpr ComponentType value = ComponentType::Camera;
+};
 
 }//namespace Renderboi
 

@@ -6,7 +6,7 @@ namespace Renderboi
 {
 
 ScriptComponent::ScriptComponent(const SceneObjectPtr sceneObject, const ScriptPtr script) :
-    Component(ComponentType::Script, sceneObject),
+    Component(sceneObject),
     _script(script)
 {
     if (!script)
@@ -53,7 +53,7 @@ void ScriptComponent::_registerScript()
     if (!sceneObject) return;
 
     // Subscribe script to updates
-    ScenePtr scene = sceneObject->getScene();
+    ScenePtr scene = sceneObject->scene();
     if (!scene) return;
     
     scene->registerScript(_script);
@@ -65,7 +65,7 @@ void ScriptComponent::_detachScript()
     if (!_sceneObject) return;
 
     // If applicable, detach script from scene updates
-    ScenePtr scene = _sceneObject->getScene();
+    ScenePtr scene = _sceneObject->scene();
     if (!scene) return;
 
     scene->detachScript(_script->id);
@@ -76,24 +76,6 @@ void ScriptComponent::_release()
     _detachScript();
     _sceneObject.reset();
     _script->setSceneObject(nullptr);
-}
-
-template<>
-ComponentType Component::componentType<ScriptComponent>()
-{
-    return ComponentType::Script;
-}
-
-template<>
-std::string Component::componentTypeString<ScriptComponent>()
-{
-    return "Script";
-}
-
-template<>
-bool Component::multipleInstancesAllowed<ScriptComponent>()
-{
-    return true;
 }
 
 }//namespace Renderboi

@@ -75,13 +75,29 @@ class ScriptComponent : public Component
 };
 
 template<>
-ComponentType Component::componentType<ScriptComponent>();
+struct ComponentMeta<ComponentType::Script>
+{
+    struct MultipleInstancesAllowed
+    {
+        static constexpr bool value = false;
+    };
+
+    struct ConcreteType
+    {
+        using type = ScriptComponent;
+    };
+
+    struct Name
+    {
+        static constexpr const char* value = "ScriptComponent";
+    };
+};
 
 template<>
-std::string Component::componentTypeString<ScriptComponent>();
-
-template<>
-bool Component::multipleInstancesAllowed<ScriptComponent>();
+struct ComponentTypeToEnum<ScriptComponent>
+{
+    static constexpr ComponentType value = ComponentType::Camera;
+};
 
 }//namespace Renderboi
 

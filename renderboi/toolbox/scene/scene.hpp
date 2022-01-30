@@ -15,6 +15,7 @@
 #include <cpptools/container/tree.hpp>
 
 #include "../script.hpp"
+#include "object/component_type.hpp"
 #include "object/scene_object.hpp"
 #include "object/scene_object_metadata.hpp"
 
@@ -26,6 +27,7 @@ class Factory;
 /// @brief A scene containing 3D objects organised in a tree structure. Handles
 /// self-updating scripts and processes input from the application. Use Factory
 /// to instantiate and terminate.
+
 class Scene : public std::enable_shared_from_this<Scene>
 {
 friend Factory;
@@ -328,18 +330,18 @@ public:
     /// @brief Get pointers to all scene objects which have a certain 
     /// component.
     ///
-    /// @tparam T Type of the concrete component to test for.
+    /// @tparam T Literal describing the type of component to query.
     ///
     /// @param mustBeEnabled Whether or not to filter the objects depending
     /// on their enabled state.
     ///
     /// @return An array filled with pointers to all the objects in the 
     /// scene which meet the criteria.
-    template<class T>
+    template<ComponentType T>
     std::vector<SceneObjectPtr> getObjectsWithComponent(const bool mustBeEnabled = true) const;
 };
 
-template<class T>
+template<ComponentType T>
 std::vector<SceneObjectPtr> Scene::getObjectsWithComponent(const bool mustBeEnabled) const
 {
     const std::vector<SceneObjectPtr> all = getAllObjects();
@@ -352,7 +354,7 @@ std::vector<SceneObjectPtr> Scene::getObjectsWithComponent(const bool mustBeEnab
         if (mustBeEnabled && !obj->enabled) return false;
         if (mustBeEnabled && _hasDisabledParent(obj->id)) return false;
         // Return whether the object has the component being asked for
-        return obj->hasComponent<T>();
+        return obj->componentMap()->hasComponent<T>();
     };
 
     // Copy all object pointers into the result vector using the check function
@@ -364,6 +366,6 @@ std::vector<SceneObjectPtr> Scene::getObjectsWithComponent(const bool mustBeEnab
 using ScenePtr = std::shared_ptr<Scene>;
 using SceneWPtr = std::weak_ptr<Scene>;
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__TOOLBOX__SCENE__SCENE_HPP

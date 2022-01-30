@@ -28,29 +28,29 @@
  *   frame of reference, whereas those of an ObjectTransform are expressed 
  *   relative to the parent frame of reference.
  *   
- * Put another way, the representation is expressed relative to the parent 
- * transform in both cases, but the parent of a pure Transform turns out to be
+ * In both cases, the representation is expressed relative to the parent 
+ * transform, but the parent of a pure Transform turns out to be
  * the global frame of reference, whereas the parent of an ObjectTransform can
- * be any frame of reference, hence why they need to be handled differently.
+ * be any frame of reference. Hence why, they need to be handled differently.
  * 
- * In the following definitions of overridden members, three cases can be 
- * distinguished.
+ * In the following definitions of overridden members, three cases arise:
  * 
  * ▫ When arguments are provided relative to the global frame of reference,
  * the aim is mostly to express the provided arguments relative to the parent 
  * frame of reference, and then call the Parent version of the same method
  * in the base Transform instance.
  * Note: this will simply in turn call the World version of that base method,
- * but making a direct call to the World version of a method with Parent-
- * relative arguments would only add to the mess. It will be optimized out 
+ * but making a direct call to the World version of a method with arguments that
+ * are now Parent-relative would only add to the mess. It will be optimized out 
  * anyway.
  * 
  * ▫ When arguments are provided relative to the parent frame of reference,
  * the Parent version of the base method can be called directly with these 
  * arguments.
  * 
- * ▫ Same when arguments are provided relative to the transform's own frame of 
- * reference.
+ * ▫ When arguments are provided relative to the transform's own frame of 
+ * reference, the Parent version of the base method can be called directly with 
+ * these arguments.
  */
 
 namespace Renderboi
@@ -58,21 +58,29 @@ namespace Renderboi
 
 using Ref = FrameOfReference;
 
-ObjectTransform::ObjectTransform(const Transform transform) :
-    Transform(transform),
+ObjectTransform::ObjectTransform(
+    const SceneObjectPtr sceneObject,
+    glm::vec3 position,
+    glm::quat orientation,
+    glm::vec3 scale
+) :
+    Transform(position,
+        orientation,
+        scale),
     _transformNotifier(),
-    _sceneObject(SceneObjectPtr(nullptr)),
+    _sceneObject(sceneObject),
     _objectId(0)
 {
 
 }
 
-ObjectTransform::ObjectTransform(glm::vec3 position, glm::quat orientation, glm::vec3 scale) :
-    Transform(position,
-              orientation,
-              scale),
+ObjectTransform::ObjectTransform(
+    const SceneObjectPtr sceneObject,
+    const Transform transform
+) :
+    Transform(transform),
     _transformNotifier(),
-    _sceneObject(SceneObjectPtr(nullptr)),
+    _sceneObject(sceneObject),
     _objectId(0)
 {
 
@@ -92,7 +100,7 @@ ObjectTransform& ObjectTransform::operator=(const ObjectTransform& other)
     // The TransformNotifier and the referenced SceneObject are left untouched
 
     // Notify transform change
-    notifyChange();
+    _notifyChange();
     
     return *this;
 }
@@ -106,7 +114,7 @@ ObjectTransform& ObjectTransform::operator=(const Transform& other)
     _matrixOutdated = true;
 
     // Notify transform change
-    notifyChange();
+    _notifyChange();
     
     return *this;
 }
@@ -137,7 +145,7 @@ glm::vec3 ObjectTransform::setPosition<Ref::World>(const glm::vec3 position)
     
     // Get the parent object's world transform
     const SceneObjectPtr thisObject = _sceneObject.lock();
-    const ScenePtr scene = thisObject->getScene();
+    const ScenePtr scene = thisObject->scene();
     const unsigned int parentId = scene->getParentId(_objectId);
     const Transform parentTransform = scene->getWorldTransform(parentId);
 
@@ -160,7 +168,7 @@ glm::vec3 ObjectTransform::setPosition<Ref::World>(const glm::vec3 position)
     
     Transform::setPosition<Ref::Parent>(positionRelativeToParent);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
 
     return _position;
 }
@@ -170,7 +178,7 @@ glm::vec3 ObjectTransform::setPosition<Ref::Parent>(const glm::vec3 position)
 {
     Transform::setPosition<Ref::Parent>(position);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
 
     return _position;
 }
@@ -180,7 +188,7 @@ glm::vec3 ObjectTransform::setPosition<Ref::Self>(const glm::vec3 position)
 {
     Transform::setPosition<Ref::Self>(position);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
 
     return _position;
 }
@@ -190,7 +198,7 @@ glm::vec3 ObjectTransform::translateBy<Ref::World>(const glm::vec3& translation)
 {
     // Get the parent object's world transform
     const SceneObjectPtr thisObject = _sceneObject.lock();
-    const ScenePtr scene = thisObject->getScene();
+    const ScenePtr scene = thisObject->scene();
     const unsigned int parentId = scene->getParentId(_objectId);
     const Transform parentTransform = scene->getWorldTransform(parentId);
 
@@ -211,7 +219,7 @@ glm::vec3 ObjectTransform::translateBy<Ref::World>(const glm::vec3& translation)
     // Translate position by found vector
     glm::vec3 newPosition = Transform::translateBy<Ref::Parent>(translation);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
     return newPosition;
 }
 
@@ -220,7 +228,7 @@ glm::vec3 ObjectTransform::translateBy<Ref::Parent>(const glm::vec3& translation
 {
     const glm::vec3 newPosition = Transform::translateBy<Ref::Parent>(translation);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
     return newPosition;
 }
 
@@ -229,7 +237,7 @@ glm::vec3 ObjectTransform::translateBy<Ref::Self>(const glm::vec3& translation)
 {
     const glm::vec3 newPosition = Transform::translateBy<Ref::Self>(translation);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
     return newPosition;
 }
 
@@ -243,7 +251,7 @@ glm::vec3 ObjectTransform::orbit<Ref::World>(
 {
     // Get the parent's world transform
     const SceneObjectPtr thisObject = _sceneObject.lock();
-    const ScenePtr scene = thisObject->getScene();
+    const ScenePtr scene = thisObject->scene();
     const unsigned int parentId = scene->getParentId(_objectId);
     const Transform parentTransform = scene->getWorldTransform(parentId);
 
@@ -271,7 +279,7 @@ glm::vec3 ObjectTransform::orbit<Ref::World>(
     Transform::orbit<Ref::Parent>(radAngle, parentAxis, parentCenter, selfRotate);
 
     // Notify transform change
-    notifyChange();
+    _notifyChange();
 
     return _position;
 }
@@ -286,7 +294,7 @@ glm::vec3 ObjectTransform::orbit<Ref::Parent>(
 {
     Transform::orbit<Ref::Parent>(radAngle, axis, center, selfRotate);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
 
     return _position;
 }
@@ -302,7 +310,7 @@ glm::vec3 ObjectTransform::orbit<Ref::Self>(
 {
     Transform::orbit<Ref::Self>(radAngle, axis, center, selfRotate);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
 
     return _position;
 }
@@ -312,7 +320,7 @@ glm::quat ObjectTransform::setRotation<Ref::World>(const glm::quat rotation)
 {
     // Get the parent's world transform
     const SceneObjectPtr thisObject = _sceneObject.lock();
-    const ScenePtr scene = thisObject->getScene();
+    const ScenePtr scene = thisObject->scene();
     const unsigned int parentId = scene->getParentId(_objectId);
     const Transform parentTransform = scene->getWorldTransform(parentId);
 
@@ -323,7 +331,7 @@ glm::quat ObjectTransform::setRotation<Ref::World>(const glm::quat rotation)
     const glm::quat rotationRelativeToParent = glm::conjugate(parentRotation) * rotation;
     Transform::setRotation<Ref::Parent>(rotationRelativeToParent);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
 
     return _rotation;
 }
@@ -333,7 +341,7 @@ glm::quat ObjectTransform::setRotation<Ref::Parent>(const glm::quat rotation)
 {
     Transform::setRotation<Ref::Parent>(rotation);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
 
     return _rotation;
 }
@@ -343,7 +351,7 @@ glm::quat ObjectTransform::setRotation<Ref::Self>(const glm::quat rotation)
 {
     Transform::setRotation<Ref::Self>(rotation);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
 
     return _rotation;
 }
@@ -352,7 +360,7 @@ glm::quat ObjectTransform::rotateBy(const glm::quat& rotation)
 {
     const glm::quat newRotation = Transform::rotateBy(rotation);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
     return newRotation;
 }
 
@@ -361,7 +369,7 @@ glm::quat ObjectTransform::rotateBy<Ref::World>(const float radAngle, const glm:
 {
     // Get the parent's world transform
     const SceneObjectPtr thisObject = _sceneObject.lock();
-    const ScenePtr scene = thisObject->getScene();
+    const ScenePtr scene = thisObject->scene();
     const unsigned int parentId = scene->getParentId(_objectId);
     const Transform parentTransform = scene->getWorldTransform(parentId);
 
@@ -373,7 +381,7 @@ glm::quat ObjectTransform::rotateBy<Ref::World>(const float radAngle, const glm:
 
     const glm::quat newRotation = Transform::rotateBy<Ref::Parent>(radAngle, parentAxis);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
     return newRotation;
 }
 
@@ -382,7 +390,7 @@ glm::quat ObjectTransform::rotateBy<Ref::Parent>(const float radAngle, const glm
 {
     const glm::quat newRotation = Transform::rotateBy<Ref::Parent>(radAngle, axis);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
     return newRotation;
 }
 
@@ -391,7 +399,7 @@ glm::quat ObjectTransform::rotateBy<Ref::Self>(const float radAngle, const glm::
 {
     const glm::quat newRotation = Transform::rotateBy<Ref::Self>(radAngle, axis);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
     return newRotation;
 }
 
@@ -400,7 +408,7 @@ glm::quat ObjectTransform::lookAt<Ref::World>(const glm::vec3& target, const glm
 {
     // Get the parent's world transform
     const SceneObjectPtr thisObject = _sceneObject.lock();
-    const ScenePtr scene = thisObject->getScene();
+    const ScenePtr scene = thisObject->scene();
     const unsigned int parentId = scene->getParentId(_objectId);
     const Transform parentTransform = scene->getWorldTransform(parentId);
 
@@ -423,7 +431,7 @@ glm::quat ObjectTransform::lookAt<Ref::World>(const glm::vec3& target, const glm
 
     glm::quat newRotation = Transform::lookAt<Ref::Parent>(target, yConstraint);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
     return newRotation;
 }
 
@@ -432,7 +440,7 @@ glm::quat ObjectTransform::lookAt<Ref::Parent>(const glm::vec3& target, const gl
 {
     const glm::quat newRotation = Transform::lookAt<Ref::Parent>(target, yConstraint);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
     return newRotation;
 }
 
@@ -441,7 +449,7 @@ glm::quat ObjectTransform::lookAt<Ref::Self>(const glm::vec3& target, const glm:
 {
     const glm::quat newRotation = Transform::lookAt<Ref::Self>(target, yConstraint);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
     return newRotation;
 }
 
@@ -450,7 +458,7 @@ glm::vec3 ObjectTransform::setScale<Ref::World>(const glm::vec3 scale)
 {
     // Get the parent's world transform
     const SceneObjectPtr thisObject = _sceneObject.lock();
-    const ScenePtr scene = thisObject->getScene();
+    const ScenePtr scene = thisObject->scene();
     const unsigned int parentId = scene->getParentId(_objectId);
     const Transform parentTransform = scene->getWorldTransform(parentId);
 
@@ -465,7 +473,7 @@ glm::vec3 ObjectTransform::setScale<Ref::World>(const glm::vec3 scale)
 
     Transform::setScale<Ref::Parent>(newScale);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
 
     return _scale;
 }
@@ -475,7 +483,7 @@ glm::vec3 ObjectTransform::setScale<Ref::Parent>(const glm::vec3 scale)
 {
     Transform::setScale<Ref::Parent>(scale);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
 
     return _scale;
 }
@@ -485,7 +493,7 @@ glm::vec3 ObjectTransform::setScale<Ref::Self>(const glm::vec3 scale)
 {
     Transform::setScale<Ref::Self>(scale);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
 
     return _scale;
 }
@@ -494,7 +502,7 @@ glm::vec3 ObjectTransform::scaleBy(const glm::vec3& scaling)
 {
     Transform::scaleBy(scaling);
     // Notify transform change
-    notifyChange();
+    _notifyChange();
     
     return _scale;
 }
@@ -509,9 +517,14 @@ Transform ObjectTransform::compoundFrom(const ObjectTransform& other) const
     return this->Transform::compoundFrom((Transform) other);
 }
 
-void ObjectTransform::notifyChange() const
+void ObjectTransform::_notifyChange() const
 {
     _transformNotifier.notify(_objectId);
+}
+
+void ObjectTransform::_release()
+{
+    _sceneObject.reset();
 }
 
 }//namespace Renderboi

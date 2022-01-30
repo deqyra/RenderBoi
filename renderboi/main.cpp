@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 	#endif
 
 	RenderboiParameters rbParams = {
-		fs::current_path()		// .assetsPath
+		.assetsPath = fs::current_path()
 	};
 	if (!processArguments(argc, argv, rbParams))
 	{

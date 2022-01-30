@@ -14,6 +14,12 @@ public:
     virtual void render();
 };
 
+template<>
+struct RenderTraitMeta<RenderTrait::Mesh>
+{
+    using RendererType = MeshTraitRenderer;
+};
+
 using MeshTraitRendererPtr = std::shared_ptr<MeshTraitRenderer>;
 
 } // namespace Renderboi
