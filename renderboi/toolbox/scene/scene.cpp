@@ -74,21 +74,16 @@ SceneObjectPtr Scene::newObject(const std::string name, const unsigned int paren
     return object;
 }
 
-void Scene::registerObject(const SceneObjectPtr object)
+void Scene::_registerObject(const SceneObjectPtr object)
 {
-    _checkNotNullOrThrow(object);
-    _verifyNoParentSceneOrThrow(object);
-
     const ObjectTree::NodePtr node = _objects.getRoot();
     const unsigned int rootId = node->value->id;
     // Register object as a root child
     _performObjectRegistration(object, _objectMetadata[rootId]);
 }
 
-void Scene::registerObject(const SceneObjectPtr object, const unsigned int parentId)
+void Scene::_registerObject(const SceneObjectPtr object, const unsigned int parentId)
 {
-    _checkNotNullOrThrow(object);
-    _verifyNoParentSceneOrThrow(object);
     const SceneObjectMetadata meta = _findObjectMetaOrThrow(parentId, "cannot register object to this parent");
  
     _performObjectRegistration(object, meta);

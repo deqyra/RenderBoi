@@ -79,6 +79,8 @@ RenderBoi:
             ☐ Serialisation
             ☐ Make a concept out of components, simplify template usage in SceneObject
             ✔ Implement template meta to have componentMap.addComponent<Camera> instead of componentMap.addComponent<CameraComponent> @done(22-01-29 18:13)
+        ComponentMap:
+            ☐ Better naming for template parameters
         Factory:
             ✔ Method to attach camera and scripts to scene object@done(20-10-26 02:40)
             ☐ Forwarding methods to ShaderBuilder
@@ -117,7 +119,7 @@ RenderBoi:
             ☐ Make `enabled` notify scene on change
             ☐ Make component collection public, notify scene as needed
             ☐ Serialisation
-            ☐ `setSceneObject` might not be useful anymore
+            ✔ `_setScene` might not be useful anymore @done(22-01-31 00:54)
         SceneRenderer:
             ✔ Implement a framerate limiter @done(20-10-19 21:49)
             ☐ Mesh rendering order based on distance to camera

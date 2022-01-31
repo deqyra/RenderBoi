@@ -31,12 +31,15 @@ class Scene;
 using ScenePtr = std::shared_ptr<Scene>;
 using SceneWPtr = std::weak_ptr<Scene>;
 
+class Factory;
+
 /// @brief An object meant to be part of a scene. Abstract entity made up of 
 /// components which give it concrete aspects in the context of a scene. Also
 /// contains information on how to draw itself.
 class SceneObject : public std::enable_shared_from_this<SceneObject>
 {
 friend Scene;
+friend Factory;
 
 private:
     SceneObject& operator=(const SceneObject& other) = delete;
@@ -63,7 +66,12 @@ private:
     /// @brief Notify instance to let go of references to shared resources.
     void _release();
 
-    /// @brief Same as init(), but to be called on a newly cloned instance.
+    /// @brief Link the scene object to its transform and internal maps (which
+    /// cannot be done during construction). To be called before any other
+    /// operation is performed on the scene object.
+    void _init();
+
+    /// @brief Same as _init(), but to be called on a newly cloned instance.
     /// 
     /// @param other Instance this one was cloned from.
     void _initCloned(const SceneObject& other);
@@ -74,11 +82,6 @@ public:
     SceneObject(const ScenePtr scene, const std::string name = "");
 
     ~SceneObject();
-
-    /// @brief Link the scene object to its transform and internal maps (which
-    /// cannot be done during construction). To be called before any other
-    /// operation is performed on the scene object.
-    void init();
 
     /// @brief Get a pointer to the transform of this object.
     ///

@@ -41,6 +41,15 @@ class Factory
         /// @return Pointer to the instantiated scene object.
         static SceneObjectPtr MakeSceneObject(const ScenePtr scene, std::string name = "");
 
+        /// @brief Instantiate and initialize a new scene object.
+        ///
+        /// @param scene Pointer to the parent of the newly created object.
+        /// @param parentId ID of the parent scene object in the scene.
+        /// @param name Name to give to the scene object.
+        ///
+        /// @return Pointer to the instantiated scene object.
+        SceneObjectPtr MakeSceneObjectWithParent(const ScenePtr scene, const unsigned int parentId, std::string name = "");
+
         /// @brief Create a mesh with vertices arranged in a certain shape.
         ///
         /// @tparam T Literal describing which mesh generator to use.

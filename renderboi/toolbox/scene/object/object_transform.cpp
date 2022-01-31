@@ -69,7 +69,7 @@ ObjectTransform::ObjectTransform(
         scale),
     _transformNotifier(),
     _sceneObject(sceneObject),
-    _objectId(0)
+    _objectId(sceneObject ? sceneObject->id : -1)
 {
 
 }
@@ -81,7 +81,7 @@ ObjectTransform::ObjectTransform(
     Transform(transform),
     _transformNotifier(),
     _sceneObject(sceneObject),
-    _objectId(0)
+    _objectId(sceneObject ? sceneObject->id : -1)
 {
 
 }
@@ -119,18 +119,9 @@ ObjectTransform& ObjectTransform::operator=(const Transform& other)
     return *this;
 }
 
-SceneObjectWPtr ObjectTransform::getSceneObject() const
+SceneObjectWPtr ObjectTransform::sceneObject() const
 {
     return _sceneObject;
-}
-
-void ObjectTransform::setSceneObject(const SceneObjectPtr sceneObj)
-{
-    _sceneObject = sceneObj;
-    SceneObjectPtr sceneObject = _sceneObject.lock();
-
-    if (sceneObject) _objectId = sceneObject->id;
-    else _objectId = -1;
 }
 
 ObjectTransform::TransformNotifier& ObjectTransform::getNotifier()

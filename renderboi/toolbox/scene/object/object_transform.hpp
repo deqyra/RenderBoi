@@ -111,13 +111,7 @@ public:
     /// @brief Get the object the transform is attached to.
     ///
     /// @return Pointer to the scene object the transform is attached to.
-    SceneObjectWPtr getSceneObject() const;
-
-    /// @brief Set which object the transform is attached to
-    ///
-    /// @param sceneObj A pointer to the scene object the transform should
-    /// be attached to.
-    void setSceneObject(const SceneObjectPtr sceneObj);
+    SceneObjectWPtr sceneObject() const;
 
     /// @brief Retrieve the notifier attached to this transform.
     ///
