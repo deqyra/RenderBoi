@@ -1,4 +1,5 @@
 #include "lighting_sandbox.hpp"
+#include "renderboi/toolbox/mesh_generators/cube_generator.hpp"
 
 #include <iostream>
 #include <memory>
@@ -28,7 +29,7 @@
 #include <renderboi/toolbox/scene/object/scene_object.hpp>
 #include <renderboi/toolbox/scene/object/component_type.hpp>
 #include <renderboi/toolbox/scene/object/components/all_components.hpp>
-#include <renderboi/toolbox/scene/renderer/scene_renderer.hpp>
+#include <renderboi/toolbox/render/scene_renderer.hpp>
 #include <renderboi/toolbox/runnables/input_logger.hpp>
 #include <renderboi/toolbox/runnables/mouse_camera_manager.hpp>
 #include <renderboi/toolbox/runnables/keyboard_movement_script.hpp>
@@ -70,34 +71,38 @@ void LightingSandbox::run()
     ScenePtr scene = Factory::MakeScene();
 
     // BIG TORUS
-    SceneObjectPtr bigTorusObj = Factory::MakeSceneObjectWithMesh<MeshType::Torus>("Big torus", {2.f, 0.5f, 72, 48}, Materials::Emerald, lightingShader);
+    SceneObjectPtr bigTorusObj = Factory::MakeSceneObjectWithMesh<MeshType::Torus>(scene, "Big torus", {2.f, 0.5f, 72, 48}, Materials::Emerald, lightingShader);
 
     // SMALL TORUS
-    SceneObjectPtr smallTorusObj = Factory::MakeSceneObjectWithMesh<MeshType::Torus>("Small torus", {0.75f, 0.25f, 64, 32}, Materials::Gold, lightingShader);
+    SceneObjectPtr smallTorusObj = Factory::MakeSceneObjectWithMesh<MeshType::Torus>(scene, "Small torus", {0.75f, 0.25f, 64, 32}, Materials::Gold, lightingShader);
     
     // AXES
-    SceneObjectPtr axesObj = Factory::MakeSceneObjectWithMesh<MeshType::Axes>("Axes", {3.f});
+    SceneObjectPtr axesObj = Factory::MakeSceneObjectWithMesh<MeshType::Axes>(scene, "Axes", {3.f});
     
     // CUBE
-    SceneObjectPtr cubeObj = Factory::MakeSceneObjectWithMesh<MeshType::Cube>("Light cube", {0.3f, {0.f, 0.f, 0.f}, false}, Materials::Default, lightingShader);
+    SceneObjectPtr cubeObj = Factory::MakeSceneObjectWithMesh<MeshType::Cube>(
+        scene, "Light cube",
+        (CubeGenerator::Parameters){0.3f, {0.f, 0.f, 0.f}, false},
+        Materials::Default, lightingShader
+    );
     std::shared_ptr<PointLight> light = std::make_shared<PointLight>(LightBaseRange);
-    cubeObj->addComponent<LightComponent>(light);
+    cubeObj->componentMap()->addComponent<ComponentType::Light>(light);
 
     // TETRAHEDRON
-    SceneObjectPtr tetrahedronObj = Factory::MakeSceneObjectWithMesh<MeshType::Tetrahedron>("Tetrahedron", {0.5f});
+    SceneObjectPtr tetrahedronObj = Factory::MakeSceneObjectWithMesh<MeshType::Tetrahedron>(scene, "Tetrahedron", {0.5f});
 
     // CAMERA
-    SceneObjectPtr cameraObj = Factory::MakeSceneObject("Camera");
+    SceneObjectPtr cameraObj = Factory::MakeSceneObject(scene, "Camera");
     CameraPtr camera = std::make_shared<Camera>(CameraParams);
-    cameraObj->addComponent<CameraComponent>(camera);
+    cameraObj->componentMap()->addComponent<ComponentType::Camera>(camera);
 
     // Register everything in scene and create relationships
-    scene->registerObject(bigTorusObj);
-    scene->registerObject(smallTorusObj, bigTorusObj->id);
-    scene->registerObject(axesObj);
-    scene->registerObject(cubeObj);
-    scene->registerObject(tetrahedronObj, smallTorusObj->id);
-    scene->registerObject(cameraObj);
+    // scene->registerObject(bigTorusObj);
+    // scene->registerObject(smallTorusObj, bigTorusObj->id);
+    // scene->registerObject(axesObj);
+    // scene->registerObject(cubeObj);
+    // scene->registerObject(tetrahedronObj, smallTorusObj->id);
+    // scene->registerObject(cameraObj);
 
     // Link camera to MouseCameraManager
     std::shared_ptr<MouseCameraManager> cameraManager = std::make_shared<MouseCameraManager>(camera);
@@ -111,7 +116,7 @@ void LightingSandbox::run()
     
     // Add script component to camera: KeyboardMovementScript
     ControlledEntityManager<KeyboardMovementScript> keyboardScriptManager(std::static_pointer_cast<BasisProvider>(camera));
-    cameraObj->addComponent<ScriptComponent>(std::static_pointer_cast<Script>(keyboardScriptManager.getEntity()));
+    cameraObj->componentMap()->addComponent<ComponentType::Script>(std::static_pointer_cast<Script>(keyboardScriptManager.getEntity()));
 
     // Window script
     ControlledEntityManager<BasicWindowManager> windowManager;
@@ -141,14 +146,14 @@ void LightingSandbox::run()
     const glm::vec3 Z = Transform::Z;
 
     // Move stuff around
-    bigTorusObj->transform.rotateBy<Ref::World>((float)glm::radians(90.f), X);
-    smallTorusObj->transform.rotateBy<Ref::Parent>(glm::radians(90.f), X);
-    smallTorusObj->transform.translateBy<Ref::Parent>(-2.f * X);
-    cubeObj->transform.setPosition<Ref::World>(StartingLightPosition);
-    tetrahedronObj->transform.translateBy<Ref::Parent>(-1.2f * X);
-    tetrahedronObj->transform.rotateBy<Ref::Parent>(glm::radians(90.f), Z);
-    cameraObj->transform.setPosition<Ref::World>(StartingCameraPosition);
-    cameraObj->transform.rotateBy<Ref::Parent>(glm::radians(180.f), Y);
+    bigTorusObj->transform()->rotateBy<Ref::World>((float)glm::radians(90.f), X);
+    smallTorusObj->transform()->rotateBy<Ref::Parent>(glm::radians(90.f), X);
+    smallTorusObj->transform()->translateBy<Ref::Parent>(-2.f * X);
+    cubeObj->transform()->setPosition<Ref::World>(StartingLightPosition);
+    tetrahedronObj->transform()->translateBy<Ref::Parent>(-1.2f * X);
+    tetrahedronObj->transform()->rotateBy<Ref::Parent>(glm::radians(90.f), Z);
+    cameraObj->transform()->setPosition<Ref::World>(StartingCameraPosition);
+    cameraObj->transform()->rotateBy<Ref::Parent>(glm::radians(180.f), Y);
 
     SceneRenderer sceneRenderer;
 
@@ -205,15 +210,15 @@ void LightingSandboxScript::update(float timeElapsed)
         // Update object transforms
         float delta = _speedFactor * timeElapsed;
 
-        _cubeObj->transform.orbit<Ref::World>((float)glm::radians(45.f * delta), CubeOrbitAxis, glm::vec3(0.f, 3.f, 0.f), true);
-        _bigTorusObj->transform.rotateBy<Ref::Parent>((float)glm::radians(45.f * delta), BigTorusRotationAxis);
-        _smallTorusObj->transform.orbit<Ref::Parent>((float)glm::radians(45.f * delta), SmallTorusRotationAxis, glm::vec3(0.f, 0.f, 0.f), true);
-        _tetrahedronObj->transform.rotateBy<Ref::Self>((float)glm::radians(45.f * delta), TetrahedronRotationAxis);
-        _tetrahedronObj->transform.orbit<Ref::Parent>((float)glm::radians(45.f * delta), TetrahedronOrbitAxis, glm::vec3(0.f), true);
+        _cubeObj->transform()->orbit<Ref::World>((float)glm::radians(45.f * delta), CubeOrbitAxis, glm::vec3(0.f, 3.f, 0.f), true);
+        _bigTorusObj->transform()->rotateBy<Ref::Parent>((float)glm::radians(45.f * delta), BigTorusRotationAxis);
+        _smallTorusObj->transform()->orbit<Ref::Parent>((float)glm::radians(45.f * delta), SmallTorusRotationAxis, glm::vec3(0.f, 0.f, 0.f), true);
+        _tetrahedronObj->transform()->rotateBy<Ref::Self>((float)glm::radians(45.f * delta), TetrahedronRotationAxis);
+        _tetrahedronObj->transform()->orbit<Ref::Parent>((float)glm::radians(45.f * delta), TetrahedronOrbitAxis, glm::vec3(0.f), true);
     }
     else
     {
-        _bigTorusObj->transform.lookAt<Ref::World>(_cameraObj->getWorldTransform().getPosition(), {0.f, 1.f, 0.f});
+        _bigTorusObj->transform()->lookAt<Ref::World>(_cameraObj->worldTransform().getPosition(), {0.f, 1.f, 0.f});
     }
 }
 

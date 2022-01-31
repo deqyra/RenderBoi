@@ -79,7 +79,7 @@ struct ComponentMeta<ComponentType::Script>
 {
     struct MultipleInstancesAllowed
     {
-        static constexpr bool value = false;
+        static constexpr bool value = true;
     };
 
     struct ConcreteType

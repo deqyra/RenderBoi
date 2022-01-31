@@ -17,7 +17,6 @@
 
 #include "project_env.hpp"
 
-namespace rb = Renderboi;
 namespace fs = std::filesystem;
 
 bool processArguments(const int argc, char* const* argv, RenderboiParameters& dest)

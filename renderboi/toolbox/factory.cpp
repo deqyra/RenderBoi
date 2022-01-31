@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "renderboi/toolbox/scene/object/object_transform.hpp"
 #include "scene/scene.hpp"
 #include "scene/object/scene_object.hpp"
 
@@ -23,7 +24,16 @@ void Factory::DestroyScene(ScenePtr scene)
 SceneObjectPtr Factory::MakeSceneObject(const ScenePtr scene, std::string name)
 {
     SceneObjectPtr sceneObject = std::make_shared<SceneObject>(scene, name);
-    sceneObject->init();
+    sceneObject->_init();
+    scene->_registerObject(sceneObject);
+    return sceneObject;
+}
+
+SceneObjectPtr Factory::MakeSceneObjectWithParent(const ScenePtr scene, const unsigned int parentId, std::string name)
+{
+    SceneObjectPtr sceneObject = std::make_shared<SceneObject>(scene, name);
+    sceneObject->_init();
+    scene->_registerObject(sceneObject, parentId);
     return sceneObject;
 }
 

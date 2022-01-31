@@ -120,6 +120,29 @@ private:
     /// the function will throw a std::runtime_error.
     void _verifyNoParentSceneOrThrow(const SceneObjectPtr object) const;
 
+    /// @brief Register an object in the scene as a root child.
+    ///
+    /// @param object Poitner to the object to register.
+    ///
+    /// @exception If the scene object is already registered to a scene, 
+    /// whether it is this scene or another one, the function will throw a
+    /// std::runtime_error.
+    void _registerObject(const SceneObjectPtr object);
+
+    /// @brief Register an object in the scene as a child of the object
+    /// with provided ID.
+    ///
+    /// @param object Poitner to the object to register.
+    /// @param parentId ID of the object which should be parent to the newly
+    /// registered object.
+    ///
+    /// @exception If the scene object is already registered to a scene, 
+    /// whether it is this scene or another one, the function will throw a
+    /// std::runtime_error. If the provided ID does not match that of an 
+    /// object present in the scene, the function will throw a 
+    /// std::runtime_error.
+    void _registerObject(const SceneObjectPtr object, const unsigned int parentId);
+
     /// @brief Perform the actual scene object registration. Call after all
     /// sanity checks have passed.
     ///
@@ -213,29 +236,6 @@ public:
     /// @exception If the provided ID does not match that of an object 
     /// present in the scene, the function will throw a std::runtime_error.
     SceneObjectPtr newObject(const std::string name, const unsigned int parentId);
-
-    /// @brief Register an object in the scene as a root child.
-    ///
-    /// @param object Poitner to the object to register.
-    ///
-    /// @exception If the scene object is already registered to a scene, 
-    /// whether it is this scene or another one, the function will throw a
-    /// std::runtime_error.
-    void registerObject(const SceneObjectPtr object);
-
-    /// @brief Register an object in the scene as a child of the object
-    /// with provided ID.
-    ///
-    /// @param object Poitner to the object to register.
-    /// @param parentId ID of the object which should be parent to the newly
-    /// registered object.
-    ///
-    /// @exception If the scene object is already registered to a scene, 
-    /// whether it is this scene or another one, the function will throw a
-    /// std::runtime_error. If the provided ID does not match that of an 
-    /// object present in the scene, the function will throw a 
-    /// std::runtime_error.
-    void registerObject(const SceneObjectPtr object, const unsigned int parentId);
 
     /// @brief Remove the object with provided ID from the scene, as well as
     /// all of its children.

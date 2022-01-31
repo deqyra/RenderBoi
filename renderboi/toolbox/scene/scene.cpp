@@ -74,21 +74,16 @@ SceneObjectPtr Scene::newObject(const std::string name, const unsigned int paren
     return object;
 }
 
-void Scene::registerObject(const SceneObjectPtr object)
+void Scene::_registerObject(const SceneObjectPtr object)
 {
-    _checkNotNullOrThrow(object);
-    _verifyNoParentSceneOrThrow(object);
-
     const ObjectTree::NodePtr node = _objects.getRoot();
     const unsigned int rootId = node->value->id;
     // Register object as a root child
     _performObjectRegistration(object, _objectMetadata[rootId]);
 }
 
-void Scene::registerObject(const SceneObjectPtr object, const unsigned int parentId)
+void Scene::_registerObject(const SceneObjectPtr object, const unsigned int parentId)
 {
-    _checkNotNullOrThrow(object);
-    _verifyNoParentSceneOrThrow(object);
     const SceneObjectMetadata meta = _findObjectMetaOrThrow(parentId, "cannot register object to this parent");
  
     _performObjectRegistration(object, meta);
@@ -284,6 +279,7 @@ void Scene::_init()
 
     // Reset the object graph root node pointer to a scene object initialized with a pointer to this Scene.
     objectRootNode->value.reset(new SceneObject(this->shared_from_this(), "SCENE_ROOT"));
+    objectRootNode->value->_init();
 
     // Set and map metadata
     const SceneObjectMetadata meta = {

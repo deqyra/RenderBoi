@@ -54,6 +54,21 @@ void SceneObject::_release()
     _renderTraitConfigMap->_release();
 }
 
+void SceneObject::_init()
+{
+    _componentMap = ComponentMapPtr(
+        new ComponentMap(shared_from_this())
+    );
+
+    _renderTraitConfigMap = RenderTraitConfigMapPtr(
+        new RenderTraitConfigMap(shared_from_this())
+    );
+
+    _transform = ObjectTransformPtr(
+        new ObjectTransform(shared_from_this())
+    );
+}
+
 void SceneObject::_initCloned(const SceneObject& other)
 {
     _componentMap = ComponentMapPtr(
@@ -66,22 +81,6 @@ void SceneObject::_initCloned(const SceneObject& other)
 
     _transform = ObjectTransformPtr(
         new ObjectTransform(shared_from_this(), (Transform)(*other._transform))
-    );
-}
-
-
-void SceneObject::init()
-{
-    _componentMap = ComponentMapPtr(
-        new ComponentMap(shared_from_this())
-    );
-
-    _renderTraitConfigMap = RenderTraitConfigMapPtr(
-        new RenderTraitConfigMap(shared_from_this())
-    );
-
-    _transform = ObjectTransformPtr(
-        new ObjectTransform(shared_from_this())
     );
 }
 

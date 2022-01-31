@@ -23,6 +23,7 @@
 #include <renderboi/toolbox/scene/object/components/camera_component.hpp>
 #include <renderboi/toolbox/scene/object/components/light_component.hpp>
 #include <renderboi/toolbox/scene/object/components/mesh_component.hpp>
+#include <renderboi/toolbox/scene/object/components/script_component.hpp>
 #include <renderboi/toolbox/runnables/basic_window_manager.hpp>
 #include <renderboi/toolbox/runnables/camera_aspect_ratio_manager.hpp>
 #include <renderboi/toolbox/runnables/gamepad_movement_script.hpp>
@@ -129,7 +130,7 @@ void ShadowSandbox::run()
     );
     Texture2D floorTex = Texture2D("wood.png", PixelSpace::sRGB);
     floorMaterial.pushDiffuseMap(floorTex);
-    SceneObjectPtr floorObj = Factory::MakeSceneObjectWithMesh<MeshType::Plane>("Floor", planeParameters, floorMaterial, blinnPhongShader);
+    SceneObjectPtr floorObj = Factory::MakeSceneObjectWithMesh<MeshType::Plane>(scene, "Floor", planeParameters, floorMaterial, blinnPhongShader);
 
     // WALLS
     Material wallMaterial = Material(
@@ -142,10 +143,10 @@ void ShadowSandbox::run()
     wallMaterial.pushDiffuseMap(wallTex);
 
     // XY wall
-    SceneObjectPtr xyWallObj = Factory::MakeSceneObjectWithMesh<MeshType::Plane>("XY wall", planeParameters, wallMaterial, blinnPhongShader);
+    SceneObjectPtr xyWallObj = Factory::MakeSceneObjectWithMesh<MeshType::Plane>(scene, "XY wall", planeParameters, wallMaterial, blinnPhongShader);
 
     // YZ wall
-    SceneObjectPtr yzWallObj = Factory::MakeSceneObjectWithMesh<MeshType::Plane>("YZ wall", planeParameters, wallMaterial, blinnPhongShader);
+    SceneObjectPtr yzWallObj = Factory::MakeSceneObjectWithMesh<MeshType::Plane>(scene, "YZ wall", planeParameters, wallMaterial, blinnPhongShader);
 
     TorusGenerator::Parameters torusParameters = {
         4.f,    // toroidalRadius
@@ -155,28 +156,28 @@ void ShadowSandbox::run()
     };
 
     // TORUS
-    SceneObjectPtr torusObj = Factory::MakeSceneObjectWithMesh<MeshType::Torus>("Torus", torusParameters, Materials::Default, blinnPhongShader);
+    SceneObjectPtr torusObj = Factory::MakeSceneObjectWithMesh<MeshType::Torus>(scene, "Torus", torusParameters, Materials::Default, blinnPhongShader);
 
     // LIGHT
-    SceneObjectPtr lightObj = Factory::MakeSceneObjectWithMesh<MeshType::Cube>("Light cube", {0.3f, {0.f, 0.f, 0.f}, false}, Materials::Default, fullLightShader);
+    SceneObjectPtr lightObj = Factory::MakeSceneObjectWithMesh<MeshType::Cube>(scene, "Light cube", {0.3f, {0.f, 0.f, 0.f}, false}, Materials::Default, fullLightShader);
     std::shared_ptr<PointLight> light = std::make_shared<PointLight>(LightBaseRange);
-    lightObj->addComponent<LightComponent>(light);
+    lightObj->componentMap()->addComponent<ComponentType::Light>(light);
 
     // CAMERA
-    SceneObjectPtr cameraObj = Factory::MakeSceneObject("Camera");
+    SceneObjectPtr cameraObj = Factory::MakeSceneObject(scene, "Camera");
     CameraPtr camera = std::make_shared<Camera>(CameraParams);
-    cameraObj->addComponent<CameraComponent>(camera);
+    cameraObj->componentMap()->addComponent<ComponentType::Camera>(camera);
 
     //depthShader.setFloat("near", camera->getNearDistance());
     //depthShader.setFloat("far", camera->getFarDistance());
 
     // Register all objects
-    scene->registerObject(floorObj);
-    scene->registerObject(xyWallObj);
-    scene->registerObject(yzWallObj);
-    scene->registerObject(torusObj);
-    scene->registerObject(lightObj);
-    scene->registerObject(cameraObj);
+    // scene->registerObject(floorObj);
+    // scene->registerObject(xyWallObj);
+    // scene->registerObject(yzWallObj);
+    // scene->registerObject(torusObj);
+    // scene->registerObject(lightObj);
+    // scene->registerObject(cameraObj);
 
 
 
@@ -190,15 +191,15 @@ void ShadowSandbox::run()
     const glm::vec3 Y = Transform::Y;
     const glm::vec3 Z = Transform::Z;
 
-    floorObj->transform.rotateBy<Ref::World>(glm::radians(-90.f), X);
-    floorObj->transform.translateBy<Ref::World>({0.f, 0.f, WallSize});
-    yzWallObj->transform.rotateBy<Ref::World>(glm::radians(90.f), Y);
-    yzWallObj->transform.translateBy<Ref::World>({0.f, 0.f, WallSize});
-    torusObj->transform.translateBy<Ref::World>({WallSize / 2.f, WallSize / 2.f, WallSize / 2.f});
-    torusObj->transform.rotateBy<Ref::World>(glm::radians(45.f), X);
-    lightObj->transform.setPosition<Ref::World>(LightPosition);
-    cameraObj->transform.setPosition<Ref::World>(StartingCameraPosition);
-    cameraObj->transform.rotateBy<Ref::Parent>(glm::radians(180.f), Y);
+    floorObj->transform()->rotateBy<Ref::World>(glm::radians(-90.f), X);
+    floorObj->transform()->translateBy<Ref::World>({0.f, 0.f, WallSize});
+    yzWallObj->transform()->rotateBy<Ref::World>(glm::radians(90.f), Y);
+    yzWallObj->transform()->translateBy<Ref::World>({0.f, 0.f, WallSize});
+    torusObj->transform()->translateBy<Ref::World>({WallSize / 2.f, WallSize / 2.f, WallSize / 2.f});
+    torusObj->transform()->rotateBy<Ref::World>(glm::radians(45.f), X);
+    lightObj->transform()->setPosition<Ref::World>(LightPosition);
+    cameraObj->transform()->setPosition<Ref::World>(StartingCameraPosition);
+    cameraObj->transform()->rotateBy<Ref::Parent>(glm::radians(180.f), Y);
 
 
 
@@ -222,11 +223,11 @@ void ShadowSandbox::run()
 
     // Add script component to camera: KeyboardMovementScript
     ControlledEntityManager<KeyboardMovementScript> keyboardMovementScriptManager(cameraAsBasisProvider);
-    cameraObj->addComponent<ScriptComponent>(std::static_pointer_cast<Script>(keyboardMovementScriptManager.getEntity()));
+    cameraObj->componentMap()->addComponent<ComponentType::Script>(std::static_pointer_cast<Script>(keyboardMovementScriptManager.getEntity()));
 
     // Add script component to camera: GamepadMovementScript
     std::shared_ptr<GamepadMovementScript> gamepadMovementScript = std::make_shared<GamepadMovementScript>(cameraAsBasisProvider);
-    cameraObj->addComponent<ScriptComponent>(std::static_pointer_cast<Script>(gamepadMovementScript));
+    cameraObj->componentMap()->addComponent<ComponentType::Script>(std::static_pointer_cast<Script>(gamepadMovementScript));
 
     // Add script component to scene: GamepadCameraManager
     std::shared_ptr<GamepadCameraManager> gamepadCameraManager = std::make_shared<GamepadCameraManager>(camera);
@@ -311,7 +312,7 @@ void ShadowSandbox::tearDown()
 ShadowSandboxScript::ShadowSandboxScript(SceneObjectPtr lightObj, SceneObjectPtr torusObj) :
     _lightObj(lightObj),
     _torusObj(torusObj),
-    _lightStartingPos(lightObj->getWorldTransform().getPosition()),
+    _lightStartingPos(lightObj->worldTransform().getPosition()),
     _pause(false),
     _speedFactor(2.f),
     _sine(LightMovementFrequency)
@@ -331,10 +332,10 @@ void ShadowSandboxScript::update(float timeElapsed)
     if (!_pause)
     {
         glm::vec3 newLightPos = _lightStartingPos + LightMovementAxis * _sine.get() * (LightMovementAmplitude / 2.f);
-        _lightObj->transform.setPosition<Ref::World>(newLightPos);
+        _lightObj->transform()->setPosition<Ref::World>(newLightPos);
 
         float delta = _speedFactor * timeElapsed;
-        _torusObj->transform.rotateBy<Ref::World>(glm::radians(45.f * delta), TorusRotationAxis);
+        _torusObj->transform()->rotateBy<Ref::World>(glm::radians(45.f * delta), TorusRotationAxis);
     }
 }
 
