@@ -279,6 +279,7 @@ void Scene::_init()
 
     // Reset the object graph root node pointer to a scene object initialized with a pointer to this Scene.
     objectRootNode->value.reset(new SceneObject(this->shared_from_this(), "SCENE_ROOT"));
+    objectRootNode->value->_init();
 
     // Set and map metadata
     const SceneObjectMetadata meta = {

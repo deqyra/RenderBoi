@@ -75,7 +75,6 @@ void ScriptComponent::_release()
 {
     _detachScript();
     _sceneObject.reset();
-    _script->setSceneObject(nullptr);
 }
 
 }//namespace Renderboi

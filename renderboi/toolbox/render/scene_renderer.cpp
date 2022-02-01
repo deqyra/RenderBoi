@@ -79,8 +79,8 @@ void SceneRenderer::renderScene(const ScenePtr scene) const
     const std::chrono::time_point<std::chrono::system_clock> newTimestamp = std::chrono::system_clock::now();
     const std::chrono::duration<double> duration = newTimestamp - _lastTimestamp;
     _lastTimestamp = newTimestamp;
-    const int64_t gap = _frameIntervalUs - std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
-    std::this_thread::sleep_for(std::chrono::microseconds(gap));
+    // const int64_t gap = _frameIntervalUs - std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+    // std::this_thread::sleep_for(std::chrono::microseconds(gap));
 
     for (const auto& meshObj : meshObjects)
     {
