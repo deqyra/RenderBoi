@@ -26,4 +26,4 @@ void GamepadManager::setGamepadDisconnected(GamepadPtr gamepad)
     gamepad->_processDisconnected();
 }
 
-}//namespace Renderboi::Window
+} // namespace Renderboi::Window

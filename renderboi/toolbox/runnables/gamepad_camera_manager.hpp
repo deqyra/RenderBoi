@@ -4,6 +4,7 @@
 #include <glm/vec2.hpp>
 
 #include <renderboi/core/camera.hpp>
+
 #include <renderboi/window/gamepad/gamepad_input_processor.hpp>
 #include <renderboi/window/gamepad/gamepad.hpp>
 
@@ -15,8 +16,7 @@ namespace Renderboi
 /// @brief Provides event callbacks to manage a camera as in a FPS game. This 
 /// script must be attached to an object which has a camera component, otherwise
 /// an std::runtime_error will be thrown upon attaching.
-class GamepadCameraManager : public GamepadInputProcessor,
-                             public Script
+class GamepadCameraManager : public GamepadInputProcessor, public Script
 {
 private:
     GamepadCameraManager(const GamepadCameraManager& other) = delete;
@@ -50,7 +50,7 @@ public:
     ///
     /// @param timeElapsed How much time passed (in seconds) since the last
     /// update.
-    void update(float timeElapsed) override;
+    void update(const float timeElapsed) override;
 
     /// @brief Set the scene object which the camera script is attached to.
     /// Will also attempt to retrieve a camera from the scene object.
@@ -82,6 +82,6 @@ public:
     virtual void processAxis(const GamepadPtr gamepad, const Window::Input::Gamepad::Axis axis, const float value) override;
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__TOOLBOX__RUNNABLES__GAMEPAD_CAMERA_MANAGER_HPP

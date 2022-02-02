@@ -180,6 +180,6 @@ void ControlEventTranslator<T>::_ImportControlBindingsIntoMap(
 template<typename T>
 using ControlEventTranslatorPtr = std::shared_ptr<ControlEventTranslator<T>>;
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__TOOLBOX__CONTROLS__CONTROL_EVENT_TRANSLATOR_HPP

@@ -41,6 +41,6 @@ public:
     void processFramebufferResize(const GLWindowPtr window, const unsigned int width, const unsigned int height) override;
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__TOOLBOX__RUNNABLES__CAMERA_ASPECT_RATIO_MANAGER_HPP

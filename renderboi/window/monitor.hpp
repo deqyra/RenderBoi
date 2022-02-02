@@ -50,22 +50,22 @@ public:
         
     public:
         /// @param size Size of the gamma ramp.
-        GammaRamp(unsigned int size);
+        GammaRamp(const unsigned int size);
 
         /// @param size Size of the gamma ramp.
         /// @param ramp Ramp to use for all three RGB components of the final
         /// gamma ramp.
-        GammaRamp(unsigned int size, std::vector<unsigned short> ramp);
+        GammaRamp(const unsigned int size, const std::vector<unsigned short> ramp);
 
         /// @param size Size of the gamma ramp.
         /// @param red Ramp for the red component of the final gamma ramp.
         /// @param green Ramp for the green component of the final gamma ramp.
         /// @param blue Ramp for the blue component of the final gamma ramp.
         GammaRamp(
-            unsigned int size,
-            std::vector<unsigned short> red,
-            std::vector<unsigned short> green,
-            std::vector<unsigned short> blue
+            const unsigned int size,
+            const std::vector<unsigned short> red,
+            const std::vector<unsigned short> green,
+            const std::vector<unsigned short> blue
         );
 
         /// @brief Get the size of the gamma ramp.
@@ -81,7 +81,7 @@ public:
         /// @brief Set the red component of the gamma ramp.
         ///
         /// @param red The red component to set for the gamma ramp.
-        void setRed(std::vector<unsigned short> red);
+        void setRed(const std::vector<unsigned short> red);
 
         /// @brief Get the green component of the gamma ramp.
         ///
@@ -91,7 +91,7 @@ public:
         /// @brief Set the green component of the gamma ramp.
         ///
         /// @param green The green component to set for the gamma ramp.
-        void setGreen(std::vector<unsigned short> green);
+        void setGreen(const std::vector<unsigned short> green);
 
         /// @brief Get the blue component of the gamma ramp.
         ///
@@ -101,7 +101,7 @@ public:
         /// @brief Set the blue component of the gamma ramp.
         ///
         /// @param blue The blue component to set for the gamma ramp.
-        void setBlue(std::vector<unsigned short> blue);
+        void setBlue(const std::vector<unsigned short> blue);
 
         /// @brief Generate a gamma ramp from a single exponent.
         ///
@@ -109,7 +109,7 @@ public:
         /// @param e Exponent to compute the gamma ramp from.
         ///
         /// @return The generated gamma ramp.
-        static GammaRamp FromExponent(unsigned int size, float e);
+        static GammaRamp FromExponent(const unsigned int size, const float e);
 
         /// @brief Generate a gamma ramp from a single exponent.
         ///
@@ -119,7 +119,12 @@ public:
         /// @param eBlue Exponent to compute the blue ramp from.
         ///
         /// @return The generated gamma ramp.
-        static GammaRamp FromExponents(unsigned int size, float eRed, float eGreen, float eBlue);
+        static GammaRamp FromExponents(
+            const unsigned int size,
+            const float eRed,
+            const float eGreen,
+            const float eBlue
+        );
     };
 
     /// @brief Get the current video mode of the monitor.
@@ -187,6 +192,6 @@ public:
 
 using MonitorPtr = std::shared_ptr<Monitor>;
 
-}//namespace Renderboi::Window
+} // namespace Renderboi::Window
 
 #endif//RENDERBOI__WINDOW__MONITOR_HPP

@@ -1,8 +1,9 @@
 #ifndef RENDERBOI__CORE__MATERIAL_HPP
 #define RENDERBOI__CORE__MATERIAL_HPP
 
-#include <glm/glm.hpp>
 #include <vector>
+
+#include <glm/glm.hpp>
 
 #include "texture_2d.hpp"
 
@@ -140,6 +141,6 @@ public:
     void bindTextures() const;
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__CORE__MATERIAL_HPP

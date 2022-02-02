@@ -57,7 +57,7 @@ class ControlHash
 
 std::string to_string(const Control& control);
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 namespace std
 {

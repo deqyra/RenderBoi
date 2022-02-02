@@ -172,7 +172,6 @@ set(RB_UTILITIES_SOURCE_FILES
     gl_utilities.hpp
     resource_locator.cpp
     resource_locator.hpp
-    to_string.hpp
 )
 
 set(RB_CORE_SOURCE_FILES
@@ -189,8 +188,8 @@ set(RB_CORE_SOURCE_FILES
     texture_2d.cpp
     texture_2d.hpp
     vertex.hpp
-    implementation/parent_dependent_vp_matrix_provider.hpp
-    implementation/parent_dependent_vp_matrix_provider.cpp
+    common/parent_dependent_vp_matrix_provider.hpp
+    common/parent_dependent_vp_matrix_provider.cpp
     interfaces/basis_provider.hpp
     interfaces/vp_matrix_provider.hpp
     lights/directional_light.cpp
@@ -279,12 +278,12 @@ set(RB_TOOLBOX_SOURCE_FILES
     interfaces/action_event_receiver.hpp
     interfaces/control_binding_provider.hpp
     interfaces/default_control_scheme_provider.hpp
-    interfaces/mesh_generator.hpp
     mesh_generators/all_mesh_generators.hpp
     mesh_generators/axes_generator.cpp
     mesh_generators/axes_generator.hpp
     mesh_generators/cube_generator.cpp
     mesh_generators/cube_generator.hpp
+    mesh_generators/mesh_generator.hpp
     mesh_generators/plane_generator.cpp
     mesh_generators/plane_generator.hpp
     mesh_generators/tetrahedron_generator.cpp
@@ -292,7 +291,6 @@ set(RB_TOOLBOX_SOURCE_FILES
     mesh_generators/torus_generator.cpp
     mesh_generators/torus_generator.hpp
     mesh_generators/mesh_type.hpp
-    mesh_generators/type_to_gen_mapping.hpp
     scene/scene.cpp
     scene/scene.hpp 
     scene/object/component.cpp

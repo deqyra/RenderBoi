@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+
 #include <glm/glm.hpp>
 
 #include <renderboi/core/mesh.hpp>
@@ -18,19 +19,19 @@ CubeGenerator::CubeGenerator() :
 
 }
 
-CubeGenerator::CubeGenerator(float size) :
+CubeGenerator::CubeGenerator(const float size) :
     parameters{ size, glm::vec3(0.f), false }
 {
     
 }
 
-CubeGenerator::CubeGenerator(float size, glm::vec3 color) :
+CubeGenerator::CubeGenerator(const float size, const glm::vec3 color) :
     parameters{ size, color, true}
 {
 
 }
 
-CubeGenerator::CubeGenerator(Parameters parameters) :
+CubeGenerator::CubeGenerator(const Parameters parameters) :
     parameters(parameters)
 {
     
@@ -103,4 +104,4 @@ MeshPtr CubeGenerator::generateMesh() const
     return std::make_shared<Mesh>(GL_TRIANGLE_STRIP, vertices, indices, primitiveSizes, primitiveOffsets);
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

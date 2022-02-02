@@ -68,4 +68,4 @@ CameraComponent* CameraComponent::clone(const SceneObjectPtr newParent) const
     return new CameraComponent(newParent, cameraClone);
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

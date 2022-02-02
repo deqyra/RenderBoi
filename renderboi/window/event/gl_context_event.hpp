@@ -9,6 +9,8 @@ namespace Renderboi
 namespace Window
 {
 
+/// @brief Collection of literals describing different render events that can
+/// take place in the event polling thread.
 enum class GLContextEvent
 {
     FitFramebufferToWindow,

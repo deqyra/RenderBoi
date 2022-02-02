@@ -207,6 +207,6 @@ public:
 
 using GLFW3WindowPtr = std::shared_ptr<GLFW3Window>;
 
-}//namespace Renderboi::Window
+} // namespace Renderboi::Window
 
 #endif//RENDERBOI__WINDOW__GLFW3__GLFW3_WINDOW_HPP

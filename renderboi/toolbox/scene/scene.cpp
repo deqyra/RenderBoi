@@ -9,8 +9,6 @@
 
 #include <glm/glm.hpp>
 
-#include <renderboi/utilities/to_string.hpp>
-
 #include <cpptools/container/tree.hpp>
 
 #include "../factory.hpp"
@@ -540,4 +538,4 @@ bool Scene::_hasDisabledParent(const unsigned int id) const
     return false;
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

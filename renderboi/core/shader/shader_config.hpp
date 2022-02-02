@@ -104,6 +104,6 @@ public:
     static const std::unordered_map<ShaderFeature, std::vector<ShaderFeature>>& IncompatibleFeatures();
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__CORE__SHADER__SHADER_CONFIG_HPP

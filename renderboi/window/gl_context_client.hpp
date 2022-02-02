@@ -24,11 +24,11 @@ public:
     using GLContextEventReceiverPtr = cpptools::EventReceiverPtr<GLContextEvent>;
 
     /// @param window Pointer to the window in charge of painting the context.
-    GLContextClient(GLWindowPtr window);
+    GLContextClient(const GLWindowPtr window);
 
     /// @param window Pointer to the window in charge of painting the context.
     /// @param eventManager Pointer to entity which will process the context events.
-    GLContextClient(GLWindowPtr window, GLContextEventManagerPtr eventManager);
+    GLContextClient(const GLWindowPtr window, const GLContextEventManagerPtr eventManager);
 
     /// @brief Read-only ointer to the render event queue manager of the sandbox.
     const GLContextEventManagerPtr& eventManager = _eventManager;

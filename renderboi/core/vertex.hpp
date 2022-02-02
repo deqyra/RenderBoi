@@ -22,6 +22,6 @@ struct Vertex
     glm::vec2 texCoord;
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__CORE__VERTEX_HPP

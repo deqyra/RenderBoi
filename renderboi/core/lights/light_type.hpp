@@ -1,5 +1,5 @@
-#ifndef LIGHT_TYPE_HPP
-#define LIGHT_TYPE_HPP
+#ifndef RENDERBOI__CORE__LIGHTS__LIGHT_TYPE_HPP
+#define RENDERBOI__CORE__LIGHTS__LIGHT_TYPE_HPP
 
 namespace Renderboi
 {
@@ -15,6 +15,6 @@ enum class LightType
     SpotLight
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
-#endif//LIGHT_TYPE_HPP
+#endif//RENDERBOI__CORE__LIGHTS__LIGHT_TYPE_HPP

@@ -41,13 +41,13 @@ public:
     ///
     /// @return The subscription ID, used to unsubscribe the registered
     /// input processor.
-    unsigned int registerInputProcessor(InputProcessorPtr inputProcessor);
+    unsigned int registerInputProcessor(const InputProcessorPtr inputProcessor);
 
     /// @brief Unsubscribe an input processor.
     ///
     /// @param subscriptionId ID returned when the input processor was first
     /// registered to the input splitter.
-    void detachInputProcessor(unsigned int subscriptionId);
+    void detachInputProcessor(const unsigned int subscriptionId);
 
     /// @brief Unsubscribe all input processors from the input splitter.
     void detachAllInputProcessors();
@@ -59,13 +59,13 @@ public:
     ///
     /// @return The subscription ID, used to unsubscribe the registered
     /// input processor.
-    unsigned int registerGamepadInputProcessor(GamepadInputProcessorPtr gamepadInputProcessor);
+    unsigned int registerGamepadInputProcessor(const GamepadInputProcessorPtr gamepadInputProcessor);
 
     /// @brief Unsubscribe an input processor.
     ///
     /// @param subscriptionId ID returned when the input processor was first
     /// registered to the input splitter.
-    void detachGamepadInputProcessor(unsigned int subscriptionId);
+    void detachGamepadInputProcessor(const unsigned int subscriptionId);
 
     /// @brief Unsubscribe all input processors from the input splitter.
     void detachAllIGamepadnputProcessors();
@@ -156,6 +156,6 @@ public:
 
 using InputSplitterPtr = std::shared_ptr<InputSplitter>;
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__TOOLBOX__INPUT_SPLITTER_HPP

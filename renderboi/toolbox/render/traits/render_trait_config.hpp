@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "renderboi/toolbox/render/traits/render_trait.hpp"
+#include "render_trait.hpp"
 
 namespace Renderboi
 {
@@ -36,7 +36,7 @@ public:
     /// @brief Get a pointer to the parent scene object of this instance.
     ///
     /// @return A pointer to the parent scene object of this instance.
-    SceneObjectPtr sceneObject();
+    SceneObjectPtr sceneObject() const;
 
     /// @brief Get a raw pointer to a new render trait config instance cloned 
     /// from this one. Ownership and responsibility for the allocated 
@@ -47,7 +47,7 @@ public:
     ///
     /// @return A raw pointer to the render trait config instance cloned from 
     /// this one.
-    virtual RenderTraitConfig* clone(const SceneObjectPtr newParent) = 0;
+    virtual RenderTraitConfig* clone(const SceneObjectPtr newParent) const = 0;
 };
 
 using RenderTraitConfigPtr = std::shared_ptr<RenderTraitConfig>;

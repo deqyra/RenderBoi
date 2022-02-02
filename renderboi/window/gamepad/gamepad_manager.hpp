@@ -114,11 +114,11 @@ GamepadPtr GamepadManager::createGamepad(ArgTypes&& ...args)
     return GamepadPtr(gamepad);
 }
 
-}//namespace Window
+} // namespace Window
 
 using GamepadManager = Window::GamepadManager;
 using GamepadManagerPtr = std::shared_ptr<GamepadManager>;
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__WINDOW__GAMEPAD__GAMEPAD_MANAGER_HPP

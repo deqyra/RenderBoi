@@ -113,6 +113,6 @@ const std::unordered_map<ShaderFeature, ShaderStage>& FeatureStages();
 
 std::string to_string(const ShaderFeature v);
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__CORE__SHADER__SHADER_FEATURE_HPP

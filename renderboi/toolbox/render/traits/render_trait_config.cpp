@@ -20,7 +20,7 @@ void RenderTraitConfig::_release()
     _sceneObject.reset();
 }
 
-SceneObjectPtr RenderTraitConfig::sceneObject()
+SceneObjectPtr RenderTraitConfig::sceneObject() const
 {
     return _sceneObject;
 }

@@ -81,6 +81,6 @@ public:
     void bind(unsigned int unit) const;
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__CORE__TEXTURE_2D_HPP

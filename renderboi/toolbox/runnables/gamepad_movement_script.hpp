@@ -6,6 +6,7 @@
 #include <glm/vec2.hpp>
 
 #include <renderboi/core/interfaces/basis_provider.hpp>
+
 #include <renderboi/window/gamepad/gamepad.hpp>
 #include <renderboi/window/gamepad/gamepad_input_processor.hpp>
 
@@ -15,8 +16,7 @@ namespace Renderboi
 {
 
 /// @brief Provides bindings to move an entity using a gamepad.
-class GamepadMovementScript : public Script,
-                              public GamepadInputProcessor
+class GamepadMovementScript : public Script, public GamepadInputProcessor
 {
 private:
     GamepadMovementScript(const GamepadMovementScript& other) = delete;
@@ -67,7 +67,7 @@ public:
     ///
     /// @param timeElapsed How much time passed (in seconds) since the last
     /// update.
-    void update(float timeElapsed) override;
+    void update(const float timeElapsed) override;
 
     /// @brief Set the scene object which the camera script is attached to.
     /// Will also attempt to retrieve a camera from the scene object.
@@ -106,6 +106,6 @@ public:
     virtual void processAxis(const GamepadPtr gamepad, const Window::Input::Gamepad::Axis axis, const float value) override;
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__TOOLBOX__RUNNABLES__GAMEPAD_MOVEMENT_SCRIPT_HPP

@@ -1,5 +1,5 @@
+#include "render_trait_config.hpp"
 #include "render_trait_config_map.hpp"
-#include "renderboi/toolbox/render/traits/render_trait_config.hpp"
 
 namespace Renderboi
 {
@@ -27,17 +27,17 @@ void RenderTraitConfigMap::_release()
     _sceneObject.reset();
 }
 
-SceneObjectPtr RenderTraitConfigMap::sceneObject()
+SceneObjectPtr RenderTraitConfigMap::sceneObject() const
 {
     return _sceneObject;
 }
 
-RenderTraitConfigPtr RenderTraitConfigMap::getConfigForTrait(const RenderTrait trait)
+RenderTraitConfigPtr RenderTraitConfigMap::getConfigForTrait(const RenderTrait trait) const
 {
-    return _map[trait];
+    return _map.at(trait);
 }
 
-bool RenderTraitConfigMap::hasConfigForTrait(const RenderTrait trait)
+bool RenderTraitConfigMap::hasConfigForTrait(const RenderTrait trait) const
 {
     return _map.contains(trait);
 }

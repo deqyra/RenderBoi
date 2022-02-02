@@ -371,4 +371,4 @@ ShadowSandboxScript* ShadowSandboxScript::clone() const
     return nullptr;
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

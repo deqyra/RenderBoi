@@ -1,12 +1,12 @@
-#ifndef RENDERBOI__CORE__LIGHT_HPP
-#define RENDERBOI__CORE__LIGHT_HPP
+#ifndef RENDERBOI__CORE__LIGHTS__LIGHT_HPP
+#define RENDERBOI__CORE__LIGHTS__LIGHT_HPP
 
 #include <memory>
 
-#include <renderboi/core/transform.hpp>
 
+#include "../common/parent_dependent_vp_matrix_provider.hpp"
 #include "../interfaces/vp_matrix_provider.hpp"
-#include "../implementation/parent_dependent_vp_matrix_provider.hpp"
+#include "../transform.hpp"
 #include "light_type.hpp"
 
 namespace Renderboi
@@ -16,8 +16,6 @@ namespace Renderboi
 class Light : public ParentDependentVPMatrixProvider
 {
 private:
-    Light() = delete;
-
     /// @brief Keeps track of how many instances were created (used as a unique
     /// ID system).
     static unsigned int _count;
@@ -27,6 +25,7 @@ protected:
     Light(const LightType type);
 
 public:
+    Light() = delete;
     virtual ~Light() = default;
 
     /// @brief ID of the light instance.
@@ -42,6 +41,7 @@ public:
     /// @return A raw pointer to the light instance cloned from this one.
     virtual Light* clone() const = 0;
 
+private:
     //////////////////////////////////////////////////////////////
     ///                                                        ///
     /// Methods inherited from ParentDependentVPMatrixProvider ///
@@ -58,6 +58,6 @@ public:
 using LightPtr = std::shared_ptr<Light>;
 using LightWPtr = std::weak_ptr<Light>;
 
-}//namespace Renderboi
+} // namespace Renderboi
 
-#endif//RENDERBOI__CORE__LIGHT_HPP
+#endif//RENDERBOI__CORE__LIGHTS__LIGHT_HPP

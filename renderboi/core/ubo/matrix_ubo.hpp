@@ -62,6 +62,6 @@ public:
     void setNormal(const glm::mat4& normal);
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__CORE__UBO__MATRIX_UBO_HPP

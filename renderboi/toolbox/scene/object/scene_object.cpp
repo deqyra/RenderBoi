@@ -114,4 +114,4 @@ SceneObjectPtr SceneObject::clone() const
     return SceneObjectPtr(new SceneObject(*this));
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

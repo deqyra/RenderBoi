@@ -56,6 +56,6 @@ public:
     void processMouseCursor(const GLWindowPtr window, const double xpos, const double ypos) override;
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__TOOLBOX__RUNNABLES__MOUSE_CAMERA_MANAGER_HPP

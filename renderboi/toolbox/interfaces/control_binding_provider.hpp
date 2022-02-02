@@ -1,7 +1,9 @@
-#ifndef CONTROL_BINDING_PROVIDER_HPP
-#define CONTROL_BINDING_PROVIDER_HPP
+#ifndef RENDERBOI__TOOLBOX__INTERFACES__CONTROL_BINDING_PROVIDER_HPP
+#define RENDERBOI__TOOLBOX__INTERFACES__CONTROL_BINDING_PROVIDER_HPP
 
 #include <memory>
+
+#include "../controls/control.hpp"
 
 namespace Renderboi
 {
@@ -58,6 +60,6 @@ public:
 template<typename T>
 using ControlBindingProviderPtr = std::shared_ptr<ControlBindingProvider<T>>;
 
-}//namespace Renderboi
+} // namespace Renderboi
 
-#endif//CONTROL_BINDING_PROVIDER_HPP
+#endif//RENDERBOI__TOOLBOX__INTERFACES__CONTROL_BINDING_PROVIDER_HPP

@@ -3,14 +3,15 @@
 #include <stdexcept>
 
 #include <glad/gl.h>
+
 #include <stb_image/stb_image.hpp>
 
-#include "pixel_space.hpp"
+#include <cpptools/exceptions/index_out_of_bounds_error.hpp>
 
 #include <renderboi/utilities/to_string.hpp>
 #include <renderboi/utilities/resource_locator.hpp>
 
-#include <cpptools/exceptions/index_out_of_bounds_error.hpp>
+#include "pixel_space.hpp"
 
 namespace Renderboi
 {
@@ -156,4 +157,4 @@ void Texture2D::bind(unsigned int unit) const
     glBindTexture(GL_TEXTURE_2D, _location);
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

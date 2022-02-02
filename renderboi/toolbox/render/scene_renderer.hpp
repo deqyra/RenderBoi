@@ -82,6 +82,6 @@ public:
 
 using SceneRendererPtr = std::shared_ptr<SceneRenderer>;
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__TOOLBOX__SCENE__SCENE_RENDERER_HPP

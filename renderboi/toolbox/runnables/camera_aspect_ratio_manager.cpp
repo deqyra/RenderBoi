@@ -17,4 +17,4 @@ void CameraAspectRatioManager::processFramebufferResize(const GLWindowPtr window
     }
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

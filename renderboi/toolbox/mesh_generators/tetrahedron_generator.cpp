@@ -18,19 +18,19 @@ TetrahedronGenerator::TetrahedronGenerator() :
 
 }
 
-TetrahedronGenerator::TetrahedronGenerator(float size) :
+TetrahedronGenerator::TetrahedronGenerator(const float size) :
     parameters{ size, glm::vec3(0.f), false }
 {
     
 }
 
-TetrahedronGenerator::TetrahedronGenerator(float size, glm::vec3 color) :
+TetrahedronGenerator::TetrahedronGenerator(const float size, const glm::vec3 color) :
     parameters{ size, color, true}
 {
 
 }
 
-TetrahedronGenerator::TetrahedronGenerator(Parameters parameters) :
+TetrahedronGenerator::TetrahedronGenerator(const Parameters parameters) :
     parameters(parameters)
 {
     
@@ -82,4 +82,4 @@ MeshPtr TetrahedronGenerator::generateMesh() const
     return std::make_shared<Mesh>(GL_TRIANGLES, vertices, indices);
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

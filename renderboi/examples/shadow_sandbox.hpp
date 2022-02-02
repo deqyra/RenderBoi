@@ -5,9 +5,6 @@
 
 #include <glm/glm.hpp>
 
-#include "gl_sandbox.hpp"
-#include "gl_sandbox_parameters.hpp"
-
 #include <cpptools/math/sine_generator.hpp>
 
 #include <renderboi/core/camera.hpp>
@@ -22,6 +19,9 @@
 #include <renderboi/window/input_processor.hpp>
 #include <renderboi/window/gamepad/gamepad.hpp>
 #include <renderboi/window/gamepad/gamepad_manager.hpp>
+
+#include "gl_sandbox.hpp"
+#include "gl_sandbox_parameters.hpp"
 
 namespace Renderboi
 {
@@ -155,6 +155,6 @@ class ShadowSandboxScript : public Script, public InputProcessor
 
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__EXAMPLES__SHADOW_SANDBOX_HPP

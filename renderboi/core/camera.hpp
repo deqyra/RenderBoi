@@ -2,11 +2,12 @@
 #define RENDERBOI__CORE__CAMERA_HPP
 
 #include <memory>
+
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+#include "common/parent_dependent_vp_matrix_provider.hpp"
 #include "interfaces/basis_provider.hpp"
-#include "implementation/parent_dependent_vp_matrix_provider.hpp"
 #include "transform.hpp"
 
 namespace Renderboi
@@ -181,6 +182,6 @@ protected:
 using CameraPtr = std::shared_ptr<Camera>;
 using CameraWPtr = std::weak_ptr<Camera>;
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__CORE__CAMERA_HPP

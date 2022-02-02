@@ -2,10 +2,10 @@
 #define RENDERBOI__EXAMPLES__LIGHTING_EXAMPLE_HPP
 
 #include <string>
+
 #include <glm/glm.hpp>
 
-#include "gl_sandbox.hpp"
-#include "gl_sandbox_parameters.hpp"
+#include <cpptools/math/sine_generator.hpp>
 
 #include <renderboi/core/camera.hpp>
 #include <renderboi/core/lights/point_light.hpp>
@@ -16,7 +16,8 @@
 #include <renderboi/toolbox/script.hpp>
 #include <renderboi/toolbox/scene/object/scene_object.hpp>
 
-#include <cpptools/math/sine_generator.hpp>
+#include "gl_sandbox.hpp"
+#include "gl_sandbox_parameters.hpp"
 
 namespace Renderboi
 {
@@ -155,6 +156,6 @@ class LightingSandboxScript : public InputProcessor, public Script
         ) override;
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__EXAMPLES__LIGHTING_EXAMPLE_HPP

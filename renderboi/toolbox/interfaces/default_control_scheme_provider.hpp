@@ -18,6 +18,6 @@ public:
     virtual ControlSchemeManagerPtr<T> getDefaultControlScheme() const = 0;
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__TOOLBOX__INTERFACES__DEFAULT_CONTROL_SCHEME_PROVIDER_HPP

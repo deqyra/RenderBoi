@@ -26,4 +26,4 @@ void Script::setSceneObject(const SceneObjectPtr sceneObject)
     _sceneObject = sceneObject;
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

@@ -28,32 +28,32 @@ InputLogger::InputLogger(std::ostream& outputStream) :
     }
 }
 
-void InputLogger::enableEventLog(IEventType eventType)
+void InputLogger::enableEventLog(const IEventType eventType)
 {
     _inputLoggingStatus[eventType] = true;
 }
 
-void InputLogger::disableEventLog(IEventType eventType)
+void InputLogger::disableEventLog(const IEventType eventType)
 {
     _inputLoggingStatus[eventType] = false;
 }
 
-void InputLogger::enableEventLog(GEventType eventType)
+void InputLogger::enableEventLog(const GEventType eventType)
 {
     _gamepadInputLoggingStatus[eventType] = true;
 }
 
-void InputLogger::disableEventLog(GEventType eventType)
+void InputLogger::disableEventLog(const GEventType eventType)
 {
     _gamepadInputLoggingStatus[eventType] = false;
 }
 
-void InputLogger::setEventLoggingStatus(IEventType eventType, bool enable)
+void InputLogger::setEventLoggingStatus(const IEventType eventType, const bool enable)
 {
     _inputLoggingStatus[eventType] = enable;
 }
 
-void InputLogger::setEventLoggingStatus(GEventType eventType, bool enable)
+void InputLogger::setEventLoggingStatus(const GEventType eventType, const bool enable)
 {
     _gamepadInputLoggingStatus[eventType] = enable;
 }
@@ -145,4 +145,4 @@ void InputLogger::processAxis(const GamepadPtr gamepad, const Axis axis, const f
                      "New value: " << value << "\n" << std::endl;
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

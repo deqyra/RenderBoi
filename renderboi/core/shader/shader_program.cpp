@@ -8,8 +8,6 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-#include <renderboi/utilities/to_string.hpp>
-
 #include "shader_feature.hpp"
 
 namespace Renderboi
@@ -224,4 +222,4 @@ bool ShaderProgram::supports(const ShaderFeature feature) const
     return it != _supportedFeatures.end();
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

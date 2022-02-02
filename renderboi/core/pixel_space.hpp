@@ -11,6 +11,6 @@ enum class PixelSpace
     sRGB
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__CORE__PIXEL_SPACE_HPP

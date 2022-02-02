@@ -150,4 +150,4 @@ Monitor::VideoMode GLFW3Monitor::getLargestVideoMode() const
     return v;
 }
 
-}//namespace Renderboi::Window
+} // namespace Renderboi::Window

@@ -172,4 +172,4 @@ glm::mat4 Camera::_computeViewMatrix() const
     return glm::lookAt(_parentWorldTransform.getPosition(), _parentWorldTransform.getPosition() + _forward, _up);
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

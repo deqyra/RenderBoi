@@ -47,7 +47,7 @@ public:
     static std::string locate(const ResourceType type, const std::string& filename);
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 
 #endif//RENDERBOI__UTILITIES__RESOURCE_LOCATOR_HPP

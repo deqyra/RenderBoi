@@ -31,4 +31,4 @@ void GamepadInputProcessor::processAxis(const GamepadPtr gamepad, const Window::
 
 }
 
-}//namespace Renderboi::Window
+} // namespace Renderboi::Window

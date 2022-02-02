@@ -1,5 +1,5 @@
-#ifndef RENDERBOI__TOOLBOX__OBJECT_TRANSFORM_HPP
-#define RENDERBOI__TOOLBOX__OBJECT_TRANSFORM_HPP
+#ifndef RENDERBOI__TOOLBOX__OBJECT__OBJECT_TRANSFORM_HPP
+#define RENDERBOI__TOOLBOX__OBJECT__OBJECT_TRANSFORM_HPP
 
 #include <memory>
 
@@ -243,6 +243,6 @@ public:
 
 using ObjectTransformPtr = std::shared_ptr<ObjectTransform>;
 
-}//namespace Renderboi
+} // namespace Renderboi
 
-#endif//RENDERBOI__TOOLBOX__OBJECT_TRANSFORM_HPP
+#endif//RENDERBOI__TOOLBOX__OBJECT__OBJECT_TRANSFORM_HPP

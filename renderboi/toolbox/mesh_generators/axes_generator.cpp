@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+
 #include <glm/glm.hpp>
 
 #include <renderboi/core/mesh.hpp>
@@ -18,13 +19,13 @@ AxesGenerator::AxesGenerator() :
 
 }
 
-AxesGenerator::AxesGenerator(float length) : 
+AxesGenerator::AxesGenerator(const float length) : 
     parameters{ length }
 {
 
 }
 
-AxesGenerator::AxesGenerator(Parameters parameters) :
+AxesGenerator::AxesGenerator(const Parameters parameters) :
     parameters(parameters)
 {
 
@@ -53,4 +54,4 @@ MeshPtr AxesGenerator::generateMesh() const
     return std::make_shared<Mesh>(GL_LINES, vertices, indices);
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

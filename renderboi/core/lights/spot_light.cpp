@@ -122,4 +122,4 @@ glm::mat4 SpotLight::_computeViewMatrix() const
     return glm::mat4();
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

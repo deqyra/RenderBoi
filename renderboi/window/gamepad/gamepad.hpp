@@ -155,11 +155,11 @@ public:
     std::string name;
 };
 
-}//namespace Window
+} // namespace Window
 
 using Gamepad = Window::Gamepad;
 using GamepadPtr = std::shared_ptr<Gamepad>;
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__WINDOW__GAMEPAD__GAMEPAD_HPP

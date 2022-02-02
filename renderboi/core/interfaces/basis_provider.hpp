@@ -33,6 +33,6 @@ public:
 
 using BasisProviderPtr = std::shared_ptr<BasisProvider>;
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__CORE__INTERFACES__BASIS_PROVIDER_HPP

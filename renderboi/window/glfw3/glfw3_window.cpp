@@ -244,4 +244,4 @@ bool GLFW3Window::extensionSupported(std::string extName)
     return (bool)glfwExtensionSupported(extName.c_str());
 }
 
-}//namespace Renderboi::Window
+} // namespace Renderboi::Window

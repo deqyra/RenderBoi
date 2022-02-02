@@ -259,4 +259,4 @@ void WindowFactory<WindowBackend::GLFW3>::_GlobalGlfwMonitorCallback(GLFWmonitor
     }
 }
 
-}//namespace Renderboi::Window
+} // namespace Renderboi::Window

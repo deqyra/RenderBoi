@@ -15,4 +15,4 @@ void ShadowMap::_GenerateShadowMap()
 
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

@@ -25,9 +25,10 @@ enum class KeyboardMovementAction
 };
 
 /// @brief Provides bindings to move an entity using the keyboard.
-class KeyboardMovementScript : public Script,
-                               public ActionEventReceiver<KeyboardMovementAction>,
-                               public DefaultControlSchemeProvider<KeyboardMovementAction>
+class KeyboardMovementScript :
+    public Script,
+    public ActionEventReceiver<KeyboardMovementAction>,
+    public DefaultControlSchemeProvider<KeyboardMovementAction>
 {
 private:
     /// @brief Index of a bool array which flags a forward keypress.
@@ -95,7 +96,7 @@ public:
     ///
     /// @param timeElapsed How much time passed (in seconds) since the last
     /// update.
-    void update(float timeElapsed) override;
+    void update(const float timeElapsed) override;
 
     /// @brief Set the scene object which the camera script is attached to.
     /// Will also attempt to retrieve a camera from the scene object.
@@ -145,6 +146,6 @@ public:
 
 std::string to_string(const KeyboardMovementAction& action);
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__TOOLBOX__RUNNABLES__KEYBOARD_MOVEMENT_SCRIPT_HPP

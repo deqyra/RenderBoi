@@ -5,8 +5,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include <renderboi/utilities/to_string.hpp>
-
 namespace Renderboi
 {
 
@@ -277,7 +275,7 @@ namespace Window
         Compatibility,
         Any
     };
-}//namespace Window
+} // namespace Window
 
 unsigned int operator&(unsigned int left, Window::Input::Modifier right);
 unsigned int operator|(unsigned int left, Window::Input::Modifier right);
@@ -293,6 +291,6 @@ std::string to_string(const Window::Input::Joystick& joystick);
 std::string to_string(const Window::Input::Gamepad::Button& gamepadButton);
 std::string to_string(const Window::Input::Gamepad::Axis& gamepadAxis);
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__WINDOW__ENUMS_HPP

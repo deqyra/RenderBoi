@@ -192,6 +192,6 @@ const Material YellowRubber = Material(
 );
 
 }//namespace Materials
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__CORE__MATERIALS_HPP

@@ -11,8 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include <renderboi/utilities/to_string.hpp>
-
 #include <cpptools/utility/map_tools.hpp>
 
 #include "control.hpp"
@@ -258,6 +256,6 @@ std::vector<std::pair<Control, T>> ControlSchemeManager<T>::getAllBoundControls(
 template<typename T>
 using ControlSchemeManagerPtr = std::shared_ptr<ControlSchemeManager<T>>;
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__TOOLBOX__CONTROLS__CONTROL_SCHEME_MANAGER_HPP

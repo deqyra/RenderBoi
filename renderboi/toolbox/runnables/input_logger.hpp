@@ -1,5 +1,5 @@
-#ifndef RENDERBOI__TOOLBOX__INPUT_LOGGER_HPP
-#define RENDERBOI__TOOLBOX__INPUT_LOGGER_HPP
+#ifndef RENDERBOI__TOOLBOX__RUNNABLES__INPUT_LOGGER_HPP
+#define RENDERBOI__TOOLBOX__RUNNABLES__INPUT_LOGGER_HPP
 
 #include <iostream>
 #include <memory>
@@ -44,25 +44,25 @@ public:
     ///
     /// @param eventType Litteral describing the type of the event for which
     /// to enable logging.
-    void enableEventLog(IEventType eventType);
+    void enableEventLog(const IEventType eventType);
 
     /// @brief Disables logging for a certain type of input event.
     ///
     /// @param eventType Litteral describing the type of the event for which
     /// to disable logging.
-    void disableEventLog(IEventType eventType);
+    void disableEventLog(const IEventType eventType);
 
     /// @brief Enables logging for a certain type of input event.
     ///
     /// @param eventType Litteral describing the type of the event for which
     /// to enable logging.
-    void enableEventLog(GEventType eventType);
+    void enableEventLog(const GEventType eventType);
 
     /// @brief Disables logging for a certain type of input event.
     ///
     /// @param eventType Litteral describing the type of the event for which
     /// to disable logging.
-    void disableEventLog(GEventType eventType);
+    void disableEventLog(const GEventType eventType);
 
     /// @brief Set the logging status for a certain type of input event: 
     /// enabled or disabled.
@@ -71,7 +71,7 @@ public:
     /// to set the logging status.
     /// @param enable Whether to enable or disable logging for the event 
     /// type.
-    void setEventLoggingStatus(IEventType eventType, bool enable);
+    void setEventLoggingStatus(const IEventType eventType, const bool enable);
 
     /// @brief Set the logging status for a certain type of input event: 
     /// enabled or disabled.
@@ -80,7 +80,7 @@ public:
     /// to set the logging status.
     /// @param enable Whether to enable or disable logging for the event 
     /// type.
-    void setEventLoggingStatus(GEventType eventType, bool enable);
+    void setEventLoggingStatus(const GEventType eventType, const bool enable);
 
     //////////////////////////////////////////////
     ///                                        ///
@@ -168,6 +168,6 @@ public:
 
 using InputLoggerPtr = std::shared_ptr<InputLogger>;
 
-}//namespace Renderboi
+} // namespace Renderboi
 
-#endif//RENDERBOI__TOOLBOX__INPUT_LOGGER_HPP
+#endif//RENDERBOI__TOOLBOX__RUNNABLES__INPUT_LOGGER_HPP

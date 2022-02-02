@@ -135,10 +135,10 @@ public:
     GamepadState& operator=(GamepadState other);
 };
 
-}//namespace Window
+} // namespace Window
 
 using GamepadState = Window::GamepadState;
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__WINDOW__GAMEPAD__GAMEPAD_STATE_HPP

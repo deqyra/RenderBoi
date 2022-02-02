@@ -28,11 +28,11 @@ enum class PolygonMode
     Point
 };
 
-
 /// @brief Provides event callbacks associated with basic window management.
-class BasicWindowManager :  public InputProcessor,
-                            public ActionEventReceiver<BasicWindowManagerAction>,
-                            public DefaultControlSchemeProvider<BasicWindowManagerAction>
+class BasicWindowManager : 
+    public InputProcessor,
+    public ActionEventReceiver<BasicWindowManagerAction>,
+    public DefaultControlSchemeProvider<BasicWindowManagerAction>
 {
 private:
     BasicWindowManager(const BasicWindowManager& other) = delete;
@@ -94,6 +94,6 @@ public:
 
 std::string to_string(const BasicWindowManagerAction& action);
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__TOOLBOX__RUNNABLES__BASIC_INPUT_MANAGER_HPP

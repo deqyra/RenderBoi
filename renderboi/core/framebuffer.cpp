@@ -32,4 +32,4 @@ void Framebuffer::Unbind(Framebuffer::Mode mode)
     glBindFramebuffer(_targetMap.at(mode), 0);
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

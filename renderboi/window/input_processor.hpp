@@ -100,12 +100,12 @@ namespace Window
         const unsigned int id;
     };
 
-}//namespace Window
+} // namespace Window
 
 using InputProcessor = Window::InputProcessor;
 using InputProcessorPtr = std::shared_ptr<InputProcessor>;
 using InputProcessorWPtr = std::weak_ptr<InputProcessor>;
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__WINDOW__INPUT_PROCESSOR_HPP

@@ -109,6 +109,6 @@ const WindowCreationParameters DefaultWindowCreationParameters = {
     .debug                      = false
 };
 
-}//namespace Renderboi::Window
+} // namespace Renderboi::Window
 
 #endif//RENDERBOI__WINDOW__WINDOW_CREATION_PARAMETERS_HPP

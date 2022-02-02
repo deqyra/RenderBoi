@@ -79,7 +79,7 @@ std::string to_string(const Control& control)
     return "Unknown control";
 }
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 namespace std
 {

@@ -25,7 +25,7 @@ KeyboardMovementScript::KeyboardMovementScript(
     if (!basisProvider) throw std::runtime_error("KeyboardMovementScript: cannot construct from a null BasisProvider pointer.");
 }
 
-void KeyboardMovementScript::update(float timeElapsed)
+void KeyboardMovementScript::update(const float timeElapsed)
 {
     // Compute distance to cover in this frame
     float velocity = timeElapsed * _moveSpeed;
@@ -153,4 +153,4 @@ std::string to_string(const KeyboardMovementAction& action)
     return "Unknown";
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

@@ -3,7 +3,9 @@
 
 #include <renderboi/core/mesh.hpp>
 
-#include "../interfaces/mesh_generator.hpp"
+#include <renderboi/core/mesh.hpp>
+
+#include "mesh_generator.hpp"
 
 namespace Renderboi
 {
@@ -27,10 +29,10 @@ public:
     AxesGenerator();
 
     /// @param length Length the axes will have.
-    AxesGenerator(float length);
+    AxesGenerator(const float length);
 
     /// @param parameters Parameters of the vertex generation.
-    AxesGenerator(Parameters parameters);
+    AxesGenerator(const Parameters parameters);
     
     /// @brief Parameters of the vertex generation.
     Parameters parameters;
@@ -48,6 +50,15 @@ public:
     MeshPtr generateMesh() const override;
 };
 
-}//namespace Renderboi
+template<>
+struct MeshTypeMeta<MeshType::Axes>
+{
+    struct Generator
+    {
+        using type = AxesGenerator;
+    };
+};
+
+} // namespace Renderboi
 
 #endif//RENDERBOI__TOOLBOX__MESH_GENERATORS__AXES_GENERATOR_HPP

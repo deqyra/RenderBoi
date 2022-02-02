@@ -97,4 +97,4 @@ void initGamepadStatuses()
     }
 }
 
-}//namespace Renderboi::GLFW3Utilities
+} // namespace Renderboi::GLFW3Utilities

@@ -73,6 +73,6 @@ class Shader
         bool supports(const ShaderFeature feature) const;
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__CORE__SHADER__SHADER_HPP

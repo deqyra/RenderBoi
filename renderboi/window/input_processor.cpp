@@ -45,4 +45,4 @@ void InputProcessor::processMouseCursor(const GLWindowPtr window, const double x
 
 }
 
-}//namespace Renderboi::Window
+} // namespace Renderboi::Window

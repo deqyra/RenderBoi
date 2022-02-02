@@ -21,7 +21,10 @@ namespace Renderboi
 /// GLSandbox.
 ///
 /// @tparam T Type of the GLSandbox to instantiate.
-template<typename T, typename = typename std::enable_if_t<std::is_base_of_v<GLSandbox, T>, GLSandbox>>
+template<
+    typename T,
+    typename = typename std::enable_if_t<std::is_base_of_v<GLSandbox, T>, GLSandbox>
+>
 class GLSandboxRunner
 {
 public:
@@ -29,7 +32,6 @@ public:
     using SandboxPtr = std::shared_ptr<T>;
 
 private:
-
     /// @brief Pointer to the hosted sandbox.
     SandboxPtr _sandbox;
 
@@ -46,6 +48,7 @@ public:
         _window(window),
         _sandbox(std::make_shared<SandboxType>(window, params))
     {
+        
     }
 
     ~GLSandboxRunner()

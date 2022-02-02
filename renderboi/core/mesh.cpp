@@ -178,4 +178,4 @@ void Mesh::draw()
     );
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

@@ -13,4 +13,4 @@ Light::Light(const LightType type) :
 
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

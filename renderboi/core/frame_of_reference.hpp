@@ -23,6 +23,6 @@ enum class FrameOfReference
     World
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__CORE__FRAME_OF_REFERENCE_HPP

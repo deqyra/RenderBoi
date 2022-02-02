@@ -25,7 +25,7 @@ GamepadMovementScript::GamepadMovementScript(
     if (!basisProvider) throw std::runtime_error("GamepadMovementScript: cannot construct from a null BasisProvider pointer.");
 }
 
-void GamepadMovementScript::update(float timeElapsed)
+void GamepadMovementScript::update(const float timeElapsed)
 {
     // Compute distance to cover in this frame
     float velocity = timeElapsed * _moveSpeed;
@@ -74,4 +74,4 @@ void GamepadMovementScript::processAxis(const GamepadPtr gamepad, const Window::
         _direction.y = -value;
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

@@ -16,6 +16,6 @@ enum class ShaderStage
 
 std::string to_string(const ShaderStage v);
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__CORE__SHADER__SHADER_STAGE_HPP

@@ -272,6 +272,6 @@ private:
     static std::string _GenerateDefineDirectives(const std::vector<ShaderFeature>& features);
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__CORE__SHADER__SHADER_BUILDER_HPP

@@ -1,7 +1,8 @@
 #include "matrix_ubo.hpp"
 
-#include <glm/gtc/type_ptr.hpp>
 #include <glad/gl.h>
+
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Renderboi
 {
@@ -45,4 +46,4 @@ void MatrixUBO::setNormal(const glm::mat4& normal)
     glBufferSubData(GL_UNIFORM_BUFFER, 192, 3*sizeof(glm::vec4), glm::value_ptr(normal));
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

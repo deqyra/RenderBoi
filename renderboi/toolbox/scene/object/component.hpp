@@ -1,5 +1,5 @@
-#ifndef RENDERBOI__TOOLBOX__SCENE__COMPONENT_HPP
-#define RENDERBOI__TOOLBOX__SCENE__COMPONENT_HPP
+#ifndef RENDERBOI__TOOLBOX__SCENE__OBJECT__COMPONENT_HPP
+#define RENDERBOI__TOOLBOX__SCENE__OBJECT__COMPONENT_HPP
 
 #include <memory>
 #include <string>
@@ -53,6 +53,7 @@ class ComponentMap;
  *         static constexpr ComponentType value = ComponentType::MyNewComponent;
  *     };
  *
+ * - Include header in all_components.hpp
  */
 
 /// @brief Abstract class meant to represent a certain aspect in a scene object
@@ -110,7 +111,7 @@ public:
     ///
     /// @return Whether or not more than one instance of this component type can
     /// be present on a same scene object.
-    static bool MultipleInstancesAllowed(ComponentType type);
+    static bool MultipleInstancesAllowed(const ComponentType type);
 
 };
 
@@ -123,8 +124,8 @@ struct ComponentMeta
     /// component type described by T are allowed within one scene object.
     struct MultipleInstancesAllowed {};
 
-    /// @brief Use ::type to get the concrete component type that 
-    /// corresponds to T.
+    /// @brief Use ::type to get the concrete component type that corresponds to
+    /// T.
     struct ConcreteType {};
 
     /// @brief Use ::value to get the name of this component type.
@@ -139,6 +140,6 @@ struct ComponentTypeToEnum {};
 using ComponentPtr = std::shared_ptr<Component>;
 using ComponentWPtr = std::weak_ptr<Component>;
 
-}//namespace Renderboi
+} // namespace Renderboi
 
-#endif//RENDERBOI__TOOLBOX__SCENE__COMPONENT_HPP
+#endif//RENDERBOI__TOOLBOX__SCENE__OBJECT__COMPONENT_HPP

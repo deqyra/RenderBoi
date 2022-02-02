@@ -114,7 +114,7 @@ public:
     void pollGamepadStates() const override;
 };
 
-}//namespace Renderboi::Window
+} // namespace Renderboi::Window
 
 
 #endif//RENDERBOI__WINDOW__GLFW3__GLFW3_GAMEPAD_MANAGER_HPP

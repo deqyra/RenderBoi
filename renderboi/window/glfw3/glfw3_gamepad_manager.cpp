@@ -9,8 +9,6 @@
 #include <GLFW/glfw3.h>
 #undef GLFW_INCLUDE_NONE
 
-#include <renderboi/utilities/to_string.hpp>
-
 #include "../enums.hpp"
 #include "glfw3_adapter.hpp"
 #include "glfw3_utilities.hpp"
@@ -172,4 +170,4 @@ GamepadState GLFW3GamepadManager::_GamepadStateFromGlfwGamepadState(const GLFWga
     return state;
 }
 
-}//namespace Renderboi::Window
+} // namespace Renderboi::Window

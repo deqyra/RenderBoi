@@ -14,7 +14,7 @@ class TraitRenderer
 {
 public:
     /// @brief Render something?
-    virtual void render() = 0;
+    virtual void render() const = 0;
 };
 
 using TraitRendererPtr = std::shared_ptr<TraitRenderer>;

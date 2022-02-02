@@ -202,4 +202,4 @@ void SceneRenderer::drawMesh(const SceneObjectPtr meshObject, const glm::mat4& v
     meshComponent->getMesh()->draw();
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

@@ -37,4 +37,4 @@ SceneObjectPtr Factory::MakeSceneObjectWithParent(const ScenePtr scene, const un
     return sceneObject;
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

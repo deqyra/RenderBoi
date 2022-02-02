@@ -119,4 +119,4 @@ MeshComponent* MeshComponent::clone(const SceneObjectPtr newParent) const
     return new MeshComponent(newParent, clonedMesh, _material, _shader);
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

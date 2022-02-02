@@ -105,6 +105,6 @@ void globalGlfwJoystickCallback(int jid, int event);
 /// those.
 void initGamepadStatuses();
 
-}//namespace Renderboi::Window::GLFW3Utilities
+} // namespace Renderboi::Window::GLFW3Utilities
 
 #endif//RENDERBOI__WINDOW__GLFW3__GLFW3_UTILITIES_HPP

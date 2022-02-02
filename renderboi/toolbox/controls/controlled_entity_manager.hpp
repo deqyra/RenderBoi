@@ -1,12 +1,12 @@
-#ifndef RENDERBOI__TOOLBOX__CONTROLLED_ENTITY_MANAGER_HPP
-#define RENDERBOI__TOOLBOX__CONTROLLED_ENTITY_MANAGER_HPP
+#ifndef RENDERBOI__TOOLBOX__CONTROLS__CONTROLLED_ENTITY_MANAGER_HPP
+#define RENDERBOI__TOOLBOX__CONTROLS__CONTROLLED_ENTITY_MANAGER_HPP
 
 #include <memory>
 #include <type_traits>
 
+#include "../interfaces/default_control_scheme_provider.hpp"
 #include "control_scheme_manager.hpp"
 #include "control_event_translator.hpp"
-#include "../interfaces/default_control_scheme_provider.hpp"
 
 namespace Renderboi
 {
@@ -17,9 +17,11 @@ namespace Renderboi
 /// @tparam T Type of the entity to manage. It must have a public ActionType
 /// typedef, and inherit from DefaultControlSchemeProvider<ActionType>, as well
 /// as from ActionEventReceiver<ActionType>.
-template<typename T,
-         typename = std::enable_if_t<std::is_convertible<T*, DefaultControlSchemeProvider<typename T::ActionType>*>::value>,
-         typename = std::enable_if_t<std::is_convertible<T*, ActionEventReceiver<typename T::ActionType>*>::value>>
+template<
+    typename T,
+    typename = std::enable_if_t<std::is_convertible<T*, DefaultControlSchemeProvider<typename T::ActionType>*>::value>,
+    typename = std::enable_if_t<std::is_convertible<T*, ActionEventReceiver<typename T::ActionType>*>::value>
+>
 class ControlledEntityManager
 {
 private:
@@ -81,6 +83,6 @@ public:
     }
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
-#endif//RENDERBOI__TOOLBOX__CONTROLLED_ENTITY_MANAGER_HPP
+#endif//RENDERBOI__TOOLBOX__CONTROLS__CONTROLLED_ENTITY_MANAGER_HPP

@@ -6,8 +6,8 @@
 #include <memory>
 #include <utility>
 
-#include "renderboi/toolbox/render/traits/render_trait.hpp"
-#include "renderboi/toolbox/render/traits/render_trait_config.hpp"
+#include "render_trait.hpp"
+#include "render_trait_config.hpp"
 
 namespace Renderboi
 {
@@ -44,33 +44,35 @@ public:
     /// @param other RenderTraitConfigMap instance to copy trait configs from
     RenderTraitConfigMap(const SceneObjectPtr, const RenderTraitConfigMap& other);
 
-    /// @param list Init list of pairs of RenderTrait / RenderTraitConfigPtr to
-    /// store into the trait config map.
-    RenderTraitConfigMap(std::initializer_list<ConfigEntry> list);
-
     /// @brief Get a pointer to the parent scene object of this instance.
     ///
     /// @return A pointer to the parent scene object of this instance.
-    SceneObjectPtr sceneObject();
+    SceneObjectPtr sceneObject() const;
 
     /// @brief Get the config pointer for the given config trait.
+    ///
     /// @param trait Render trait to get the config for.
+    ///
     /// @return Pointer to the config for the given render trait (can be
     /// nullptr).
-    RenderTraitConfigPtr getConfigForTrait(const RenderTrait trait);
+    RenderTraitConfigPtr getConfigForTrait(const RenderTrait trait) const;
 
     /// @brief Return whether there is a registered config for the given config
     /// trait.
+    ///
     /// @param trait Render trait to test the config for.
+    ///
     /// @return Whether there is a registered config for the given config trait.
-    bool hasConfigForTrait(const RenderTrait trait);
+    bool hasConfigForTrait(const RenderTrait trait) const;
 
     /// @brief Set the config pointer for the given config trait.
+    ///
     /// @param trait Render trait to set the config for.
     /// @param config Pointer to the config to set for the given render trait.
     void setConfigForTrait(const RenderTrait trait, const RenderTraitConfigPtr config);
 
     /// @brief Remove the config pointer for the given config trait.
+    ///
     /// @param trait Render trait whose config is to be cleared.
     void clearConfigForTrait(const RenderTrait trait);
 

@@ -1,7 +1,8 @@
-#ifndef POINT_LIGHT_HPP
-#define POINT_LIGHT_HPP
+#ifndef RENDERBOI__CORE__LIGHTS__POINT_LIGHT_HPP
+#define RENDERBOI__CORE__LIGHTS__POINT_LIGHT_HPP
 
 #include <functional>
+
 #include <glm/glm.hpp>
 
 #include "light.hpp"
@@ -97,6 +98,6 @@ public:
     virtual glm::mat4 _computeViewMatrix() const override;
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
-#endif//POINT_LIGHT_HPP
+#endif//RENDERBOI__CORE__LIGHTS__POINT_LIGHT_HPP

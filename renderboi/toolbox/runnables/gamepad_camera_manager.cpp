@@ -1,11 +1,7 @@
 #include "gamepad_camera_manager.hpp"
 
-#include <renderboi/core/frame_of_reference.hpp>
-
 namespace Renderboi
 {
-
-using Ref = FrameOfReference;
 
 GamepadCameraManager::GamepadCameraManager(const CameraPtr camera, const float sensitivity) :
     _camera(camera),
@@ -15,7 +11,7 @@ GamepadCameraManager::GamepadCameraManager(const CameraPtr camera, const float s
 
 }
 
-void GamepadCameraManager::update(float timeElapsed)
+void GamepadCameraManager::update(const float timeElapsed)
 {
     float velocity = timeElapsed * _lookSensitivity;
 
@@ -45,4 +41,4 @@ void GamepadCameraManager::processAxis(const GamepadPtr gamepad, const Window::I
         _direction.y = -value;
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

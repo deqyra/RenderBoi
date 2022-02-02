@@ -13,8 +13,9 @@ namespace Renderboi
 {
 
 /// @brief Abstract class to run any 3D scene in a GL window.
-class GLSandbox : public Window::GLContextClient,
-				  public std::enable_shared_from_this<GLSandbox>
+class GLSandbox :
+	public Window::GLContextClient,
+	public std::enable_shared_from_this<GLSandbox>
 {
 	public:
 		/// @brief Set up the window prior to running the example. Will be
@@ -53,6 +54,6 @@ class GLSandbox : public Window::GLContextClient,
 		GLSandboxParameters _parameters;
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__EXAMPLES__GL_SANDBOX_HPP

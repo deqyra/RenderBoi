@@ -121,4 +121,4 @@ std::string to_string(const BasicWindowManagerAction& action)
     return "Unknown";
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

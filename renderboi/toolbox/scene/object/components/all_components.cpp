@@ -5,7 +5,7 @@
 namespace Renderboi
 {
 
-bool Component::MultipleInstancesAllowed(ComponentType type)
+bool Component::MultipleInstancesAllowed(const ComponentType type)
 {
     switch (type)
     {

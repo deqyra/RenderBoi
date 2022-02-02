@@ -1,5 +1,5 @@
-#ifndef RENDERBOI__CORE__IMPLEMENTATION__PARENT_DEPENDENT_VP_MATRIX_PROVIDER_HPP
-#define RENDERBOI__CORE__IMPLEMENTATION__PARENT_DEPENDENT_VP_MATRIX_PROVIDER_HPP
+#ifndef RENDERBOI__CORE__COMMON__PARENT_DEPENDENT_VP_MATRIX_PROVIDER_HPP
+#define RENDERBOI__CORE__COMMON__PARENT_DEPENDENT_VP_MATRIX_PROVIDER_HPP
 
 #include <glm/matrix.hpp>
 
@@ -9,8 +9,9 @@
 namespace Renderboi
 {
 
-/// @brief Implementation of the VPMatrixProvider interface which relies on a
-/// provided parent transform to perform matrix calculations and lazy updates.
+/// @brief Partial implementation of the VPMatrixProvider interface which relies
+/// on a provided parent transform to perform matrix calculations and lazy
+/// updates.
 class ParentDependentVPMatrixProvider : public VPMatrixProvider
 {
 public:
@@ -19,6 +20,22 @@ public:
     ParentDependentVPMatrixProvider(Transform parentWorldTransform);
 
     ParentDependentVPMatrixProvider(const ParentDependentVPMatrixProvider& other);
+
+    /// @brief Get the world transform of the parent of the entity.
+    ///
+    /// @return The world transform of the parent of the entity.
+    Transform getParentWorldTransform() const;
+
+    /// @brief Update the registered world transform of the parent of the entity.
+    ///
+    /// @param transform New world transform of the parent of the entity.
+    void setParentWorldTransform(Transform parentTransform);
+
+    ///////////////////////////////////////////////
+    ///                                         ///
+    /// Methods inherited from VPMatrixProvider ///
+    ///                                         ///
+    ///////////////////////////////////////////////
 
     /// @brief Get the view matrix of the entity from its view point.
     ///
@@ -44,16 +61,6 @@ public:
     ///
     /// @return The view-projection matrix of the entity.
     virtual glm::mat4 getViewProjectionMatrix() const override;
-
-    /// @brief Get the world transform of the parent of the entity.
-    ///
-    /// @return The world transform of the parent of the entity.
-    Transform getParentWorldTransform() const;
-
-    /// @brief Update the registered world transform of the parent of the entity.
-    ///
-    /// @param transform New world transform of the parent of the entity.
-    void setParentWorldTransform(Transform parentTransform);
 
 protected:
     /// @brief World transform of the object the entity is attached to.
@@ -102,4 +109,4 @@ protected:
 
 } // namespace Renderboi
 
-#endif//RENDERBOI__CORE__IMPLEMENTATION__PARENT_DEPENDENT_VP_MATRIX_PROVIDER_HPP
+#endif//RENDERBOI__CORE__COMMON__PARENT_DEPENDENT_VP_MATRIX_PROVIDER_HPP

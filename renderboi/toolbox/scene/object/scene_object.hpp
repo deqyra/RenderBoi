@@ -1,8 +1,7 @@
-#ifndef RENDERBOI__TOOLBOX__SCENE__SCENE_OBJECT_HPP
-#define RENDERBOI__TOOLBOX__SCENE__SCENE_OBJECT_HPP
+#ifndef RENDERBOI__TOOLBOX__SCENE__OBJECT__SCENE_OBJECT_HPP
+#define RENDERBOI__TOOLBOX__SCENE__OBJECT__SCENE_OBJECT_HPP
 
 #include <algorithm>
-#include <stdexcept>
 #include <functional>
 #include <iterator>
 #include <memory>
@@ -14,15 +13,13 @@
 
 #include <renderboi/core/transform.hpp>
 
-#include <renderboi/utilities/to_string.hpp>
-
+#include "../../render/traits/render_trait.hpp"
+#include "../../render/traits/render_trait_config.hpp"
+#include "../../render/traits/render_trait_config_map.hpp"
 #include "object_transform.hpp"
 #include "component.hpp"
 #include "component_map.hpp"
 #include "component_type.hpp"
-#include "../../render/traits/render_trait.hpp"
-#include "../../render/traits/render_trait_config.hpp"
-#include "../../render/traits/render_trait_config_map.hpp"
 
 namespace Renderboi
 {
@@ -129,6 +126,6 @@ public:
 using SceneObjectPtr = std::shared_ptr<SceneObject>;
 using SceneObjectWPtr = std::weak_ptr<SceneObject>;
 
-}//namespace Renderboi
+} // namespace Renderboi
 
-#endif//RENDERBOI__TOOLBOX__SCENE__SCENE_OBJECT_HPP
+#endif//RENDERBOI__TOOLBOX__SCENE__OBJECT__SCENE_OBJECT_HPP

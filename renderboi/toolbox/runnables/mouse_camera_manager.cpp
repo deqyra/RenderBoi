@@ -40,4 +40,4 @@ void MouseCameraManager::processMouseCursor(const GLWindowPtr window, const doub
     _lastMouseY = (float)ypos;
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

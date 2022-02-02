@@ -16,8 +16,11 @@ RenderBoi:
         ✔ Better documentation @done(20-10-19 19:22)
         ☐ In all accessor functions using local-statically generated data: provide a refresh argument
         ☐ In all functions using the `bool runOnce` trick to generate local static data once: use initialiser syntax instead
-        ☐ ADL behaves badly on to_string methods
+        ☐ ADL behaves badly on to_string methods (these REALLY need to be fixed they're a mess rn)
         ☐ Investigate move semantics usage
+        ☐ Change shared_ptr to unique_ptr where ownership is due and to naked pointer where it's just being used
+        ☐ Destructors with an empty body should just be defaulted
+        ☐ Put #pragma region directives in files
     Core:
         Camera:
             ✔ Use a parent transform instead of a simple up vector @done(20-10-14 12:27)
@@ -32,7 +35,7 @@ RenderBoi:
             ☐ Meshed curve generator, using cpptools::Curve
             ☐ Use `glVertexAttribFormat` to describe vertex layout in memory (instead of `glVertexAttribPointer`)
             See https://stackoverflow.com/questions/37972229/glvertexattribpointer-and-glvertexattribformat-whats-the-difference
-            ☐ Rename the template meta classes they ugly AF
+            ✔ Rename the template meta classes they ugly AF @done(22-02-02 00:14)
         Shaders:
             ✔ Use GL_ARB_shader_language_include @done(20-10-24 17:30)
             ✔ Declare uniform blocks in their own file @done(20-10-24 17:30)
@@ -58,7 +61,7 @@ RenderBoi:
         VertexDataManager:
             ☐ A VertexDataManager holds actual vertex data and takes care of memory management
             ☐ Meshes now only keep handles to vertex content held in a VertexDataManager
-            ☐ !!!!! REQUIRED for proper cloning of mesh render trait config
+            !!!!! REQUIRED for proper cloning of mesh render trait config
             ☐ Investigate better buffering methods
         ☐ Dynamic meshes
         ☐ Unity-like prefab system?
@@ -80,7 +83,9 @@ RenderBoi:
             ☐ Make a concept out of components, simplify template usage in SceneObject
             ✔ Implement template meta to have componentMap.addComponent<Camera> instead of componentMap.addComponent<CameraComponent> @done(22-01-29 18:13)
         ComponentMap:
-            ☐ Better naming for template parameters
+            ✔ Better naming for template parameters @done(22-02-02 00:16)
+        Controls:
+            ☐ Make concept for actions, enforce it on Control-related classes
         Factory:
             ✔ Method to attach camera and scripts to scene object@done(20-10-26 02:40)
             ☐ Forwarding methods to ShaderBuilder
@@ -90,7 +95,7 @@ RenderBoi:
         Logger:
             ☐ Write a real logger, have the input logger use it
         Object transform:
-            ☐ Keep a shared pointer to the scene object
+            ✘ Keep a shared pointer to the scene object @cancelled(22-02-02 00:16)
         Render traits:
             ☐ The copy constructor of the RenderTraitConfigMap is WRONG - it should clone configs
             ☐ When cloned as part of SceneObject cloning, the MeshRenderTraitConfig needs to reference its new parent SceneObject

@@ -71,11 +71,11 @@ public:
     const unsigned int id;
 };
 
-}//namespace Window
+} // namespace Window
 
 using GamepadInputProcessor = Window::GamepadInputProcessor;
 using GamepadInputProcessorPtr = std::shared_ptr<GamepadInputProcessor>;
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__WINDOW__GAMEPAD__GAMEPAD_INPUT_PROCESSOR_HPP

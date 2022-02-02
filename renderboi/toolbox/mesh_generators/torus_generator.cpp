@@ -17,18 +17,33 @@ namespace Renderboi
 constexpr double Pi = glm::pi<double>();
 
 TorusGenerator::TorusGenerator() :
-    TorusGenerator(DefaultToroidalRadius, DefaultPoloidalRadius, DefaultToroidalVertexResolution, DefaultPoloidalVertexResolution)
+    TorusGenerator(
+        DefaultToroidalRadius,
+        DefaultPoloidalRadius,
+        DefaultToroidalVertexResolution,
+        DefaultPoloidalVertexResolution
+    )
 {
 
 }
 
-TorusGenerator::TorusGenerator(float toroidalRadius, float poloidalRadius, unsigned int toroidalVertexRes, unsigned int poloidalVertexRes) :
-    parameters{ toroidalRadius, poloidalRadius, toroidalVertexRes, poloidalVertexRes }
+TorusGenerator::TorusGenerator(
+    const float toroidalRadius,
+    const float poloidalRadius,
+    const unsigned int toroidalVertexRes,
+    const unsigned int poloidalVertexRes
+) :
+    parameters{
+        toroidalRadius,
+        poloidalRadius,
+        toroidalVertexRes,
+        poloidalVertexRes
+    }
 {
 
 }
 
-TorusGenerator::TorusGenerator(Parameters parameters) :
+TorusGenerator::TorusGenerator(const Parameters parameters) :
     parameters(parameters)
 {
 
@@ -124,4 +139,4 @@ MeshPtr TorusGenerator::generateMesh() const
     return std::make_shared<Mesh>(GL_TRIANGLE_STRIP, vertices, indices);
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

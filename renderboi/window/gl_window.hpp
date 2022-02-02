@@ -292,11 +292,11 @@ protected:
 
 using GLWindowPtr = std::shared_ptr<GLWindow>;
 
-}//namespace Window
+} // namespace Window
 
 using GLWindow = Window::GLWindow;
 using GLWindowPtr = std::shared_ptr<GLWindow>;
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__WINDOW__GL_WINDOW_HPP

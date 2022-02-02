@@ -1,5 +1,4 @@
 #include "lighting_sandbox.hpp"
-#include "renderboi/toolbox/mesh_generators/cube_generator.hpp"
 
 #include <iostream>
 #include <memory>
@@ -251,4 +250,4 @@ LightingSandboxScript* LightingSandboxScript::clone() const
     return nullptr;
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

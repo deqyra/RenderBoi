@@ -13,23 +13,23 @@ namespace Renderboi
 /// `glStopIgnoringDebugMessages` to undo.
 ///
 /// @param type GL constant corresponding to the debug message type to ignore.
-void glIgnoreDebugMessagesOfType(int type);
+void glIgnoreDebugMessagesOfType(const int type);
 
 /// @brief Have glDebugCallback stop ignoring certain message types as a result
 /// of calls to `glIgnoreDebugMessagesOfType`.
 void glStopIgnoringDebugMessages();
 
 void APIENTRY glDebugCallback(
-    unsigned int source,
-    unsigned int type,
-    unsigned int id,
-    unsigned int severity,
-    int length,
+    const unsigned int source,
+    const unsigned int type,
+    const unsigned int id,
+    const unsigned int severity,
+    const int length,
     const char* message,
     const void* userParam
 );
 
 float glGetAspectRatio();
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__UTILITIES__GL_UTILITIES_HPP

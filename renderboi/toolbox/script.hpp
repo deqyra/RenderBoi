@@ -33,7 +33,7 @@ class Script
         ///
         /// @param timeElapsed How much time passed (in seconds) since the last
         /// update.
-        virtual void update(float timeElapsed) = 0;
+        virtual void update(const float timeElapsed) = 0;
 
         /// @brief Get a pointer to the parent scene object, if any.
         ///
@@ -60,6 +60,6 @@ class Script
 using ScriptPtr = std::shared_ptr<Script>;
 using ScriptWPtr = std::weak_ptr<Script>;
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__TOOLBOX__SCENE__SCRIPT_HPP

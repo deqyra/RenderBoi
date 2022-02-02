@@ -31,7 +31,7 @@ PlaneGenerator::PlaneGenerator() :
 
 }
 
-PlaneGenerator::PlaneGenerator(Parameters parameters) :
+PlaneGenerator::PlaneGenerator(const Parameters parameters) :
     parameters(parameters)
 {
     if (parameters.xTexSize <= 0.f)
@@ -120,4 +120,4 @@ MeshPtr PlaneGenerator::generateMesh() const
     return std::make_shared<Mesh>(GL_TRIANGLE_STRIP, vertices, indices, primitiveSizes, primitiveOffsets);
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

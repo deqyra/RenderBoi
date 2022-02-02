@@ -45,6 +45,6 @@ public:
     static void Unbind(Mode mode = Mode::ReadWrite);
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__CORE__FRAMEBUFFER_HPP

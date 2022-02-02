@@ -12,7 +12,7 @@ InputSplitter::InputSplitter() :
 
 }
 
-unsigned int InputSplitter::registerInputProcessor(InputProcessorPtr inputProcessor)
+unsigned int InputSplitter::registerInputProcessor(const InputProcessorPtr inputProcessor)
 {
     if (!inputProcessor)
     {
@@ -23,7 +23,7 @@ unsigned int InputSplitter::registerInputProcessor(InputProcessorPtr inputProces
     return _subscriberRollingCount++;
 }
 
-void InputSplitter::detachInputProcessor(unsigned int subscriptionId)
+void InputSplitter::detachInputProcessor(const unsigned int subscriptionId)
 {
     _subscribers.erase(subscriptionId);
 }
@@ -33,7 +33,7 @@ void InputSplitter::detachAllInputProcessors()
     _subscribers.clear();
 }
 
-unsigned int InputSplitter::registerGamepadInputProcessor(GamepadInputProcessorPtr inputProcessor)
+unsigned int InputSplitter::registerGamepadInputProcessor(const GamepadInputProcessorPtr inputProcessor)
 {
     if (!inputProcessor)
     {
@@ -44,7 +44,7 @@ unsigned int InputSplitter::registerGamepadInputProcessor(GamepadInputProcessorP
     return _subscriberRollingCount++;
 }
 
-void InputSplitter::detachGamepadInputProcessor(unsigned int subscriptionId)
+void InputSplitter::detachGamepadInputProcessor(const unsigned int subscriptionId)
 {
     _gamepadSubscribers.erase(subscriptionId);
 }
@@ -129,4 +129,4 @@ void InputSplitter::processAxis(const GamepadPtr gamepad, const Axis axis, const
     }
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

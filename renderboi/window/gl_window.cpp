@@ -111,4 +111,4 @@ GamepadManagerPtr GLWindow::getGamepadManager()
 }
 
 
-}//namespace Renderboi::Window
+} // namespace Renderboi::Window

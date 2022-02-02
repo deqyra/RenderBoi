@@ -47,4 +47,4 @@ std::string ResourceLocator::locate(const ResourceType type, const std::string& 
 }
 
 
-}//namespace Renderboi
+} // namespace Renderboi

@@ -271,6 +271,6 @@ class Transform : public BasisProvider
         glm::vec3 forward() const override;
 };
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__CORE__TRANSFORM_HPP

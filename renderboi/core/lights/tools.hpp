@@ -15,6 +15,6 @@ namespace Renderboi
 /// light attenuation.
 void attenuationFromRange(const float range, float& quadraticFactor, float& linearFactor, float& constantFactor);
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__CORE__LIGHTS__TOOLS_HPP

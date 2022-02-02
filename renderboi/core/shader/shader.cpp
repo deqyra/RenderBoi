@@ -90,4 +90,4 @@ bool Shader::supports(const ShaderFeature feature) const
     return it != _supportedFeatures.end();
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

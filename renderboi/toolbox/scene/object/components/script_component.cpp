@@ -77,4 +77,4 @@ void ScriptComponent::_release()
     _sceneObject.reset();
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

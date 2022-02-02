@@ -60,4 +60,4 @@ glm::mat4 PointLight::_computeViewMatrix() const
     return glm::mat4();
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

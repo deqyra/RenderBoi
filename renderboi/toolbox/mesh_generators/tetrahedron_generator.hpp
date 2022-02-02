@@ -5,7 +5,7 @@
 
 #include <renderboi/core/mesh.hpp>
 
-#include "../interfaces/mesh_generator.hpp"
+#include "mesh_generator.hpp"
 
 namespace Renderboi
 {
@@ -37,15 +37,15 @@ public:
 
     /// @param size Size the tetrahedron will have (radius of encompassing 
     /// sphere).
-    TetrahedronGenerator(float size);
+    TetrahedronGenerator(const float size);
 
     /// @param size Size the tetrahedron will have (radius of encompassing 
     /// sphere).
     /// @param color RGB color of the generated vertices.
-    TetrahedronGenerator(float size, glm::vec3 color);
+    TetrahedronGenerator(const float size, const glm::vec3 color);
 
     /// @param parameters Parameters of the vertex generation.
-    TetrahedronGenerator(Parameters parameters);
+    TetrahedronGenerator(const Parameters parameters);
     
     /// @brief Parameters of the vertex generation.
     Parameters parameters;
@@ -63,6 +63,15 @@ public:
     MeshPtr generateMesh() const override;
 };
 
-}//namespace Renderboi
+template<>
+struct MeshTypeMeta<MeshType::Tetrahedron>
+{
+    struct Generator
+    {
+        using type = TetrahedronGenerator;
+    };
+};
+
+} // namespace Renderboi
 
 #endif//RENDERBOI__TOOLBOX__MESH_GENERATORS__TETRAHEDRON_GENERATOR_HPP

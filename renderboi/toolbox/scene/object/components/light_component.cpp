@@ -43,4 +43,4 @@ LightComponent* LightComponent::clone(const SceneObjectPtr newParent) const
     return new LightComponent(newParent, clonedLight);
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

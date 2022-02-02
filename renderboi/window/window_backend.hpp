@@ -11,6 +11,6 @@ enum class WindowBackend
     GLFW3
 };
 
-}//namespace Renderboi::Window
+} // namespace Renderboi::Window
 
 #endif//RENDERBOI__WINDOW__WINDOW_BACKEND_HPP

@@ -106,6 +106,6 @@ public:
 
 using GLFW3MonitorPtr = std::shared_ptr<GLFW3Monitor>;
 
-}//namespace Renderboi::Window
+} // namespace Renderboi::Window
 
 #endif//RENDERBOI__WINDOW__GLFW3__GLFW3_MONITOR_HPP

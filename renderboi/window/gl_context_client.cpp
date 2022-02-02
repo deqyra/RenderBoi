@@ -6,14 +6,14 @@ namespace Renderboi
 namespace Window
 {
 
-GLContextClient::GLContextClient(GLWindowPtr window) :
+GLContextClient::GLContextClient(const GLWindowPtr window) :
     _window(window),
     _eventManager(std::make_shared<GLContextEventManager>(window))
 {
 
 }
 
-GLContextClient::GLContextClient(GLWindowPtr window, GLContextEventManagerPtr eventManager) :
+GLContextClient::GLContextClient(const GLWindowPtr window, const GLContextEventManagerPtr eventManager) :
     _window(window),
     _eventManager(eventManager)
 {

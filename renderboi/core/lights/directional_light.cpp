@@ -39,4 +39,4 @@ glm::mat4 DirectionalLight::_computeViewMatrix() const
     return glm::mat4();
 }
 
-}//namespace Renderboi
+} // namespace Renderboi

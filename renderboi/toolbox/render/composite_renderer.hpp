@@ -17,7 +17,7 @@ private:
 
 public:
     /// @brief Render something?
-    void render();
+    void render() const;
 };
 
 } // namespace Renderboi

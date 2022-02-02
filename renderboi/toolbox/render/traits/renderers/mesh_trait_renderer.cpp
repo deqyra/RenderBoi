@@ -3,7 +3,7 @@
 namespace Renderboi
 {
 
-void MeshTraitRenderer::render()
+void MeshTraitRenderer::render() const
 {
     
 }

@@ -34,6 +34,6 @@ public:
 template<typename T>
 using ActionEventReceiverPtr = std::shared_ptr<ActionEventReceiver<T>>;
 
-}//namespace Renderboi
+} // namespace Renderboi
 
 #endif//RENDERBOI__TOOLBOX__INTERFACES__ACTION_EVENT_RECEIVER_HPP

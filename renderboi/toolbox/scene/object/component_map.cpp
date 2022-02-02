@@ -39,7 +39,7 @@ void ComponentMap::_release()
     _sceneObject.reset();
 }
 
-SceneObjectPtr ComponentMap::sceneObject()
+SceneObjectPtr ComponentMap::sceneObject() const
 {
     return _sceneObject;
 }

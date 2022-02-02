@@ -65,6 +65,6 @@ public:
     static void DestroyWindow(GLWindowPtr window);
 };
 
-}//namespace Renderboi::Window
+} // namespace Renderboi::Window
 
 #endif//RENDERBOI__WINDOW__GLFW3__GLFW3_WINDOW_FACTORY_HPP
