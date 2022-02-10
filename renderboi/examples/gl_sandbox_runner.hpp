@@ -29,26 +29,23 @@ class GLSandboxRunner
 {
 public:
     using SandboxType = T;
-    using SandboxPtr = std::shared_ptr<T>;
+    using SandboxPtr = std::unique_ptr<T>;
 
 private:
     /// @brief Pointer to the hosted sandbox.
     SandboxPtr _sandbox;
 
-    /// @brief Pointer to the window to run the sandbox on.
-    GLWindowPtr _window;
-
-    /// @brief Pointer to the gamepad manager of the window.
-    GamepadManagerPtr _gamepadManager;
+    /// @brief Reference to the window to run the sandbox on.
+    GLWindow& _window;
 
 public:
-    /// @param window Pointer to the window to run the sandbox on.
+    /// @param window Reference to the window to run the sandbox on.
     /// @param params Parameters to run the sandbox with
-    GLSandboxRunner(GLWindowPtr window, GLSandboxParameters params) :
+    GLSandboxRunner(GLWindow& window, const GLSandboxParameters& params) :
         _window(window),
-        _sandbox(std::make_shared<SandboxType>(window, params))
+        _sandbox(std::make_unique<SandboxType>(window, params))
     {
-        
+
     }
 
     ~GLSandboxRunner()
@@ -72,7 +69,7 @@ public:
         _sandbox->setUp();
 
 		std::thread th(&GLSandbox::run, _sandbox);
-		_window->startPollingLoop();
+		_window.startPollingLoop();
 
 		th.join();
 		_sandbox->tearDown();

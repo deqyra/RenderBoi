@@ -7,7 +7,7 @@ namespace Renderboi
 
 using Window::GLContextEvent;
 
-std::string to_string(const GLContextEvent& event)
+std::string to_string(const GLContextEvent event)
 {
     static std::unordered_map<GLContextEvent, std::string> enumNames = {
         {GLContextEvent::FitFramebufferToWindow,    "FitFramebufferToWindow"},

@@ -117,7 +117,7 @@ MeshPtr PlaneGenerator::generateMesh() const
         primitiveOffsets[j] = (void*)(j * primitiveSize * sizeof(int));
     }
 
-    return std::make_shared<Mesh>(GL_TRIANGLE_STRIP, vertices, indices, primitiveSizes, primitiveOffsets);
+    return std::make_unique<Mesh>(GL_TRIANGLE_STRIP, vertices, indices, primitiveSizes, primitiveOffsets);
 }
 
 } // namespace Renderboi

@@ -17,8 +17,6 @@ private:
     static unsigned int _count;
 
 public:
-    Monitor();
-
     virtual ~Monitor();
 
     /// @brief Data structure describing a video mode for a monitor.
@@ -127,15 +125,20 @@ public:
         );
     };
 
+protected:
+    /// @param name Name of the monitor.
+    Monitor(std::string name);
+
+public:
     /// @brief Get the current video mode of the monitor.
     ///
     /// @return The current video mode of the monitor.
-    virtual VideoMode getCurrentVideoMode() const = 0;
+    virtual const VideoMode getCurrentVideoMode() const = 0;
 
     /// @brief Get the video modes supported by the monitor.
     ///
     /// @return An array filled with the video modes support by the monitor.
-    virtual std::vector<VideoMode> getVideoModes() const = 0;
+    virtual const std::vector<VideoMode>& getVideoModes() const = 0;
 
     /// @brief Get the physical size of the monitor in millimetres.
     ///
@@ -166,11 +169,6 @@ public:
     /// @param[out] height To receive the height of the work area.
     virtual void getWorkArea(int& xscale, int& yscale, int& width, int& height) const = 0;
 
-    /// @brief Get the human-readable name of the monitor.
-    ///
-    /// @return The human-readable name of the monitor.
-    virtual std::string getName() const = 0;
-
     /// @brief Get the gamma ramp of the monitor.
     ///
     /// @return The gamma ramp of the monitor.
@@ -181,16 +179,23 @@ public:
     /// @return The gamma ramp to set for the monitor.
     virtual void setGammaRamp(const GammaRamp& gammaRamp) const = 0;
 
-    /// @brief Get the largest video mode supported by the monitor.
+    /// @brief Get the "largest" video mode supported by the monitor.
     ///
-    /// @return The largest video mode supported by the monitor.
+    /// @return The "largest" video mode supported by the monitor.
+    ///
+    /// @note Since a video mode is hardly sizeable, this function may only 
+    /// return a hypothetical video mode made of the single largest attribute 
+    /// values encountered across all supported video modes.
     virtual VideoMode getLargestVideoMode() const = 0;
 
     /// @brief ID of the monitor.
     const unsigned int id;
+
+    /// @brief Name of the monitor.
+    const std::string name;
 };
 
-using MonitorPtr = std::shared_ptr<Monitor>;
+using MonitorPtr = std::unique_ptr<Monitor>;
 
 } // namespace Renderboi::Window
 

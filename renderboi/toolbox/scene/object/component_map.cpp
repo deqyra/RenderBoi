@@ -8,7 +8,7 @@
 namespace Renderboi
 {
 
-ComponentMap::ComponentMap(const SceneObjectPtr sceneObject) :
+ComponentMap::ComponentMap(SceneObject& sceneObject) :
     _sceneObject(sceneObject),
     _singleComponentMap(),
     _multiComponentMap()
@@ -16,7 +16,7 @@ ComponentMap::ComponentMap(const SceneObjectPtr sceneObject) :
 
 }
 
-ComponentMap::ComponentMap(const SceneObjectPtr sceneObject, const ComponentMap& other) :
+ComponentMap::ComponentMap(SceneObject& sceneObject, const ComponentMap& other) :
     _sceneObject(sceneObject),
     _singleComponentMap(),
     _multiComponentMap()
@@ -34,28 +34,14 @@ ComponentMap::ComponentMap(const SceneObjectPtr sceneObject, const ComponentMap&
     }
 }
 
-void ComponentMap::_release()
-{
-    _sceneObject.reset();
-}
-
-SceneObjectPtr ComponentMap::sceneObject() const
+SceneObject& ComponentMap::sceneObject()
 {
     return _sceneObject;
 }
 
 void ComponentMap::clear()
 {
-    for (const auto& [type, component] : _singleComponentMap)
-    {
-        component->_release();
-    }
     _singleComponentMap.clear();
-
-    for (const auto& [type, component] : _multiComponentMap)
-    {
-        component->_release();
-    }
     _multiComponentMap.clear();
 }
 

@@ -2,6 +2,7 @@
 #define RENDERBOI__TOOLBOX__SCENE__COMPONENTS__SCRIPT_COMPONENT_HPP
 
 #include <string>
+#include <type_traits>
 
 #include "../component.hpp"
 #include "../component_type.hpp"
@@ -17,8 +18,12 @@ private:
     ScriptComponent(ScriptComponent& other) = delete;
     ScriptComponent& operator=(const ScriptComponent& other) = delete;
 
-    /// @brief Pointer to the actual script resource.
-    ScriptPtr _script;
+    /// @brief Pointer to an owned script resource. May be null in the case 
+    /// where the referenced script is external to the component instance.
+    ScriptPtr _scriptPtr;
+
+    /// @brief Reference to the actual script resource.
+    Script& _script;
 
     /// @brief Register script to the scene which the parent scene object
     /// belongs to.
@@ -27,34 +32,43 @@ private:
     /// @brief Detach script from the scene it is registered at.
     void _detachScript();
 
-    /// @brief Release the parent scene object pointer.
-    void _release() override;
-
 public:
-    /// @param sceneObject Pointer to the scene object which will be parent
+    /// @param sceneObject Reference to the scene object which will be parent
     /// to this component.
-    /// @param script Pointer to the input processing script which the 
+    /// @param script Reference to the input processing script which the 
+    /// component will use.
+    ScriptComponent(SceneObject& sceneObject, Script& script);
+
+    /// @param sceneObject Reference to the scene object which will be parent
+    /// to this component.
+    /// @param script Reference to the input processing script which the 
     /// component will use.
     ///
-    /// @exception If the passed scene object pointer is null, or if the 
-    /// passed script pointer is null, the function will throw a 
-    /// std::runtime_error.
-    ScriptComponent(const SceneObjectPtr sceneObject, const ScriptPtr script);
+    /// @exception If the passed script pointer is null, the function will 
+    /// throw a std::runtime_error.
+    ScriptComponent(SceneObject& sceneObject, ScriptPtr&& script);
+
+    /// @param sceneObject Reference to the scene object which will be parent
+    /// to this component.
+    /// @param args Arguments to pass to the constructor of the instantiated
+    /// script.
+    ///
+    /// @tparam T Required. Concrete type of Script to instantiate.
+    /// @tparam ArgTypes Types of the arguments to be forwarded to the 
+    /// constructor of T. Leave for deduction.
+    template<
+        typename T,
+        typename... ArgTypes,
+        typename = std::enable_if_t<std::is_base_of_v<Script, T>, void>
+    >
+    ScriptComponent(SceneObject& sceneObject, ArgTypes&& ...args);
 
     ~ScriptComponent();
 
-    /// @brief Get a pointer to the script used by the component.
+    /// @brief Get a reference to the script used by the component.
     ///
-    /// @return Pointer to the script used by the component.
-    ScriptPtr getScript() const;
-
-    /// @brief Set the script used by the component.
-    ///
-    /// @param script Pointer to the script which the component will use.
-    ///
-    /// @exception If the passed script pointer is null, the function will
-    /// throw a std::runtime_error.
-    void setScript(const ScriptPtr script);
+    /// @return Reference to the script used by the component.
+    Script& script() const;
 
     /////////////////////////////////////////
     ///                                   ///
@@ -62,16 +76,16 @@ public:
     ///                                   ///
     /////////////////////////////////////////
 
-    /// @brief Get a raw pointer to a new component instance cloned 
+    /// @brief Get a raw reference to a new component instance cloned 
     /// from this one. Ownership and responsibility for the allocated 
     /// resources are fully transferred to the caller.
     ///
-    /// @param newParent Pointer the scene object which will be parent to
+    /// @param newParent Reference the scene object which will be parent to
     /// the cloned component instance.
     ///
-    /// @return A raw pointer to the component instance cloned from this 
+    /// @return A raw reference to the component instance cloned from this 
     /// one.
-    ScriptComponent* clone(const SceneObjectPtr newParent) const override;
+    ScriptComponent* clone(SceneObject& newParent) const override;
 };
 
 template<>
@@ -96,7 +110,7 @@ struct ComponentMeta<ComponentType::Script>
 template<>
 struct ComponentTypeToEnum<ScriptComponent>
 {
-    static constexpr ComponentType value = ComponentType::Camera;
+    static constexpr ComponentType value = ComponentType::Script;
 };
 
 } // namespace Renderboi

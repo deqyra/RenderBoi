@@ -2,18 +2,20 @@
 #define RENDERBOI__TOOLBOX__CONTROLS__CONTROL_EVENT_TRANSLATOR_HPP
 
 #include <algorithm>
+#include <functional>
 #include <iterator>
 #include <map>
 #include <memory>
 #include <utility>
 #include <vector>
 
+#include <cpptools/oo/interfaces/action_event_receiver.hpp>
+
 #include <renderboi/window/gl_window.hpp>
 #include <renderboi/window/input_processor.hpp>
 
 #include "control.hpp"
-#include "../interfaces/control_binding_provider.hpp"
-#include "../interfaces/action_event_receiver.hpp"
+#include "control_scheme.hpp"
 
 namespace Renderboi
 {
@@ -25,16 +27,17 @@ template<typename T>
 class ControlEventTranslator : public InputProcessor
 {
 private:
-    /// @brief Object which can tell which controls are mapped to which
-    /// actions.
-    ControlBindingProviderPtr<T> _bindingProvider;
+    using ActionEventReceiverType = type_utils::apply_types<
+        typename cpptools::ActionEventReceiver,
+        typename T::TemplateTypes
+    >;
+
+    /// @brief Structure mapping actions to the control they are bound to.
+    const std::multimap<T, Control>& _controlBindings;
 
     /// @brief Object which will be notified of which actions were triggered
     /// by their bound controls.
-    ActionEventReceiverPtr<T> _listener;
-
-    /// @brief Structure mapping actions to the control they are bound to.
-    std::multimap<Control, T> _controlBindings;
+    ActionEventReceiverType& _listener;
 
     /// @brief Translate a given control into action(s) and forward those to
     /// the listener.
@@ -43,25 +46,21 @@ private:
     /// just processed.
     /// @param action Object describing the action that was performed on the
     /// control.
-    /// @param window Pointer to the window on which the control was
+    /// @param window Reference to the window on which the control was
     /// captured.
-    void _translateAndNotify(const Control& control, Window::Input::Action action, const GLWindowPtr window) const;
+    void _translateAndNotify(const Control& control, Window::Input::Action action, GLWindow* const window) const;
 
-    /// @brief Copies controls from a control binding provider into a multimap.
-    ///
-    /// @param bindingProvider Object to copy the bindings from.
-    /// @param destination Map to copy the bindings into.
-    static void _ImportControlBindingsIntoMap(
-        const ControlBindingProviderPtr<T>& bindingProvider,
-        std::multimap<Control, T>& destination
-    );
+    // std::tuple<
 
 public:
-    /// @param bindingProvider Object which can tell which controls are 
+    /// @param controlScheme Object which can tell which controls are 
     /// mapped to which actions.
     /// @param listener Object which will be notified of which actions 
     /// were triggered by their bound controls.
-    ControlEventTranslator(ControlBindingProviderPtr<T> bindingProvider, ActionEventReceiverPtr<T> listener);
+    ControlEventTranslator(
+        const ControlScheme<T>& controlScheme,
+        const ActionEventReceiverType& listener
+    );
 
     //////////////////////////////////////////////
     ///                                        ///
@@ -71,7 +70,7 @@ public:
 
     /// @brief Callback for a keyboard event.
     ///
-    /// @param window Pointer to the GLWindow in which the event was
+    /// @param window Reference to the GLWindow in which the event was
     /// triggered.
     /// @param key Literal describing which key triggered the event.
     /// @param scancode Scancode of the key which triggered the event. 
@@ -81,7 +80,7 @@ public:
     /// @param mods Bit field describing which modifiers were enabled 
     /// during the key event (Ctrl, Shift, etc).
     void processKeyboard(
-        const GLWindowPtr window, 
+        GLWindow& window, 
         const Window::Input::Key key, 
         const int scancode, 
         const Window::Input::Action action, 
@@ -90,7 +89,7 @@ public:
 
     /// @brief Callback for a mouse button event.
     ///
-    /// @param window Pointer to the GLWindow in which the event was
+    /// @param window Reference to the GLWindow in which the event was
     /// triggered.
     /// @param button Literal describing which button triggered the
     /// event.
@@ -99,7 +98,7 @@ public:
     /// @param mods Bit field describing which modifiers were enabled 
     /// during the button event (Ctrl, Shift, etc).
     void processMouseButton(
-        const GLWindowPtr window, 
+        GLWindow& window, 
         const Window::Input::MouseButton button, 
         const Window::Input::Action action, 
         const int mods
@@ -108,45 +107,44 @@ public:
 
 template<typename T>
 ControlEventTranslator<T>::ControlEventTranslator(
-    ControlBindingProviderPtr<T> bindingProvider,
-    ActionEventReceiverPtr<T> listener
+    const ControlScheme<T>& controlScheme,
+    const ActionEventReceiverType& listener
 ) :
-    _bindingProvider(bindingProvider),
-    _listener(listener),
-    _controlBindings()
+    _controlBindings(controlScheme.getAllBoundControls()),
+    _listener(listener)
 {
-    _ImportControlBindingsIntoMap(bindingProvider, _controlBindings);
+
 }
 
 template<typename T>
 void ControlEventTranslator<T>::processKeyboard(
-    const GLWindowPtr window,
+    GLWindow& window,
     const Window::Input::Key key,
     const int scancode,
     const Window::Input::Action action,
     const int mods
 )
 {
-    Control triggeredControl = Control(key);
-
-    _translateAndNotify(triggeredControl, action, window);
+    _translateAndNotify(Control(key), action, window);
 }
 
 template<typename T>
 void ControlEventTranslator<T>::processMouseButton(
-    const GLWindowPtr window,
+    GLWindow& window,
     const Window::Input::MouseButton button,
     const Window::Input::Action action,
     const int mods
 )
 {
-    const Control triggeredControl = Control(button);
-
-    _translateAndNotify(triggeredControl, action, window);
+    _translateAndNotify(Control(button), action, window);
 }
 
 template<typename T>
-void ControlEventTranslator<T>::_translateAndNotify(const Control& control, Window::Input::Action action, const GLWindowPtr window) const
+void ControlEventTranslator<T>::_translateAndNotify(
+    const Control& control,
+    Window::Input::Action action,
+    GLWindow* const window
+) const
 {
     using Iter = typename std::multimap<Control, T>::const_iterator;
     const std::pair<Iter, Iter> range = _controlBindings.equal_range(control);
@@ -155,30 +153,20 @@ void ControlEventTranslator<T>::_translateAndNotify(const Control& control, Wind
     {
         for (Iter it = range.first; it != range.second; it++)
         {
-            _listener->stopAction(window, it->second);
+            _listener->stopAction(it->second, window);
         }
     }
-    else // (action == Window::Input::Action::Press)
+    else // if (action == Window::Input::Action::Press)
     {
         for (Iter it = range.first; it != range.second; it++)
         {
-            _listener->triggerAction(window, it->second);
+            _listener->triggerAction(it->second, window);
         }
     }    
 }
 
 template<typename T>
-void ControlEventTranslator<T>::_ImportControlBindingsIntoMap(
-    const ControlBindingProviderPtr<T>& bindingProvider,
-    std::multimap<Control, T>& destination
-)
-{
-    const std::vector<std::pair<Control, T>> bindings = bindingProvider->getAllBoundControls();
-    std::copy(bindings.begin(), bindings.end(), std::inserter(destination, destination.begin()));
-}
-
-template<typename T>
-using ControlEventTranslatorPtr = std::shared_ptr<ControlEventTranslator<T>>;
+using ControlEventTranslatorPtr = std::unique_ptr<ControlEventTranslator<T>>;
 
 } // namespace Renderboi
 

@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "component.hpp"
 #include "component_type.hpp"
@@ -15,7 +16,7 @@ namespace Renderboi
 {
 
 class SceneObject;
-using SceneObjectPtr = std::shared_ptr<SceneObject>;
+using SceneObjectPtr = std::unique_ptr<SceneObject>;
 
 class ComponentMap
 {
@@ -31,9 +32,9 @@ public:
 private:
     ComponentMap& operator=(const ComponentMap& right) = delete;
 
-    /// @param sceneObject Pointer to the parent scene object of this instance.
+    /// @param sceneObject Reference to the parent scene object of this instance.
     /// @param other Instance to copy-construct from.
-    ComponentMap(const SceneObjectPtr sceneObject, const ComponentMap& other);
+    ComponentMap(SceneObject& sceneObject, const ComponentMap& other);
 
     /// @brief Map to store pointers to components for which only single
     /// instances are allowed on a single scene object.
@@ -43,48 +44,51 @@ private:
     /// instances are allowed on a single scene object.
     MultimapType _multiComponentMap;
 
-    /// @brief Pointer to the parent scene object.
-    SceneObjectPtr _sceneObject;
-
-    /// @brief Release held references to shared resources.
-    void _release();
+    /// @brief Reference to the parent scene object.
+    SceneObject& _sceneObject;
 
 public:
-    /// @param sceneObject Pointer to the parent scene object of this instance.
-    ComponentMap(const SceneObjectPtr sceneObject);
+    /// @param sceneObject Reference to the parent scene object of this instance.
+    ComponentMap(SceneObject& sceneObject);
 
     /// @brief Get a pointer to the parent scene object of this instance.
     ///
     /// @return A pointer to the parent scene object of this instance.
-    SceneObjectPtr sceneObject() const;
+    SceneObject& sceneObject();
 
     /// @brief Get the component pointer of the given component type (single 
     /// instance variant).
+    ///
     /// @tparam Ty Required. Litteral describing the type of component to get a
     /// pointer to.
-    /// @return Pointer to the component for the given type (can be null).
+    ///
+    /// @return Reference to the component for the given type (can be null).
     template<
         ComponentType Ty,
         typename CTy = typename ComponentMeta<Ty>::ConcreteType::type,
         std::enable_if_t<!ComponentMeta<Ty>::MultipleInstancesAllowed::value, bool> = true
     >
-    std::shared_ptr<CTy> getComponent() const;
+    CTy& getComponent() const;
 
     /// @brief Get an iterator range to component pointers of the given
     /// component type (multi instance variant).
+    ///
     /// @tparam Ty Required. Litteral describing the type of component to get a
     /// range of pointers to.
+    ///
     /// @return Iterator range to pointers to the components for the given type.
     template<
         ComponentType Ty,
+        typename CTy = typename ComponentMeta<Ty>::ConcreteType::type,
         std::enable_if_t<ComponentMeta<Ty>::MultipleInstancesAllowed::value, bool> = true
     >
-    std::pair<ComponentMap::MultimapType::const_iterator, ComponentMap::MultimapType::const_iterator>
-    getComponents() const;
+    std::vector<std::reference_wrapper<CTy>> getComponents() const;
 
     /// @brief Return whether there are registered components for the given
     /// component type (multi instance variant).
+    ///
     /// @tparam Ty Required. Component type to test components for.
+    ///
     /// @return Whether there are registered components for the given component
     /// type.
     template<
@@ -95,7 +99,9 @@ public:
 
     /// @brief Return whether there are registered components for the given
     /// component type (single instance variant).
+    ///
     /// @tparam Ty Required. Component type to test components for.
+    ///
     /// @return Whether there are registered components for the given component
     /// type.
     template<
@@ -105,63 +111,74 @@ public:
     bool hasComponent() const;
 
     /// @brief Construct a component in place (single instance variant).
+    ///
     /// @tparam Ty Required. Litteral describing the type of the component.
     /// @tparam CTy Concrete type of the component. Leave for deduction.
     /// @tparam ArgTypes... Types of the arguments that are to be forwarded to 
     /// the constructor of the component. Leave for deduction.
+    ///
     /// @param args Arguments to be passed to the constructor of the component.
-    /// @return A shared pointer to the newly constructed component.
+    ///
+    /// @return A reference to the newly constructed component.
     template<
         ComponentType Ty,
         class CTy = typename ComponentMeta<Ty>::ConcreteType::type,
         class... ArgTypes,
         std::enable_if_t<!ComponentMeta<Ty>::MultipleInstancesAllowed::value, bool> = true
     >
-    std::shared_ptr<CTy> addComponent(ArgTypes&&... args);
+    CTy& addComponent(ArgTypes&&... args);
 
     /// @brief Construct a component in place (single instance variant).
+    ///
     /// @tparam Ty Required. Litteral describing the type of the component.
     /// @tparam CTy Concrete type of the component. Leave for deduction.
     /// @tparam ArgTypes... Types of the arguments that are to be forwarded to 
     /// the constructor of the component. Leave for deduction.
+    ///
     /// @param args Arguments to be passed to the constructor of the component.
-    /// @return A shared pointer to the newly constructed component.
+    ///
+    /// @return A reference to the newly constructed component.
     template<
         ComponentType Ty,
         class CTy = typename ComponentMeta<Ty>::ConcreteType::type,
         class... ArgTypes,
         std::enable_if_t<ComponentMeta<Ty>::MultipleInstancesAllowed::value, bool> = true
     >
-    std::shared_ptr<CTy> addComponent(ArgTypes&&... args);
+    CTy& addComponent(ArgTypes&&... args);
 
     /// @brief Register a component (single instance variant).
+    ///
     /// @tparam CTy Concrete type of the component. Leave for deduction.
     /// @tparam Ty Litteral describing the type of the component. Leave for
     /// deduction.
+    ///
     /// @param type Type to set the component for.
-    /// @param component Pointer to the component to set for that type.
+    /// @param component Reference to the component to set for that type.
     template<
         class CTy,
         ComponentType Ty = ComponentTypeToEnum<CTy>::value,
         std::enable_if_t<!ComponentMeta<Ty>::MultipleInstancesAllowed::value, bool> = true
     >
-    void putComponent(const CTy component);
+    CTy& putComponent(std::unique_ptr<CTy>&& component);
 
     /// @brief Register a component (multi instance variant).
+    ///
     /// @tparam CTy Concrete type of the component. Leave for deduction.
     /// @tparam Ty Litteral describing the type of the component. Leave for
     /// deduction.
+    ///
     /// @param type Type to set the component for.
-    /// @param component Pointer to the component to set for that type.
+    /// @param component Reference to the component to set for that type.
     template<
         class CTy,
         ComponentType Ty = ComponentTypeToEnum<CTy>::value,
         std::enable_if_t<ComponentMeta<Ty>::MultipleInstancesAllowed::value, bool> = true
     >
-    void putComponent(const CTy component);
+    CTy& putComponent(std::unique_ptr<CTy>&& component);
 
     /// @brief Remove the component pointer for the given component type (single
     /// instance variant).
+    ///
     /// @tparam Ty Required. Type whose component is to be cleared.
     template<
         ComponentType Ty,
@@ -171,6 +188,7 @@ public:
 
     /// @brief Remove the component pointers for the given component type (multi
     /// instance variant).
+    ///
     /// @tparam Ty Required. Type whose components are to be cleared.
     template<
         ComponentType Ty,
@@ -182,30 +200,38 @@ public:
     void clear();
 };
 
-using ComponentMapPtr = std::shared_ptr<ComponentMap>;
+using ComponentMapPtr = std::unique_ptr<ComponentMap>;
 
 template<
     ComponentType Ty,
     typename CTy,
     std::enable_if_t<!ComponentMeta<Ty>::MultipleInstancesAllowed::value, bool>
 >
-std::shared_ptr<CTy> ComponentMap::getComponent() const
+CTy& ComponentMap::getComponent() const
 {
     auto it = _singleComponentMap.find(Ty);
 
     if (it == _singleComponentMap.end()) return nullptr;
 
-    return static_pointer_cast<CTy>(it->second);
+    return *(it->second);
 }
 
 template<
     ComponentType Ty,
+    typename CTy,
     std::enable_if_t<ComponentMeta<Ty>::MultipleInstancesAllowed::value, bool>
 >
-std::pair<ComponentMap::MultimapType::const_iterator, ComponentMap::MultimapType::const_iterator>
-ComponentMap::getComponents() const
+std::vector<std::reference_wrapper<CTy>> ComponentMap::getComponents() const
 {
-    return _multiComponentMap.equal_range(Ty);
+    std::vector<std::reference_wrapper<CTy>> components;
+
+    auto range = _multiComponentMap.equal_range(Ty);
+    for (auto it = range.first; it != range.second; it++)
+    {
+        components.push_back(*(it->second));
+    }
+
+    return components;
 }
 
 template<
@@ -232,10 +258,8 @@ template<
     class... ArgTypes,
     std::enable_if_t<!ComponentMeta<Ty>::MultipleInstancesAllowed::value, bool>
 >
-std::shared_ptr<CTy> ComponentMap::addComponent(ArgTypes&&... args)
+CTy& ComponentMap::addComponent(ArgTypes&&... args)
 {
-    bool xd = ComponentMeta<Ty>::MultipleInstancesAllowed::value;
-
     if (hasComponent<Ty>())
     {
         using std::to_string;
@@ -247,14 +271,12 @@ std::shared_ptr<CTy> ComponentMap::addComponent(ArgTypes&&... args)
     }
 
     // Construct component from passed arguments
-    const std::shared_ptr<CTy> realComponent = std::make_shared<CTy>(_sceneObject, std::forward<ArgTypes>(args)...);
+    auto it = _singleComponentMap.insert({
+        Ty,
+        std::make_unique<CTy>(_sceneObject, std::forward(args)...)
+    });
 
-    // std::shared_ptr<Component> and std::shared_ptr<MyComponent> are not covariant types, even if Component and MyComponent are.
-    // Cast to base Component in order to add to collection.
-    const ComponentPtr baseComponent = std::static_pointer_cast<Component>(realComponent);
-    _singleComponentMap[Ty] = baseComponent;
-
-    return realComponent;
+    return *(it->second);
 }
 
 template<
@@ -263,19 +285,15 @@ template<
     class... ArgTypes,
     std::enable_if_t<ComponentMeta<Ty>::MultipleInstancesAllowed::value, bool>
 >
-std::shared_ptr<CTy> ComponentMap::addComponent(ArgTypes&&... args)
+CTy& ComponentMap::addComponent(ArgTypes&&... args)
 {
-    bool xd = ComponentMeta<Ty>::MultipleInstancesAllowed::value;
-
     // Construct component from passed arguments
-    const std::shared_ptr<CTy> realComponent = std::make_shared<CTy>(_sceneObject, std::forward<ArgTypes>(args)...);
+    auto it = _multiComponentMap.insert({
+        Ty,
+        std::make_unique<CTy>(_sceneObject, std::forward(args)...)
+    });
 
-    // std::shared_ptr<Component> and std::shared_ptr<MyComponent> are not covariant types, even if Component and MyComponent are.
-    // Cast to base Component in order to add to collection.
-    const ComponentPtr baseComponent = std::static_pointer_cast<Component>(realComponent);
-    _multiComponentMap.insert({Ty, baseComponent});
-
-    return realComponent;
+    return *(it->second);
 }
 
 template<
@@ -283,7 +301,7 @@ template<
     ComponentType Ty,
     std::enable_if_t<!ComponentMeta<Ty>::MultipleInstancesAllowed::value, bool>
 >
-void ComponentMap::putComponent(const CTy component)
+CTy& ComponentMap::putComponent(std::unique_ptr<CTy>&& component)
 {
     auto it = _singleComponentMap.find(Ty);
 
@@ -297,7 +315,10 @@ void ComponentMap::putComponent(const CTy component)
         throw std::runtime_error(s.c_str());
     }
 
-    _singleComponentMap[Ty] = component;
+    CTy& ref = *component;
+    _singleComponentMap.insert({Ty, std::move(component)});
+
+    return ref;
 }
 
 template<
@@ -305,9 +326,12 @@ template<
     ComponentType Ty,
     std::enable_if_t<ComponentMeta<Ty>::MultipleInstancesAllowed::value, bool>
 >
-void ComponentMap::putComponent(const CTy component)
+CTy& ComponentMap::putComponent(std::unique_ptr<CTy>&& component)
 {
-    _multiComponentMap.insert({Ty, component});
+    CTy& ref = *component;
+    _multiComponentMap.insert({Ty, std::move(component)});
+
+    return ref;
 }
 
 template<
@@ -319,7 +343,6 @@ void ComponentMap::clear()
     auto it = _singleComponentMap.find(Ty);
     if (it == _singleComponentMap.end()) return;
 
-    it->second->_release();
     _singleComponentMap.erase(it);
 }
 

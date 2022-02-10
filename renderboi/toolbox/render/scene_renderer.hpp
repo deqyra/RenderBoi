@@ -24,6 +24,9 @@ namespace Renderboi
 class SceneRenderer
 {
 private:
+    using ObjectVector = std::vector<std::reference_wrapper<SceneObject>>;
+    using LightVector = std::vector<std::reference_wrapper<Light>>;
+
     /// @brief Handle to a UBO for matrices on the GPU.
     mutable MatrixUBO _matrixUbo;
 
@@ -48,7 +51,7 @@ private:
     /// exceeding the per-type limit defined by the light UBO, the function
     /// will throw a std::runtime_error.
     void _sendLightData(
-        const std::vector<LightPtr>& lights,
+        const LightVector& lights,
         const std::vector<Transform>& worldTransforms,
         const glm::mat4& view
     ) const;
@@ -57,7 +60,7 @@ private:
     /// 
     /// @param meshComponent A pointer to the object whose mesh is to render.
     /// @param viewMatrix The view matrix, provided by the scene camera.
-    void drawMesh(const SceneObjectPtr meshComponent, const glm::mat4& viewMatrix) const;
+    void drawMesh(SceneObject& meshComponent, const glm::mat4& viewMatrix) const;
 
 public:
     /// @param framerateLimit How many frames per second the SceneRenderer
@@ -70,7 +73,7 @@ public:
     ///
     /// @exception If the scene has too many lights of any type for the 
     /// light UBO to handle, the function will throw a std::runtime_error.
-    void renderScene(const ScenePtr scene) const;
+    void renderScene(Scene& scene) const;
 
     /// @brief Set the framerate limit (in frames per second) of the 
     /// renderer.
@@ -80,7 +83,7 @@ public:
     void setFramerateLimit(const unsigned int framerateLimit);
 };
 
-using SceneRendererPtr = std::shared_ptr<SceneRenderer>;
+using SceneRendererPtr = std::unique_ptr<SceneRenderer>;
 
 } // namespace Renderboi
 

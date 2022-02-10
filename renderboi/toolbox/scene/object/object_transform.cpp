@@ -59,7 +59,7 @@ namespace Renderboi
 using Ref = FrameOfReference;
 
 ObjectTransform::ObjectTransform(
-    const SceneObjectPtr sceneObject,
+    SceneObject& sceneObject,
     glm::vec3 position,
     glm::quat orientation,
     glm::vec3 scale
@@ -69,19 +69,19 @@ ObjectTransform::ObjectTransform(
         scale),
     _transformNotifier(),
     _sceneObject(sceneObject),
-    _objectId(sceneObject ? sceneObject->id : -1)
+    _objectId(sceneObject.id)
 {
 
 }
 
 ObjectTransform::ObjectTransform(
-    const SceneObjectPtr sceneObject,
+    SceneObject& sceneObject,
     const Transform transform
 ) :
     Transform(transform),
     _transformNotifier(),
     _sceneObject(sceneObject),
-    _objectId(sceneObject ? sceneObject->id : -1)
+    _objectId(sceneObject.id)
 {
 
 }
@@ -119,7 +119,7 @@ ObjectTransform& ObjectTransform::operator=(const Transform& other)
     return *this;
 }
 
-SceneObjectWPtr ObjectTransform::sceneObject() const
+SceneObject& ObjectTransform::sceneObject() const
 {
     return _sceneObject;
 }
@@ -132,13 +132,8 @@ ObjectTransform::TransformNotifier& ObjectTransform::getNotifier()
 template<>
 glm::vec3 ObjectTransform::setPosition<Ref::World>(const glm::vec3 position)
 {
-    // Compute the new wanted position in parent's coordinates
-    
-    // Get the parent object's world transform
-    const SceneObjectPtr thisObject = _sceneObject.lock();
-    const ScenePtr scene = thisObject->scene();
-    const unsigned int parentId = scene->getParentId(_objectId);
-    const Transform parentTransform = scene->getWorldTransform(parentId);
+    // Compute the new wanted position in parent's coordinates    
+    const Transform parentTransform = _getParentTransform();
 
     // Retrieve some stuff
     const glm::quat parentRotation = parentTransform.getRotation();
@@ -187,11 +182,7 @@ glm::vec3 ObjectTransform::setPosition<Ref::Self>(const glm::vec3 position)
 template<>
 glm::vec3 ObjectTransform::translateBy<Ref::World>(const glm::vec3& translation)
 {
-    // Get the parent object's world transform
-    const SceneObjectPtr thisObject = _sceneObject.lock();
-    const ScenePtr scene = thisObject->scene();
-    const unsigned int parentId = scene->getParentId(_objectId);
-    const Transform parentTransform = scene->getWorldTransform(parentId);
+    const Transform parentTransform = _getParentTransform();
 
     // Retrieve some stuff
     const glm::quat parentRotation = parentTransform.getRotation();
@@ -240,11 +231,7 @@ glm::vec3 ObjectTransform::orbit<Ref::World>(
     const bool selfRotate
 )
 {
-    // Get the parent's world transform
-    const SceneObjectPtr thisObject = _sceneObject.lock();
-    const ScenePtr scene = thisObject->scene();
-    const unsigned int parentId = scene->getParentId(_objectId);
-    const Transform parentTransform = scene->getWorldTransform(parentId);
+    const Transform parentTransform = _getParentTransform();
 
     // Retrieve some stuff
     const glm::quat parentRotation = parentTransform.getRotation();
@@ -309,11 +296,7 @@ glm::vec3 ObjectTransform::orbit<Ref::Self>(
 template<>
 glm::quat ObjectTransform::setRotation<Ref::World>(const glm::quat rotation)
 {
-    // Get the parent's world transform
-    const SceneObjectPtr thisObject = _sceneObject.lock();
-    const ScenePtr scene = thisObject->scene();
-    const unsigned int parentId = scene->getParentId(_objectId);
-    const Transform parentTransform = scene->getWorldTransform(parentId);
+    const Transform parentTransform = _getParentTransform();
 
     // Retrieve some stuff
     const glm::quat parentRotation = parentTransform.getRotation();
@@ -358,11 +341,7 @@ glm::quat ObjectTransform::rotateBy(const glm::quat& rotation)
 template<>
 glm::quat ObjectTransform::rotateBy<Ref::World>(const float radAngle, const glm::vec3& axis)
 {
-    // Get the parent's world transform
-    const SceneObjectPtr thisObject = _sceneObject.lock();
-    const ScenePtr scene = thisObject->scene();
-    const unsigned int parentId = scene->getParentId(_objectId);
-    const Transform parentTransform = scene->getWorldTransform(parentId);
+    const Transform parentTransform = _getParentTransform();
 
     // Retrieve some stuff
     const glm::quat parentRotation = parentTransform.getRotation();
@@ -397,11 +376,7 @@ glm::quat ObjectTransform::rotateBy<Ref::Self>(const float radAngle, const glm::
 template<>
 glm::quat ObjectTransform::lookAt<Ref::World>(const glm::vec3& target, const glm::vec3& yConstraint)
 {
-    // Get the parent's world transform
-    const SceneObjectPtr thisObject = _sceneObject.lock();
-    const ScenePtr scene = thisObject->scene();
-    const unsigned int parentId = scene->getParentId(_objectId);
-    const Transform parentTransform = scene->getWorldTransform(parentId);
+    const Transform parentTransform = _getParentTransform();
 
     // Retrieve some stuff
     const glm::quat parentRotation = parentTransform.getRotation();
@@ -447,11 +422,7 @@ glm::quat ObjectTransform::lookAt<Ref::Self>(const glm::vec3& target, const glm:
 template<>
 glm::vec3 ObjectTransform::setScale<Ref::World>(const glm::vec3 scale)
 {
-    // Get the parent's world transform
-    const SceneObjectPtr thisObject = _sceneObject.lock();
-    const ScenePtr scene = thisObject->scene();
-    const unsigned int parentId = scene->getParentId(_objectId);
-    const Transform parentTransform = scene->getWorldTransform(parentId);
+    const Transform parentTransform = _getParentTransform();
 
     // Retrieve some stuff
     const glm::vec3 parentScale = parentTransform.getScale();
@@ -513,9 +484,12 @@ void ObjectTransform::_notifyChange() const
     _transformNotifier.notify(_objectId);
 }
 
-void ObjectTransform::_release()
+Transform ObjectTransform::_getParentTransform() const
 {
-    _sceneObject.reset();
+    // Get the parent's world transform
+    Scene& scene = _sceneObject.scene;
+    const unsigned int parentId = scene.getParentId(_objectId);
+    return scene.getWorldTransform(parentId);
 }
 
 } // namespace Renderboi

@@ -51,7 +51,7 @@ MeshPtr AxesGenerator::generateMesh() const
         4, 5    // Z axis
     };
 
-    return std::make_shared<Mesh>(GL_LINES, vertices, indices);
+    return std::make_unique<Mesh>(GL_LINES, vertices, indices);
 }
 
 } // namespace Renderboi

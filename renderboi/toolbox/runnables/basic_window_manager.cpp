@@ -13,15 +13,15 @@ namespace Renderboi
 
 BasicWindowManager::BasicWindowManager()
 {
-
+    
 }
 
-void BasicWindowManager::triggerAction(const GLWindowPtr window, const BasicWindowManagerAction& action)
+void BasicWindowManager::triggerAction(const BasicWindowManagerAction& action, GLWindow& window)
 {
     switch (action)
     {
     case BasicWindowManagerAction::Terminate:
-        window->signalExit();
+        window.signalExit();
         break;
 
     case BasicWindowManagerAction::PolygonFill:
@@ -41,84 +41,88 @@ void BasicWindowManager::triggerAction(const GLWindowPtr window, const BasicWind
     }
 }
 
-void BasicWindowManager::stopAction(const GLWindowPtr window, const BasicWindowManagerAction& action)
+void BasicWindowManager::stopAction(const BasicWindowManagerAction& action, GLWindow& window)
 {
 
 }
 
-void BasicWindowManager::processFramebufferResize(const GLWindowPtr window, const unsigned int width, const unsigned int height)
+void BasicWindowManager::processFramebufferResize(
+    GLWindow& window,
+    const unsigned int width,
+    const unsigned int height
+)
 {
-    window->getGlContextClient()->eventManager->queueEvent(Window::GLContextEvent::FitFramebufferToWindow);
+    window.forwardContextEvent(Window::GLContextEvent::FitFramebufferToWindow);
 }
 
-ControlSchemeManagerPtr<BasicWindowManagerAction> BasicWindowManager::getDefaultControlScheme() const
+const ControlScheme<BasicWindowManagerAction>& BasicWindowManager::getDefaultControlScheme() const
 {
-    ControlSchemeManagerPtr<BasicWindowManagerAction>
-    schemeManager = std::make_shared<ControlSchemeManager<BasicWindowManagerAction>>();
+    static ControlScheme<BasicWindowManagerAction> scheme;
+    static bool runOnce = false;
 
-    using Window::Input::Key;
-    schemeManager->bindControl(Control(Key::Escape), BasicWindowManagerAction::Terminate);
-    schemeManager->bindControl(Control(Key::Space), BasicWindowManagerAction::Terminate);
-    schemeManager->bindControl(Control(Key::F1), BasicWindowManagerAction::PolygonFill);
-    schemeManager->bindControl(Control(Key::F2), BasicWindowManagerAction::PolygonLine);
-    schemeManager->bindControl(Control(Key::F3), BasicWindowManagerAction::PolygonPoint);
-    schemeManager->bindControl(Control(Key::F11), BasicWindowManagerAction::ToggleFullscreen);
-
-    return schemeManager;
-}
-
-void BasicWindowManager::_toggleFullscreen(const GLWindowPtr window) const
-{
-    if (window->isFullscreen())
+    if (!runOnce)
     {
-        window->exitFullscreen();
+        using Window::Input::Key;
+        scheme.bindControl(Control(Key::Escape), BasicWindowManagerAction::Terminate);
+        scheme.bindControl(Control(Key::Space), BasicWindowManagerAction::Terminate);
+        scheme.bindControl(Control(Key::F1), BasicWindowManagerAction::PolygonFill);
+        scheme.bindControl(Control(Key::F2), BasicWindowManagerAction::PolygonLine);
+        scheme.bindControl(Control(Key::F3), BasicWindowManagerAction::PolygonPoint);
+        scheme.bindControl(Control(Key::F11), BasicWindowManagerAction::ToggleFullscreen);
+
+        runOnce = true;
+    }
+
+    return scheme;
+}
+
+void BasicWindowManager::_toggleFullscreen(GLWindow& window) const
+{
+    if (window.isFullscreen())
+    {
+        window.exitFullscreen();
     }
     else
     {
-        window->goFullscreen(nullptr, true);
+        window.goFullscreen(true);
     }
 }
 
-void BasicWindowManager::_setPolygonMode(const GLWindowPtr window, const PolygonMode mode) const
+void BasicWindowManager::_setPolygonMode(GLWindow& window, const PolygonMode mode) const
 {
     using Window::GLContextEvent;
 
     switch (mode)
     {
     case PolygonMode::Fill:
-        window->getGlContextClient()->eventManager->queueEvent(GLContextEvent::PolygonModeFill);
+        window.forwardContextEvent(GLContextEvent::PolygonModeFill);
         break;
 
     case PolygonMode::Line:
-        window->getGlContextClient()->eventManager->queueEvent(GLContextEvent::PolygonModeLine);
+        window.forwardContextEvent(GLContextEvent::PolygonModeLine);
         break;
 
     case PolygonMode::Point:
-        window->getGlContextClient()->eventManager->queueEvent(GLContextEvent::PolygonModePoint);
+        window.forwardContextEvent(GLContextEvent::PolygonModePoint);
         break;
     }
 }
 
-std::string to_string(const BasicWindowManagerAction& action)
+std::string to_string(const BasicWindowManagerAction action)
 {
-    static bool runOnce = false;
-    static std::unordered_map<BasicWindowManagerAction, std::string> enumNames;
-
-    if (!runOnce)
+    static std::unordered_map<BasicWindowManagerAction, std::string> enumNames =
     {
-        enumNames[BasicWindowManagerAction::Terminate]          = "Terminate";
-        enumNames[BasicWindowManagerAction::PolygonFill]        = "PolygonFill";
-        enumNames[BasicWindowManagerAction::PolygonLine]        = "PolygonLine";
-        enumNames[BasicWindowManagerAction::PolygonPoint]       = "PolygonPoint";
-        enumNames[BasicWindowManagerAction::ToggleFullscreen]   = "ToggleFullscreen";
-
-        runOnce = true;
-    }
+        {BasicWindowManagerAction::Terminate,          "Terminate"},
+        {BasicWindowManagerAction::PolygonFill,        "PolygonFill"},
+        {BasicWindowManagerAction::PolygonLine,        "PolygonLine"},
+        {BasicWindowManagerAction::PolygonPoint,       "PolygonPoint"},
+        {BasicWindowManagerAction::ToggleFullscreen,   "ToggleFullscreen"},
+    };
 
     auto it = enumNames.find(action);
-    if (it != enumNames.end()) return it->second;
-
-    return "Unknown";
+    return (it != enumNames.end())
+        ? it->second
+        : "Unknown";
 }
 
 } // namespace Renderboi

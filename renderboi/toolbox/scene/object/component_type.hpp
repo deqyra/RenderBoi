@@ -19,7 +19,7 @@ enum class ComponentType
     Script
 };
 
-std::string to_string(const ComponentType& type);
+std::string to_string(const ComponentType type);
 
 } // namespace Renderboi
 

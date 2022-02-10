@@ -18,32 +18,33 @@ private:
     CameraComponent(CameraComponent& other) = delete;
     CameraComponent& operator=(const CameraComponent& other) = delete;
 
-    /// @brief Pointer to the camera used by the component.
-    CameraPtr _camera;
+    /// @brief Pointer to the camera of the object, if owned. Is null when the
+    /// referenced camera isn't owned by the instance.
+    CameraPtr _cameraPtr;
+
+    /// @brief Reference to the camera.
+    Camera& _camera;
 
 public:
-    /// @param sceneObject Pointer to the scene object which will be parent
+    /// @param sceneObject Reference to the scene object which will be parent
     /// to this component.
-    /// @param camera Camera for the component to use.
+    /// @param camera Reference to the camera for the component to use.
     ///
-    /// @exception If the provided scene object pointer is null, the 
+    /// @exception If the provided camera pointer is null, the 
     /// constructor will throw a std::runtime_error.
-    CameraComponent(const SceneObjectPtr sceneObject, const CameraPtr camera);
+    CameraComponent(SceneObject& sceneObject, CameraPtr&& camera);
+
+    /// @param sceneObject Reference to the scene object which will be parent
+    /// to this component.
+    /// @param camera Reference to the camera for the component to use.
+    CameraComponent(SceneObject& sceneObject, Camera& camera);
 
     ~CameraComponent();
 
-    /// @brief Get a pointer to the camera used by the component.
+    /// @brief Get the camera used by the component.
     ///
-    /// @return A pointer to the camera used by the component.
-    CameraPtr getCamera() const;
-
-    /// @brief Set the camera used by the component.
-    ///
-    /// @param camera Pointer to the camera the component should use.
-    ///
-    /// @exception If the passed camera pointer is null, the function will
-    /// throw a std::runtime_error.
-    void setCamera(const CameraPtr camera);
+    /// @return The camera used by the component.
+    Camera& camera();
 
     /// @brief Get the view matrix corresponding to the position and facing
     /// of the camera.
@@ -84,7 +85,7 @@ public:
     ///
     /// @return A raw pointer to the component instance cloned from this 
     /// one.
-    CameraComponent* clone(const SceneObjectPtr newParent) const override;
+    CameraComponent* clone(SceneObject& newParent) const override;
 };
 
 template<>

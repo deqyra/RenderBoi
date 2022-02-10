@@ -17,7 +17,7 @@ public:
     virtual void render() const = 0;
 };
 
-using TraitRendererPtr = std::shared_ptr<TraitRenderer>;
+using TraitRendererPtr = std::unique_ptr<TraitRenderer>;
 
 } // namespace Renderboi
 

@@ -26,10 +26,10 @@ private:
     unsigned int _subscriberRollingCount;
 
     /// @brief Array of subscribers to which input must be forwarded.
-    std::unordered_map<unsigned int, InputProcessorPtr> _subscribers;
+    std::unordered_map<unsigned int, InputProcessor*> _subscribers;
 
-    /// @brief Array of subscribers to which input must be forwarded.
-    std::unordered_map<unsigned int, GamepadInputProcessorPtr> _gamepadSubscribers;
+    /// @brief Array of subscribers to which gamepad input must be forwarded.
+    std::unordered_map<unsigned int, GamepadInputProcessor*> _gamepadSubscribers;
 
 public:
     InputSplitter();
@@ -41,7 +41,7 @@ public:
     ///
     /// @return The subscription ID, used to unsubscribe the registered
     /// input processor.
-    unsigned int registerInputProcessor(const InputProcessorPtr inputProcessor);
+    unsigned int registerInputProcessor(InputProcessor* const inputProcessor);
 
     /// @brief Unsubscribe an input processor.
     ///
@@ -59,7 +59,7 @@ public:
     ///
     /// @return The subscription ID, used to unsubscribe the registered
     /// input processor.
-    unsigned int registerGamepadInputProcessor(const GamepadInputProcessorPtr gamepadInputProcessor);
+    unsigned int registerGamepadInputProcessor(GamepadInputProcessor* const gamepadInputProcessor);
 
     /// @brief Unsubscribe an input processor.
     ///
@@ -78,15 +78,15 @@ public:
 
     /// @brief Callback for a framebuffer resize event.
     ///
-    /// @param window Pointer to the GLWindow in which the event was
+    /// @param window Reference to the GLWindow in which the event was
     /// triggered.
     /// @param width New width (in pixels) of the framebuffer.
     /// @param height New height (in pixels) of the framebuffer.
-    void processFramebufferResize(const GLWindowPtr window, const unsigned int width, const unsigned int height) override;
+    void processFramebufferResize(GLWindow& window, const unsigned int width, const unsigned int height) override;
 
     /// @brief Callback for a keyboard event.
     ///
-    /// @param window Pointer to the GLWindow in which the event was
+    /// @param window Reference to the GLWindow in which the event was
     /// triggered.
     /// @param key Literal describing which key triggered the event.
     /// @param scancode Scancode of the key which triggered the event. 
@@ -96,7 +96,7 @@ public:
     /// @param mods Bit field describing which modifiers were enabled 
     /// during the key event (Ctrl, Shift, etc).
     void processKeyboard(
-        const GLWindowPtr window,
+        GLWindow& window,
         const Key key,
         const int scancode,
         const Action action,
@@ -105,7 +105,7 @@ public:
 
     /// @brief Callback for a mouse button event.
     ///
-    /// @param window Pointer to the GLWindow in which the event was
+    /// @param window Reference to the GLWindow in which the event was
     /// triggered.
     /// @param button Literal describing which button triggered the
     /// event.
@@ -114,7 +114,7 @@ public:
     /// @param mods Bit field describing which modifiers were enabled 
     /// during the button event (Ctrl, Shift, etc).
     void processMouseButton(
-        const GLWindowPtr window,
+        GLWindow& window,
         const MButton button,
         const Action action,
         const int mods
@@ -122,11 +122,11 @@ public:
 
     /// @brief Callback for a mouse cursor event.
     ///
-    /// @param window Pointer to the GLWindow in which the event was
+    /// @param window Reference to the GLWindow in which the event was
     /// triggered.
     /// @param xpos X coordinate of the new position of the mouse.
     /// @param ypos Y coordinate of the new position of the mouse.
-    void processMouseCursor(const GLWindowPtr window, const double xpos, const double ypos) override;
+    void processMouseCursor(GLWindow& window, const double xpos, const double ypos) override;
 
     /////////////////////////////////////////////////////
     ///                                               ///
@@ -135,26 +135,26 @@ public:
     /////////////////////////////////////////////////////
 
     /// @brief Callback for when the gamepad is connected.
-    void processConnected(const GamepadPtr gamepad) override;
+    void processConnected(const Gamepad& gamepad) override;
 
     /// @brief Callback for when the gamepad is disconnected.
-    void processDisconnected(const GamepadPtr gamepad) override;
+    void processDisconnected(const Gamepad& gamepad) override;
 
     /// @brief Callback for a gamepad button event.
     ///
     /// @param button Literal describing which key triggered the event.
     /// @param action Literal describing what action was performed on
     /// the button which triggered the event.
-    void processButton(const GamepadPtr gamepad, const GButton button, const Action action) override;
+    void processButton(const Gamepad& gamepad, const GButton button, const Action action) override;
 
     /// @brief Callback for a gamepad axis event.
     ///
     /// @param axis Literal describing which axis triggered the event.
     /// @param value Value at which the axis was polled.
-    void processAxis(const GamepadPtr gamepad, const Axis axis, const float value) override;
+    void processAxis(const Gamepad& gamepad, const Axis axis, const float value) override;
 };
 
-using InputSplitterPtr = std::shared_ptr<InputSplitter>;
+using InputSplitterPtr = std::unique_ptr<InputSplitter>;
 
 } // namespace Renderboi
 

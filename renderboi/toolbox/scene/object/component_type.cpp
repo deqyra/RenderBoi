@@ -3,7 +3,7 @@
 namespace Renderboi
 {
 
-std::string to_string(const ComponentType& type)
+std::string to_string(const ComponentType type)
 {
     switch (type)
     {

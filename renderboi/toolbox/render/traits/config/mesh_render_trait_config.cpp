@@ -9,25 +9,19 @@
 namespace Renderboi
 {
 
-MeshRenderTraitConfig::MeshRenderTraitConfig(const SceneObjectPtr parentSceneObject) :
+MeshRenderTraitConfig::MeshRenderTraitConfig(SceneObject& parentSceneObject) :
     RenderTraitConfig(parentSceneObject),
-    _mesh(parentSceneObject->componentMap()->getComponent<ComponentType::Mesh>())
+    _mesh(parentSceneObject.componentMap().getComponent<ComponentType::Mesh>())
 {
-    if (!_mesh)
+    if (!parentSceneObject.componentMap().hasComponent<ComponentType::Mesh>())
     {
         throw std::runtime_error("MeshConfig: cannot be instantiated on an object without a MeshComponent");
     }
 }
 
-MeshRenderTraitConfig* MeshRenderTraitConfig::clone(const SceneObjectPtr newParent) const
+MeshRenderTraitConfig* MeshRenderTraitConfig::clone(SceneObject& newParent) const
 {
-    return nullptr;
-}
-
-void MeshRenderTraitConfig::_release()
-{
-    _mesh.reset();
-    RenderTraitConfig::_release();
+    return new MeshRenderTraitConfig(newParent);
 }
 
 } // namespace Renderboi

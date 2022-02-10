@@ -58,16 +58,20 @@ void InputLogger::setEventLoggingStatus(const GEventType eventType, const bool e
     _gamepadInputLoggingStatus[eventType] = enable;
 }
 
-void InputLogger::processFramebufferResize(const GLWindowPtr window, const unsigned int width, const unsigned int height)
+void InputLogger::processFramebufferResize(
+    GLWindow& window,
+    const unsigned int width,
+    const unsigned int height
+)
 {
     if (!_inputLoggingStatus[IEventType::FramebufferResize]) return;
 
-    _outputStream << "Event on window \"" << window->getTitle() << "\": framebuffer resized.\n"
+    _outputStream << "Event on window \"" << window.getTitle() << "\": framebuffer resized.\n"
                      "New dimensions: w=" << width << ";h=" << height << ".\n" << std::endl;
 }
 
 void InputLogger::processKeyboard(
-    const GLWindowPtr window, 
+    GLWindow& window, 
     const Key key, 
     const int scancode, 
     const Action action,
@@ -78,14 +82,14 @@ void InputLogger::processKeyboard(
 
     std::bitset<8> bits(mods);
 
-    _outputStream << "Event on window \"" << window->getTitle() << "\": keyboard.\n"
+    _outputStream << "Event on window \"" << window.getTitle() << "\": keyboard.\n"
                      "Key: " << to_string(key) << " (scancode: " << std::hex << scancode << std::dec << ")\n"
                      "Action: " << to_string(action) << "\n"
                      "Mod flags: " << bits << "\n" << std::endl;
 }
 
 void InputLogger::processMouseButton(
-    const GLWindowPtr window, 
+    GLWindow& window, 
     const MButton button, 
     const Action action, 
     const int mods
@@ -95,52 +99,56 @@ void InputLogger::processMouseButton(
 
     std::bitset<8> bits(mods);
 
-    _outputStream << "Event on window \"" << window->getTitle() << "\": mouse button.\n"
+    _outputStream << "Event on window \"" << window.getTitle() << "\": mouse button.\n"
                      "Button: " << to_string(button) << "\n"
                      "Action: " << to_string(action) << "\n"
                      "Mod flags: " << bits << "\n" << std::endl;
 }
 
-void InputLogger::processMouseCursor(const GLWindowPtr window, const double xpos, const double ypos)
+void InputLogger::processMouseCursor(
+    GLWindow& window,
+    const double xpos,
+    const double ypos
+)
 {
     if (!_inputLoggingStatus[IEventType::MouseCursor]) return;
 
     _outputStream << std::setprecision(3) <<
-                     "Event on window \"" << window->getTitle() << "\": mouse moved.\n"
+                     "Event on window \"" << window.getTitle() << "\": mouse moved.\n"
                      "New position: x=" << xpos << ";y=" << ypos << ".\n" << std::endl;
 }
 
-void InputLogger::processConnected(const GamepadPtr gamepad)
+void InputLogger::processConnected(const Gamepad& gamepad)
 {
     if (!_gamepadInputLoggingStatus[GEventType::Connect]) return;
 
-    _outputStream << "Gamepad \"" << gamepad->name << "\" (slot " << to_string(gamepad->slot) << ") was connected.\n" << std::endl;
+    _outputStream << "Gamepad \"" << gamepad.name << "\" (slot " << to_string(gamepad.slot) << ") was connected.\n" << std::endl;
 }
 
-void InputLogger::processDisconnected(const GamepadPtr gamepad)
+void InputLogger::processDisconnected(const Gamepad& gamepad)
 {
     if (!_gamepadInputLoggingStatus[GEventType::Disconnect]) return;
 
-    _outputStream << "Gamepad \"" << gamepad->name << "\" (slot " << to_string(gamepad->slot) << ") was disconnected.\n" << std::endl;
+    _outputStream << "Gamepad \"" << gamepad.name << "\" (slot " << to_string(gamepad.slot) << ") was disconnected.\n" << std::endl;
 }
 
-void InputLogger::processButton(const GamepadPtr gamepad, const GButton button, const Window::Input::Action action)
+void InputLogger::processButton(const Gamepad& gamepad, const GButton button, const Window::Input::Action action)
 {
     if (!_gamepadInputLoggingStatus[GEventType::Button]) return;
 
-    _outputStream << "Event on gamepad (slot " << to_string(gamepad->slot) << "): button.\n"
-                     "Gamepad name: " << gamepad->name << "\n"
+    _outputStream << "Event on gamepad (slot " << to_string(gamepad.slot) << "): button.\n"
+                     "Gamepad name: " << gamepad.name << "\n"
                      "Button: " << to_string(button) << "\n"
                      "Action: " << to_string(action) << "\n" << std::endl;
 }
 
-void InputLogger::processAxis(const GamepadPtr gamepad, const Axis axis, const float value)
+void InputLogger::processAxis(const Gamepad& gamepad, const Axis axis, const float value)
 {
     if (!_gamepadInputLoggingStatus[GEventType::Axis]) return;
 
     _outputStream << std::setprecision(3) <<
-                     "Event on gamepad (slot " << to_string(gamepad->slot) << "): axis.\n"
-                     "Gamepad name: " << gamepad->name << "\n"
+                     "Event on gamepad (slot " << to_string(gamepad.slot) << "): axis.\n"
+                     "Gamepad name: " << gamepad.name << "\n"
                      "Axis: " << to_string(axis) << "\n"
                      "New value: " << value << "\n" << std::endl;
 }

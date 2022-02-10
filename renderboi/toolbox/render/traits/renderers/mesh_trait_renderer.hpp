@@ -26,7 +26,7 @@ struct RenderTraitMeta<RenderTrait::Mesh>::Renderer
     using type = MeshTraitRenderer;
 };
 
-using MeshTraitRendererPtr = std::shared_ptr<MeshTraitRenderer>;
+using MeshTraitRendererPtr = std::unique_ptr<MeshTraitRenderer>;
 
 } // namespace Renderboi
 

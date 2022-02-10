@@ -22,8 +22,8 @@ private:
     GamepadCameraManager(const GamepadCameraManager& other) = delete;
     GamepadCameraManager& operator=(const GamepadCameraManager& other) = delete;
 
-    /// @brief Pointer to the camera controlled by the script.
-    const CameraPtr _camera;
+    /// @brief Reference to the camera controlled by the script.
+    Camera& _camera;
 
     /// @brief Camera sensitivity (right thumbstick).
     float _lookSensitivity;
@@ -35,10 +35,10 @@ public:
     /// @brief The default thumbstick sensitivity.
     static constexpr float DefaultLookSensitivity = 0.1f;
 
-    /// @param camera Pointer to the camera whose orientation to manage.
+    /// @param camera Reference to the camera whose orientation to manage.
     /// @param sensitivity The amplitude of the rotation induced by the right 
     /// thumbstick.
-    GamepadCameraManager(const CameraPtr camera, const float sensitivity = DefaultLookSensitivity);
+    GamepadCameraManager(Camera& camera, const float sensitivity = DefaultLookSensitivity);
 
     //////////////////////////////////////
     ///                                ///
@@ -55,12 +55,12 @@ public:
     /// @brief Set the scene object which the camera script is attached to.
     /// Will also attempt to retrieve a camera from the scene object.
     ///
-    /// @param sceneObject Pointer to the scene object the script should be
+    /// @param sceneObject Reference to the scene object the script should be
     /// attached to.
     ///
     /// @exception If the provided pointer is null, this function will throw
     /// a std::runtime_error.
-    void setSceneObject(const SceneObjectPtr sceneObject) override;
+    void setSceneObject(SceneObject* const sceneObject) override;
 
     /// @brief Get a raw pointer to a new keyboard script instance cloned 
     /// from this one. Ownership and responsibility for the allocated 
@@ -79,7 +79,7 @@ public:
     ///
     /// @param axis Literal describing which axis triggered the event.
     /// @param value Value at which the axis was polled.
-    virtual void processAxis(const GamepadPtr gamepad, const Window::Input::Gamepad::Axis axis, const float value) override;
+    virtual void processAxis(const Gamepad& gamepad, const Window::Input::Gamepad::Axis axis, const float value) override;
 };
 
 } // namespace Renderboi

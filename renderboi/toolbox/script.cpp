@@ -16,12 +16,12 @@ Script::~Script()
 
 }
 
-SceneObjectPtr Script::getSceneObject() const
+SceneObject* Script::sceneObject() const
 {
     return _sceneObject;
 }
 
-void Script::setSceneObject(const SceneObjectPtr sceneObject)
+void Script::setSceneObject(SceneObject* const sceneObject)
 {
     _sceneObject = sceneObject;
 }

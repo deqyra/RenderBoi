@@ -12,21 +12,7 @@
 
 #include "../component.hpp"
 #include "../component_type.hpp"
-
-namespace Renderboi
-{
-
-enum class MeshRenderTags : char
-{
-    None            = 0x00,
-    Outline         = 0x01,
-    CastShadows     = 0x02,
-};
-
-}// namespace Renderboi
-
-template<>
-struct cpptools::enable_bitwise_enum<Renderboi::MeshRenderTags> : public std::true_type { };
+#include "renderboi/core/shader/shader_builder.hpp"
 
 namespace Renderboi
 {
@@ -38,8 +24,12 @@ private:
     MeshComponent(MeshComponent& other) = delete;
     MeshComponent& operator=(const MeshComponent& other) = delete;
 
-    /// @brief Pointer to the mesh data of the object.
-    MeshPtr _mesh;
+    /// @brief Pointer to the mesh data of the object, if owned. Is null when
+    /// the referenced mesh isn't owned by the instance.
+    MeshPtr _meshPtr;
+
+    /// @brief Reference to the mesh data of the object.
+    Mesh& _mesh;
 
     /// @brief Material to paint the mesh with.
     Material _material;
@@ -47,107 +37,50 @@ private:
     /// @brief Shader program to render the mesh with.
     ShaderProgram _shader;
 
-    /// @brief Tags describing how the mesh should behave with certain 
-    /// render features.
-    MeshRenderTags _tags;
-
 public:
-    /// @param sceneObject Pointer to the scene object which will be parent
+    /// @param sceneObject Reference to the scene object which will be parent
     /// to this component.
-    /// @param mesh Pointer to the mesh which the component should use.
-    ///
-    /// @exception If the provided mesh pointer is null, the constructor
-    /// will throw a std::runtime_error.
-    MeshComponent(const SceneObjectPtr sceneObject, const MeshPtr mesh);
-
-    /// @param sceneObject Pointer to the scene object which will be parent
-    /// to this component.
-    /// @param mesh Pointer to the mesh which the component should use.
-    /// @param material Material which the mesh should be rendered with.
-    ///
-    /// @exception If the provided mesh pointer is null, the constructor
-    /// will throw a std::runtime_error.
-    MeshComponent(const SceneObjectPtr sceneObject, const MeshPtr mesh, const Material material);
-
-    /// @param sceneObject Pointer to the scene object which will be parent
-    /// to this component.
-    /// @param mesh Pointer to the mesh which the component should use.
-    /// @param shader Shader program which the mesh should be rendred by.
-    ///
-    /// @exception If the provided mesh pointer is null, the constructor
-    /// will throw a std::runtime_error.
-    MeshComponent(const SceneObjectPtr sceneObject, const MeshPtr mesh, const ShaderProgram shader);
-
-    /// @param sceneObject Pointer to the scene object which will be parent
-    /// to this component.
-    /// @param mesh Pointer to the mesh which the component should use.
+    /// @param mesh Reference to the mesh which the component should use.
     /// @param material Material which the mesh should be rendered with.
     /// @param shader Shader program which the mesh should be rendred by.
     ///
     /// @exception If the provided mesh pointer is null, the constructor
     /// will throw a std::runtime_error.
-    MeshComponent(const SceneObjectPtr sceneObject, const MeshPtr mesh, const Material material, const ShaderProgram shader);
+    MeshComponent(
+        SceneObject& sceneObject,
+        MeshPtr&& mesh,
+        const Material material,
+        const ShaderProgram shader = ShaderBuilder::MinimalShaderProgram()
+    );
+
+    /// @param sceneObject Reference to the scene object which will be parent
+    /// to this component.
+    /// @param mesh Reference to the mesh which the component should use.
+    /// @param material Material which the mesh should be rendered with.
+    /// @param shader Shader program which the mesh should be rendred by.
+    MeshComponent(
+        SceneObject& sceneObject,
+        Mesh& mesh,
+        const Material material,
+        const ShaderProgram shader = ShaderBuilder::MinimalShaderProgram()
+    );
 
     ~MeshComponent();
 
-    /// @brief Get a pointer to the mesh used by the component.
+    /// @brief Get the mesh used by the component.
     ///
-    /// @return A pointer to the mesh used by the component.
-    MeshPtr getMesh() const;
-
-    /// @brief Set the mesh used by the component.
-    ///
-    /// @param mesh The new mesh to be used by the component.
-    ///
-    /// @exception If the provided mesh pointer is null, the function will
-    /// throw a std::runtime_error.
-    void setMesh(const MeshPtr mesh);
+    /// @return The mesh used by the component.
+    Mesh& mesh();
 
     /// @brief Get the material used by the component.
     ///
     /// @return The material used by the component.
-    Material getMaterial() const;
-
-    /// @brief Set the material used by the component.
-    ///
-    /// @param material The new material to be used by the component.
-    void setMaterial(const Material material);
+    Material& material();
 
     /// @brief Get the shader used by the component.
     ///
     /// @return The shader used by the component.
-    ShaderProgram getShader() const;
-
-    /// @brief Set the shader used by the component.
-    ///
-    /// @param shader The new shader to be used by the component.
-    void setShader(const ShaderProgram shader);
-
-    /// @brief Get the render tags associated with the mesh.
-    ///
-    /// @return The render tags associated with the mesh.
-    MeshRenderTags getRenderTags();
-
-    /// @brief Set the render tags for the mesh.
-    ///
-    /// @param tag Render tags to set on the mesh.
-    void setRenderTags(const MeshRenderTags& tags);
-
-    /// @brief Tells whether or not the mesh has a certain render tag.
-    ///
-    /// @return Whether or not the mesh has a certain render tag.
-    bool hasRenderTags(const MeshRenderTags& tags);
-
-    /// @brief Add tags for rendering the mesh.
-    /// 
-    /// @param tag Bitfield describing which render tags to add to the mesh.
-    void addRenderTags(const MeshRenderTags& tags);
-
-    /// @brief Remove tags for rendering the mesh.
-    /// 
-    /// @param tag Bitfield describing which render tags to remove from the
-    /// mesh.
-    void removeRenderTags(const MeshRenderTags& tags);
+    ShaderProgram& shader();
 
     /////////////////////////////////////////
     ///                                   ///
@@ -164,7 +97,7 @@ public:
     ///
     /// @return A raw pointer to the component instance cloned from this 
     /// one.
-    MeshComponent* clone(const SceneObjectPtr newParent) const override;
+    MeshComponent* clone(SceneObject& newParent) const override;
 };
 
 
@@ -190,7 +123,7 @@ struct ComponentMeta<ComponentType::Mesh>
 template<>
 struct ComponentTypeToEnum<MeshComponent>
 {
-    static constexpr ComponentType value = ComponentType::Camera;
+    static constexpr ComponentType value = ComponentType::Mesh;
 };
 
 } // namespace Renderboi

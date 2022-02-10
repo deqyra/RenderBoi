@@ -31,7 +31,7 @@ public:
     virtual glm::vec3 forward() const = 0;
 };
 
-using BasisProviderPtr = std::shared_ptr<BasisProvider>;
+using BasisProviderPtr = std::unique_ptr<BasisProvider>;
 
 } // namespace Renderboi
 

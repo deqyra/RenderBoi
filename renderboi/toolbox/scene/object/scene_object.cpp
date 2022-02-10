@@ -14,26 +14,26 @@ namespace Renderboi
 
 unsigned int SceneObject::_count = 0;
 
-SceneObject::SceneObject(const ScenePtr scene, std::string name) :
+SceneObject::SceneObject(Scene& scene, const std::string name) :
     id(_count++),
+    scene(scene),
     enabled(true),
-    _componentMap(nullptr),
-    _renderTraitConfigMap(nullptr),
-    _transform(nullptr),
-    _name(name),
-    _scene(scene)
+    name(name),
+    _transform(*this),
+    _componentMap(*this),
+    _renderTraitConfigMap(*this)
 {
 
 }
 
 SceneObject::SceneObject(const SceneObject& other) :
     id(_count++),
+    scene(other.scene),
     enabled(other.enabled),
-    _componentMap(nullptr),
-    _renderTraitConfigMap(nullptr),
-    _transform(nullptr),
-    _name(other._name),
-    _scene(other._scene)
+    name(other.name),
+    _transform(*this),
+    _componentMap(*this),
+    _renderTraitConfigMap(*this)
 {
 
 }
@@ -43,70 +43,39 @@ SceneObject::~SceneObject()
 
 }
 
-void SceneObject::_release()
-{
-    _transform->_release();
-
-    _componentMap->clear();
-    _componentMap->_release();
-
-    _renderTraitConfigMap->clear();
-    _renderTraitConfigMap->_release();
-}
-
-void SceneObject::_init()
-{
-    _componentMap = ComponentMapPtr(
-        new ComponentMap(shared_from_this())
-    );
-
-    _renderTraitConfigMap = RenderTraitConfigMapPtr(
-        new RenderTraitConfigMap(shared_from_this())
-    );
-
-    _transform = ObjectTransformPtr(
-        new ObjectTransform(shared_from_this())
-    );
-}
-
-void SceneObject::_initCloned(const SceneObject& other)
-{
-    _componentMap = ComponentMapPtr(
-        new ComponentMap(shared_from_this(), *(other._componentMap))
-    );
-
-    _renderTraitConfigMap = RenderTraitConfigMapPtr(
-        new RenderTraitConfigMap(shared_from_this(), *(other._renderTraitConfigMap))
-    );
-
-    _transform = ObjectTransformPtr(
-        new ObjectTransform(shared_from_this(), (Transform)(*other._transform))
-    );
-}
-
-ObjectTransformPtr SceneObject::transform() const
+ObjectTransform& SceneObject::transform()
 {
     return _transform;
 }
 
-ComponentMapPtr SceneObject::componentMap() const
+const ObjectTransform& SceneObject::transform() const
+{
+    return _transform;
+}
+
+ComponentMap& SceneObject::componentMap()
 {
     return _componentMap;
 }
 
-RenderTraitConfigMapPtr SceneObject::renderTraitConfigMap() const
+const ComponentMap& SceneObject::componentMap() const
+{
+    return _componentMap;
+}
+
+RenderTraitConfigMap& SceneObject::renderTraitConfigMap()
+{
+    return _renderTraitConfigMap;
+}
+
+const RenderTraitConfigMap& SceneObject::renderTraitConfigMap() const
 {
     return _renderTraitConfigMap;
 }
 
 Transform SceneObject::worldTransform() const
 {
-    return _scene->getWorldTransform(id);
-}
-
-ScenePtr SceneObject::scene() const
-{
-    return _scene;
+    return scene.getWorldTransform(id);
 }
 
 SceneObjectPtr SceneObject::clone() const

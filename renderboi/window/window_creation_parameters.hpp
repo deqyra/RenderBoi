@@ -39,11 +39,11 @@ struct WindowCreationParameters
 
     /// @brief Pointer to the window whose context to share. Pass nullptr to 
     /// instantiate a new context.
-    GLWindowPtr shareContext;
+    const GLWindow* shareContext;
 
     /// @brief Monitor on which the window should go fullscreen. Pass nullptr to
     /// stay in windowed mode.
-    MonitorPtr monitor;
+    const Monitor* monitor;
 
     /// @brief If the window is requested to go fullscreen on a monitor and this
     /// is enabled, the window will fit exactly the current video mode of the 

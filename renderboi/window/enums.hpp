@@ -281,15 +281,15 @@ unsigned int operator&(unsigned int left, Window::Input::Modifier right);
 unsigned int operator|(unsigned int left, Window::Input::Modifier right);
 bool any(Window::Input::Modifier value);
 
-std::string to_string(const Window::Input::Mode::Target& mode);
-std::string to_string(const Window::Input::Mode::Value& value);
-std::string to_string(const Window::Input::Action& action);
-std::string to_string(const Window::Input::Key& key);
-std::string to_string(const Window::Input::Modifier& mod);
-std::string to_string(const Window::Input::MouseButton& mouseButton);
-std::string to_string(const Window::Input::Joystick& joystick);
-std::string to_string(const Window::Input::Gamepad::Button& gamepadButton);
-std::string to_string(const Window::Input::Gamepad::Axis& gamepadAxis);
+std::string to_string(const Window::Input::Mode::Target mode);
+std::string to_string(const Window::Input::Mode::Value value);
+std::string to_string(const Window::Input::Action action);
+std::string to_string(const Window::Input::Key key);
+std::string to_string(const Window::Input::Modifier mod);
+std::string to_string(const Window::Input::MouseButton mouseButton);
+std::string to_string(const Window::Input::Joystick joystick);
+std::string to_string(const Window::Input::Gamepad::Button gamepadButton);
+std::string to_string(const Window::Input::Gamepad::Axis gamepadAxis);
 
 } // namespace Renderboi
 

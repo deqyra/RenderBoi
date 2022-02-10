@@ -58,8 +58,7 @@ namespace Renderboi
 {
 
 class SceneObject;
-using SceneObjectPtr = std::shared_ptr<SceneObject>;
-using SceneObjectWPtr = std::weak_ptr<SceneObject>;
+using SceneObjectPtr = std::unique_ptr<SceneObject>;
 
 /// @brief Wraps a Transform and is attached to a SceneObject. Refer to the
 /// README section at the top of the .hpp file for more info.
@@ -74,31 +73,33 @@ protected:
     /// @brief Will notify subscribers that the transform has been modified.
     TransformNotifier _transformNotifier;
     /// @brief The SceneObject the transform is attached to.
-    SceneObjectWPtr _sceneObject;
+    SceneObject& _sceneObject;
     /// @brief The ID of the SceneObject the transform is attached to.
     unsigned int _objectId;
 
     /// @brief Notify all subscribers that the transform was updated.
     void _notifyChange() const;
 
-    /// @brief Release held references to shared resources.
-    virtual void _release();
+    /// @brief Get the transform of the parent scene object to this instance.
+    ///
+    /// @return The transform of the parent scene object to this instance.
+    Transform _getParentTransform() const;
 
 public:
-    /// @param sceneObject Pointer to the scene object of the object transform.
+    /// @param sceneObject Reference to the scene object of the object transform.
     /// @param position Base position of the transform.
     /// @param rotation Base orientation of the transform.
     /// @param scale Base scale of the transform.
     ObjectTransform(
-        const SceneObjectPtr sceneObject,
+        SceneObject& sceneObject,
         const glm::vec3 position = glm::vec3(0.f), 
         const glm::quat orientation = glm::quat(1.f, glm::vec3(0.f)), 
         const glm::vec3 scale = glm::vec3(1.f)
     );
 
-    /// @param sceneObject Pointer to the scene object of the object transform.
+    /// @param sceneObject Reference to the scene object of the object transform.
     /// @param transform Base state of the object transform.
-    ObjectTransform(const SceneObjectPtr sceneObject, const Transform transform);
+    ObjectTransform(SceneObject& sceneObject, const Transform transform);
 
     /// @param other Instance to assign to this.
     ObjectTransform& operator=(const ObjectTransform& other);
@@ -110,8 +111,8 @@ public:
 
     /// @brief Get the object the transform is attached to.
     ///
-    /// @return Pointer to the scene object the transform is attached to.
-    SceneObjectWPtr sceneObject() const;
+    /// @return Reference to the scene object the transform is attached to.
+    SceneObject& sceneObject() const;
 
     /// @brief Retrieve the notifier attached to this transform.
     ///
@@ -241,7 +242,7 @@ public:
     Transform compoundFrom(const ObjectTransform& other) const;
 };
 
-using ObjectTransformPtr = std::shared_ptr<ObjectTransform>;
+using ObjectTransformPtr = std::unique_ptr<ObjectTransform>;
 
 } // namespace Renderboi
 

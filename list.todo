@@ -20,7 +20,8 @@ RenderBoi:
         ☐ Investigate move semantics usage
         ☐ Change shared_ptr to unique_ptr where ownership is due and to naked pointer where it's just being used
         ☐ Destructors with an empty body should just be defaulted
-        ☐ Put #pragma region directives in files
+        ✘ Put #pragma region directives in files @cancelled(22-02-02 13:42)
+        ☐ Remove friends or if not possible restrict to certain methods
     Core:
         Camera:
             ✔ Use a parent transform instead of a simple up vector @done(20-10-14 12:27)
@@ -82,6 +83,7 @@ RenderBoi:
             ☐ Serialisation
             ☐ Make a concept out of components, simplify template usage in SceneObject
             ✔ Implement template meta to have componentMap.addComponent<Camera> instead of componentMap.addComponent<CameraComponent> @done(22-01-29 18:13)
+            ☐ Is MeshRenderTags necessary?
         ComponentMap:
             ✔ Better naming for template parameters @done(22-02-02 00:16)
         Controls:
@@ -97,9 +99,8 @@ RenderBoi:
         Object transform:
             ✘ Keep a shared pointer to the scene object @cancelled(22-02-02 00:16)
         Render traits:
-            ☐ The copy constructor of the RenderTraitConfigMap is WRONG - it should clone configs
-            ☐ When cloned as part of SceneObject cloning, the MeshRenderTraitConfig needs to reference its new parent SceneObject
-            VERTEX DATA MANAGER IS REQUIRED FOR THAT
+            ✔ The copy constructor of the RenderTraitConfigMap is WRONG - it should clone configs @done(22-02-08 21:35)
+            ✔ When cloned as part of SceneObject cloning, the MeshRenderTraitConfig needs to reference its new parent SceneObject @done(22-02-08 21:36)
         Scene:
             ✔ In `moveObject`, add possibility to keep world position of moved object @done(20-10-13 14:49)
             ☐ Add something like `registerObjectTree(ScenePtr)` to import complex objects into a scene
@@ -113,6 +114,7 @@ RenderBoi:
             ☐ triggerUpdate() should not update scripts attached to disabled scene objects (or which have a disabled parent)
             ☐ remove() recursively calls itself instead of a more efficient, check-free private routine
             ☐ Implement transform optimisations using object tags
+            ☐ Get rid of _findObjectMetaOrThrow code duplication for const variant
             ☐ Serialisation
         SceneObject:
             ✔ Add name for debugging purposes @done(20-10-19 12:04)
@@ -152,6 +154,10 @@ RenderBoi:
         ✔ Handle fullscreen toggling @done(21-07-14 16:07)
         ☐ Fully integrate GLFW in windowing system
         ☐ Make it possible to queue GLContextEvents alonside with parameters for them
+        ✘ Make GLContextClient not dependent on one single GLWindow @cancelled(22-02-04 03:32)
+        ✘ Have window be able to forward events to several GLContextEventManagers @cancelled(22-02-06 15:22)
+        ☐ Move gamepad state polling out of GamepadManager instance, in order to allow for single polling in multiple managers (windows)
+        ☐ GLFW3GamepadManager::_JoystickStatusRefreshFlag may not be necessary
         Gamepad:
             ✔ Write GamepadState @done(21-01-25 12:37)
             ✔ Write Gamepad @done(21-01-25 15:18)

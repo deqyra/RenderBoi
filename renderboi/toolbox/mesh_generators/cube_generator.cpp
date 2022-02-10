@@ -101,7 +101,7 @@ MeshPtr CubeGenerator::generateMesh() const
         primitiveOffsets[i] = (void*)(i * 4 * sizeof(unsigned int));
     }
 
-    return std::make_shared<Mesh>(GL_TRIANGLE_STRIP, vertices, indices, primitiveSizes, primitiveOffsets);
+    return std::make_unique<Mesh>(GL_TRIANGLE_STRIP, vertices, indices, primitiveSizes, primitiveOffsets);
 }
 
 } // namespace Renderboi

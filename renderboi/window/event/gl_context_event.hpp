@@ -21,7 +21,7 @@ enum class GLContextEvent
 
 } // namespace Window
 
-std::string to_string(const Window::GLContextEvent& event);
+std::string to_string(const Window::GLContextEvent event);
 
 } // namespace Renderboi
 

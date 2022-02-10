@@ -9,28 +9,20 @@
 namespace Renderboi
 {
 
-Component::Component(const SceneObjectPtr sceneObject) :
+Component::Component(SceneObject& sceneObject) :
     _sceneObject(sceneObject)
 {
-    if (!sceneObject)
-    {
-        throw std::runtime_error("Component: cannot create a component from a null scene object pointer.");
-    }
+
 }
 
 Component::~Component()
 {
-    _release();
+
 }
 
-SceneObjectPtr Component::getSceneObject() const
+SceneObject& Component::sceneObject()
 {
     return _sceneObject;
-}
-
-void Component::_release()
-{
-    _sceneObject.reset();
 }
 
 } // namespace Renderboi

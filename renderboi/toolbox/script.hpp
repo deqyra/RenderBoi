@@ -20,9 +20,9 @@ class Script
         static unsigned int _count;
 
     protected:
-        /// @brief Pointer to a scene object which the script might be attached
+        /// @brief Reference to a scene object which the script might be attached
         /// to.
-        SceneObjectPtr _sceneObject;
+        SceneObject* _sceneObject;
 
     public:
         Script();
@@ -38,13 +38,13 @@ class Script
         /// @brief Get a pointer to the parent scene object, if any.
         ///
         /// @return A pointer to the parent scene object, or nullptr.
-        virtual SceneObjectPtr getSceneObject() const;
+        virtual SceneObject* sceneObject() const;
 
         /// @brief Set the parent scene object of the script.
         ///
         /// @param object A pointer to scene object which should be parent to 
         /// the script (can be nullptr).
-        virtual void setSceneObject(const SceneObjectPtr object);
+        virtual void setSceneObject(SceneObject* const object);
 
         /// @brief Get a raw pointer to a new script instance cloned 
         /// from this one. Ownership and responsibility for the allocated 
@@ -57,8 +57,7 @@ class Script
         const unsigned int id;
 };
 
-using ScriptPtr = std::shared_ptr<Script>;
-using ScriptWPtr = std::weak_ptr<Script>;
+using ScriptPtr = std::unique_ptr<Script>;
 
 } // namespace Renderboi
 

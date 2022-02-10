@@ -19,12 +19,12 @@ private:
     CameraAspectRatioManager(const CameraAspectRatioManager& other) = delete;
     CameraAspectRatioManager& operator=(const CameraAspectRatioManager& other) = delete;
 
-    /// @brief Pointer to the camera controlled by the script.
-    const CameraPtr _camera;
+    /// @brief Reference to the camera controlled by the script.
+    Camera& _camera;
     
 public:
-    /// @param camera Pointer to the camera whose aspect ratio to manage.
-    CameraAspectRatioManager(const CameraPtr camera);
+    /// @param camera Reference to the camera whose aspect ratio to manage.
+    CameraAspectRatioManager(Camera& camera);
 
     //////////////////////////////////////////////
     ///                                        ///
@@ -34,11 +34,11 @@ public:
 
     /// @brief Callback for a framebuffer resize event.
     ///
-    /// @param window Pointer to the GLWindow in which the event was
+    /// @param window Reference to the GLWindow in which the event was
     /// triggered.
     /// @param width New width (in pixels) of the framebuffer.
     /// @param height New height (in pixels) of the framebuffer.
-    void processFramebufferResize(const GLWindowPtr window, const unsigned int width, const unsigned int height) override;
+    void processFramebufferResize(GLWindow& window, const unsigned int width, const unsigned int height) override;
 };
 
 } // namespace Renderboi
