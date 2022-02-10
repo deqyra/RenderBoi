@@ -179,8 +179,7 @@ protected:
     virtual glm::mat4 _computeViewMatrix() const override;
 };
 
-using CameraPtr = std::shared_ptr<Camera>;
-using CameraWPtr = std::weak_ptr<Camera>;
+using CameraPtr = std::unique_ptr<Camera>;
 
 } // namespace Renderboi
 

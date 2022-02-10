@@ -29,7 +29,7 @@ Camera::Camera(
 }
 
 Camera::Camera(const Camera& other) :
-    ParentDependentVPMatrixProvider(*dynamic_cast<ParentDependentVPMatrixProvider*>(this)),
+    ParentDependentVPMatrixProvider(*this),
     _forward(other._forward),
     _left(other._left),
     _up(other._up),

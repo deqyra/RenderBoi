@@ -7,10 +7,20 @@
 namespace Renderboi
 {
 
-CameraComponent::CameraComponent(const SceneObjectPtr sceneObject, const CameraPtr camera) :
-    Component(sceneObject)
+CameraComponent::CameraComponent(SceneObject& sceneObject, CameraPtr&& camera) :
+    Component(sceneObject),
+    _cameraPtr(std::move(camera)),
+    _camera(*_cameraPtr)
 {
-    setCamera(camera);
+
+}
+
+CameraComponent::CameraComponent(SceneObject& sceneObject, Camera& camera) :
+    Component(sceneObject),
+    _cameraPtr(nullptr),
+    _camera(camera)
+{
+
 }
 
 CameraComponent::~CameraComponent()
@@ -18,28 +28,16 @@ CameraComponent::~CameraComponent()
 
 }
 
-CameraPtr CameraComponent::getCamera() const
+Camera& CameraComponent::camera() 
 {
     return _camera;
 }
 
-void CameraComponent::setCamera(const CameraPtr camera)
-{
-    if (!camera)
-    {
-        throw std::runtime_error("CameraComponent: cannot set camera from a null pointer.");
-    }
-
-    _camera = camera;
-}
-
 glm::mat4 CameraComponent::getViewMatrix() const
 {
-    Transform worldTransform = _sceneObject->worldTransform();
-
     // Update camera and compute view matrix
-    _camera->setParentWorldTransform(worldTransform);
-    return _camera->getViewMatrix();
+    _camera.setParentWorldTransform(_sceneObject.worldTransform());
+    return _camera.getViewMatrix();
 }
 
 glm::vec3 CameraComponent::worldPositionToViewSpace(const glm::vec3 worldPosition) const
@@ -50,22 +48,18 @@ glm::vec3 CameraComponent::worldPositionToViewSpace(const glm::vec3 worldPositio
 
 glm::mat4 CameraComponent::getProjectionMatrix() const
 {
-    return _camera->getProjectionMatrix();
+    return _camera.getProjectionMatrix();
 }
 
 glm::mat4 CameraComponent::getViewProjectionMatrix() const
 {
-    glm::vec3 worldPosition = _sceneObject->worldTransform().getPosition();
-    return _camera->getViewProjectionMatrix();
+    _camera.setParentWorldTransform(_sceneObject.worldTransform());
+    return _camera.getViewProjectionMatrix();
 }
 
-CameraComponent* CameraComponent::clone(const SceneObjectPtr newParent) const
+CameraComponent* CameraComponent::clone(SceneObject& newParent) const
 {
-    // This shared pointer will be destroyed at the end of this scope, but responsibilty for the 
-    // resources will already have been shared with the cloned CameraComponent by this point.
-    CameraPtr cameraClone = std::make_shared<Camera>(*_camera);
-
-    return new CameraComponent(newParent, cameraClone);
+    return new CameraComponent(newParent, std::make_unique<Camera>(_camera));
 }
 
 } // namespace Renderboi

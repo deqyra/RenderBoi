@@ -42,7 +42,7 @@ bool any(Window::Input::Modifier value)
     return value != Window::Input::Modifier::None;
 }
 
-std::string to_string(const Window::Input::Mode::Target& target)
+std::string to_string(const Window::Input::Mode::Target target)
 {
     static std::unordered_map<Window::Input::Mode::Target, std::string> enumNames = {
         {Window::Input::Mode::Target::Cursor,              "Cursor"},
@@ -58,7 +58,7 @@ std::string to_string(const Window::Input::Mode::Target& target)
         : "Unknown window input mode target";
 }
 
-std::string to_string(const Window::Input::Mode::Value& value)
+std::string to_string(const Window::Input::Mode::Value value)
 {
     static std::unordered_map<Window::Input::Mode::Value, std::string> enumNames = {
         {Window::Input::Mode::Value::True,             "True"},
@@ -74,7 +74,7 @@ std::string to_string(const Window::Input::Mode::Value& value)
         : "Unknown window input mode value";
 }
 
-std::string to_string(const Window::Input::Action& action)
+std::string to_string(const Window::Input::Action action)
 {
     static std::unordered_map<Window::Input::Action, std::string> enumNames = {
         {Window::Input::Action::Release,   "Release"},
@@ -88,7 +88,7 @@ std::string to_string(const Window::Input::Action& action)
         : "Unknown input action";
 }
 
-std::string to_string(const Window::Input::Key& key)
+std::string to_string(const Window::Input::Key key)
 {
     static std::unordered_map<Window::Input::Key, std::string> enumNames = {
         {Window::Input::Key::Unknown,          "Unknown"},
@@ -220,7 +220,7 @@ std::string to_string(const Window::Input::Key& key)
         : "Unknown keyboard key";
 }
 
-std::string to_string(const Window::Input::Modifier& mod)
+std::string to_string(const Window::Input::Modifier mod)
 {
     static std::unordered_map<Window::Input::Modifier, std::string> enumNames = {
         {Window::Input::Modifier::None,        "None"},
@@ -238,7 +238,7 @@ std::string to_string(const Window::Input::Modifier& mod)
         : "Unknown keyboard modifier";
 }
 
-std::string to_string(const Window::Input::MouseButton& mouseButton)
+std::string to_string(const Window::Input::MouseButton mouseButton)
 {
     static std::unordered_map<Window::Input::MouseButton, std::string> enumNames = {
         {Window::Input::MouseButton::B1,   "B1"},
@@ -265,7 +265,7 @@ std::string to_string(const Window::Input::MouseButton& mouseButton)
         : "Unknown mouse button";
 }
 
-std::string to_string(const Window::Input::Joystick& joystick)
+std::string to_string(const Window::Input::Joystick joystick)
 {
     static std::unordered_map<Window::Input::Joystick, std::string> enumNames = {
         {Window::Input::Joystick::J1,  "J1"},
@@ -292,7 +292,7 @@ std::string to_string(const Window::Input::Joystick& joystick)
         : "Unknown joystick";
 }
 
-std::string to_string(const Window::Input::Gamepad::Button& gamepadButton)
+std::string to_string(const Window::Input::Gamepad::Button gamepadButton)
 {
     static std::unordered_map<Window::Input::Gamepad::Button, std::string> enumNames = {
         {Window::Input::Gamepad::Button::A,             "A"},
@@ -318,7 +318,7 @@ std::string to_string(const Window::Input::Gamepad::Button& gamepadButton)
         : "Unknown gamepad button";
 }
 
-std::string to_string(const Window::Input::Gamepad::Axis& gamepadAxis)
+std::string to_string(const Window::Input::Gamepad::Axis gamepadAxis)
 {
     static std::unordered_map<Window::Input::Gamepad::Axis, std::string> enumNames = {
         {Window::Input::Gamepad::Axis::LeftX,           "LeftX"},

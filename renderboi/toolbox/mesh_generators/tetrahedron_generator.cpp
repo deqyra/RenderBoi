@@ -79,7 +79,7 @@ MeshPtr TetrahedronGenerator::generateMesh() const
         9, 10, 11
     };
 
-    return std::make_shared<Mesh>(GL_TRIANGLES, vertices, indices);
+    return std::make_unique<Mesh>(GL_TRIANGLES, vertices, indices);
 }
 
 } // namespace Renderboi

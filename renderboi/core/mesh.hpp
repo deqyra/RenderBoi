@@ -94,8 +94,7 @@ public:
     const unsigned int id;
 };
 
-using MeshPtr = std::shared_ptr<Mesh>;
-using MeshWPtr = std::weak_ptr<Mesh>;
+using MeshPtr = std::unique_ptr<Mesh>;
 
 } // namespace Renderboi
 

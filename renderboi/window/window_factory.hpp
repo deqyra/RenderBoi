@@ -42,11 +42,11 @@ public:
     static void SetErrorCallback(const void* callback) = delete;
 
     /// @brief Get a pointer to the primary monitor of the system.
-    static MonitorPtr GetPrimaryMonitor() = delete;
+    static Monitor& GetPrimaryMonitor() = delete;
 
     /// @brief Get an array filled with pointers to the different monitors of
     /// the system.
-    static std::vector<MonitorPtr> GetMonitors() = delete;
+    static std::map<unsigned int, Monitor&> GetMonitors() = delete;
 
     /// @brief Set the callback for monitor configuration changes.
     ///
@@ -57,11 +57,13 @@ public:
     /// @brief Get the desktop video mode of the monitor. Implementation may not
     /// always return exact results under particular circumstances.
     ///
-    /// @param monitor Pointer to the monitor whose native video mode to retrieve.
-    static Monitor::VideoMode GetMonitorNativeVideoMode(const MonitorPtr monitor) = delete;
+    /// @param monitor Reference to the monitor whose native video mode to
+    /// retrieve.
+    static Monitor::VideoMode GetMonitorNativeVideoMode(const Monitor& monitor) = delete;
 
     /// @brief Create a window on the system, initialize a context within it,
-    /// bind callbacks, and get a pointer to it.
+    /// bind callbacks, and get a pointer to it. May only be called from the 
+    /// main thread.
     ///
     /// @param params Parameters for the window creation.
     ///
@@ -78,7 +80,7 @@ public:
     /// it uses.
     ///
     /// @param window Pointer to the window to deallocate.
-    static void DestroyWindow(GLWindowPtr window) = delete;
+    static void DestroyWindow(GLWindowPtr&& window) = delete;
 };
 
 } // namespace Renderboi::Window

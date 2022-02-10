@@ -93,7 +93,7 @@ int main(int argc, char** argv)
 			true,								// resizable
 			GL_CONTEXT_VERSION_MAJOR,			// glVersionMajor
 			GL_CONTEXT_VERSION_MINOR,			// glVersionMinor
-			rb::Window::OpenGLProfile::Core,	// glProfile
+			rbw::OpenGLProfile::Core,			// glProfile
 			nullptr,							// shareContext
 			nullptr,							// monitor
 			false,								// borderlessFullscreen
@@ -134,19 +134,19 @@ int main(int argc, char** argv)
 		if (false)
 		{
 			rb::GLSandboxRunner<rb::LightingSandbox> lightingSandbox =
-			rb::GLSandboxRunner<rb::LightingSandbox>(window, sbParams);
+			rb::GLSandboxRunner<rb::LightingSandbox>(window.get(), sbParams);
 
 			lightingSandbox.run();
 		}
 
 		{
 			rb::GLSandboxRunner<rb::ShadowSandbox> shadowSandbox =
-			rb::GLSandboxRunner<rb::ShadowSandbox>(window, sbParams);
+			rb::GLSandboxRunner<rb::ShadowSandbox>(window.get(), sbParams);
 
 			shadowSandbox.run();
 		}
 
-		AppWindowFactory::DestroyWindow(window);
+		AppWindowFactory::DestroyWindow(std::move(window));
 	}
 
 	AppWindowFactory::TerminateBackend();

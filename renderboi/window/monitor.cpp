@@ -9,8 +9,9 @@ namespace Renderboi::Window
 
 unsigned int Monitor::_count = 0;
 
-Monitor::Monitor() :
-    id(_count++)
+Monitor::Monitor(const std::string name) :
+    id(_count++),
+    name(name)
 {
 
 }
@@ -64,7 +65,7 @@ const std::vector<unsigned short>& Monitor::GammaRamp::getRed() const
 
 void Monitor::GammaRamp::setRed(const std::vector<unsigned short> red)
 {
-    if (red.size() != _size) throw std::runtime_error("GammaRamp: cannot set ramp component of different size.");
+    if (red.size() != _size) throw std::runtime_error("GammaRamp: cannot set red ramp component of different size.");
 
     _red = red;
 }
@@ -76,7 +77,7 @@ const std::vector<unsigned short>& Monitor::GammaRamp::getGreen() const
 
 void Monitor::GammaRamp::setGreen(const std::vector<unsigned short> green)
 {
-    if (green.size() != _size) throw std::runtime_error("GammaRamp: cannot set ramp component of different size.");
+    if (green.size() != _size) throw std::runtime_error("GammaRamp: cannot set green ramp component of different size.");
 
     _green = green;
 }
@@ -88,7 +89,7 @@ const std::vector<unsigned short>& Monitor::GammaRamp::getBlue() const
 
 void Monitor::GammaRamp::setBlue(const std::vector<unsigned short> blue)
 {
-    if (blue.size() != _size) throw std::runtime_error("GammaRamp: cannot set ramp component of different size.");
+    if (blue.size() != _size) throw std::runtime_error("GammaRamp: cannot set blue ramp component of different size.");
 
     _blue = blue;
 }

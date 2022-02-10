@@ -11,6 +11,8 @@
 #include "../window_backend.hpp"
 #include "../window_creation_parameters.hpp"
 
+#include "glfw3_monitor.hpp"
+
 namespace Renderboi::Window
 {
 
@@ -25,7 +27,7 @@ public:
 
 private:
     /// @brief List of monitors connected to the system (mapped by IDs).
-    static std::map<unsigned int, MonitorPtr> _monitors;
+    static std::map<unsigned int, GLFW3MonitorPtr> _monitors;
 
     /// @brief List of video modes the monitors were using when detected on the system.
     static std::map<unsigned int, Monitor::VideoMode> _nativeVideoModes;
@@ -34,7 +36,7 @@ private:
     static GLFWmonitorfun* _monitorCallback;
 
     /// @brief List the monitors currently connected to the system.
-    static std::map<unsigned int, MonitorPtr> _ListMonitors();
+    static std::map<unsigned int, GLFW3MonitorPtr> _ListMonitors();
 
     /// @brief Save the video modes of monitors currently connected to the system.
     static void _SaveMonitorVideoModes();
@@ -52,17 +54,17 @@ public:
 
     static void SetErrorCallback(const void* callback);
 
-    static MonitorPtr GetPrimaryMonitor();
+    static Monitor& GetPrimaryMonitor();
 
-    static std::map<unsigned int, MonitorPtr> GetMonitors();
+    static std::map<unsigned int, Monitor&> GetMonitors();
 
     static void SetMonitorCallback(const void* callback);
 
-    static Monitor::VideoMode GetMonitorNativeVideoMode(const MonitorPtr monitor);
+    static Monitor::VideoMode GetMonitorNativeVideoMode(const Monitor& monitor);
 
     static GLWindowPtr MakeWindow(const WindowCreationParameters& params);
 
-    static void DestroyWindow(GLWindowPtr window);
+    static void DestroyWindow(GLWindowPtr&& window);
 };
 
 } // namespace Renderboi::Window

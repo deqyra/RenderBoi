@@ -16,7 +16,7 @@
 namespace Renderboi::Window
 {
 
-std::unordered_map<unsigned int, GamepadManagerPtr> GLFW3GamepadManager::_GamepadManagers = std::unordered_map<unsigned int, GamepadManagerPtr>();
+std::unordered_map<unsigned int, const GamepadManager*> GLFW3GamepadManager::_GamepadManagers = std::unordered_map<unsigned int, const GamepadManager*>();
 std::unordered_map<int, std::atomic<bool>> GLFW3GamepadManager::_PresentJoysticks = std::unordered_map<int, std::atomic<bool>>();
 std::unordered_map<int, std::atomic<bool>> GLFW3GamepadManager::_PresentGamepads = std::unordered_map<int, std::atomic<bool>>();
 std::atomic<bool> GLFW3GamepadManager::_JoystickStatusRefreshFlag = true;
@@ -33,23 +33,23 @@ GLFW3GamepadManager::GLFW3GamepadManager() :
     }
 }
 
-void GLFW3GamepadManager::gamepadConnected(Joystick slot) const
+void GLFW3GamepadManager::gamepadConnected(const Joystick slot) const
 {
     if (_managedGamepads.contains(slot) && _enabledGamepads.at(slot))
     {
-        GamepadManager::setGamepadConnected(_managedGamepads.at(slot));
+        GamepadManager::setGamepadConnected(*(_managedGamepads.at(slot)));
     }
 }
 
-void GLFW3GamepadManager::gamepadDisconnected(Joystick slot) const
+void GLFW3GamepadManager::gamepadDisconnected(const Joystick slot) const
 {
     if (_managedGamepads.contains(slot) && _enabledGamepads.at(slot))
     {
-        GamepadManager::setGamepadDisconnected(_managedGamepads.at(slot));
+        GamepadManager::setGamepadDisconnected(*(_managedGamepads.at(slot)));
     }
 }
 
-std::vector<Window::Input::Joystick> GLFW3GamepadManager::pollPresentGamepads(bool mustBeUnused) const
+std::vector<Window::Input::Joystick> GLFW3GamepadManager::pollPresentGamepads(const bool mustBeUnused) const
 {
     using Window::Input::Joysticks;
 
@@ -67,9 +67,10 @@ std::vector<Window::Input::Joystick> GLFW3GamepadManager::pollPresentGamepads(bo
     return result;
 }
 
-GamepadPtr GLFW3GamepadManager::getGamepad(Window::Input::Joystick slot)
+Gamepad& GLFW3GamepadManager::getGamepad(const Joystick slot)
 {
-    if (_managedGamepads.contains(slot)) return _managedGamepads.at(slot);
+    if (_managedGamepads.contains(slot))
+        return *_managedGamepads.at(slot);
 
     int jid = Window::GLFW3Adapter::getValue(slot);
     if (!glfwJoystickIsGamepad(jid))
@@ -78,16 +79,17 @@ GamepadPtr GLFW3GamepadManager::getGamepad(Window::Input::Joystick slot)
     }
 
     std::string gamepadName(glfwGetGamepadName(jid));
-    _managedGamepads[slot] = GamepadManager::createGamepad(shared_from_this(), slot, gamepadName);
-    return _managedGamepads[slot];
+    _managedGamepads[slot] = GamepadManager::createGamepad(*this, slot, gamepadName);
+
+    return *_managedGamepads[slot];
 }
 
-void GLFW3GamepadManager::startGamepadPolling(Window::Input::Joystick slot) const
+void GLFW3GamepadManager::startGamepadPolling(const Joystick slot) const
 {
     _enabledGamepads[slot] = true;
 }
 
-void GLFW3GamepadManager::stopGamepadPolling(Window::Input::Joystick slot) const
+void GLFW3GamepadManager::stopGamepadPolling(const Joystick slot) const
 {
     _enabledGamepads[slot] = false;
 }
@@ -132,7 +134,7 @@ void GLFW3GamepadManager::pollGamepadStates() const
         GLFWgamepadstate glfwState;
         glfwGetGamepadState(jid, &glfwState);
         GamepadState state = _GamepadStateFromGlfwGamepadState(glfwState);
-        GamepadManager::setGamepadState(it->second, state);
+        GamepadManager::setGamepadState(*(it->second), state);
     }
 }
 

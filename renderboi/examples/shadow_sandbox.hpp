@@ -32,8 +32,8 @@ class ShadowSandbox : public GLSandbox
         /// @brief Used to temporarily store the original title of the window.
         std::string _title;
 
-        /// @brief Pointer to a gamepad instace.
-        GamepadPtr _gamepad;
+        /// @brief Reference to a gamepad instance.
+        Gamepad& _gamepad;
         
         /// @brief Whether or not a gamepad could be retrieved.
         bool _gamepadPresent;
@@ -47,10 +47,10 @@ class ShadowSandbox : public GLSandbox
         static constexpr float WallSize = PlaneTileCount * PlaneTileSize;
         static constexpr glm::vec3 LightPosition = {WallSize / 2.f, WallSize / 2.f, WallSize / 2.f};
 
-		/// @param window Pointer to the window on which the sandbox should run.
+		/// @param window Reference to the window on which the sandbox should run.
         /// @param params Strcture packing the parameters according to which the
         /// sandbox should run.
-        ShadowSandbox(const GLWindowPtr window, const GLSandboxParameters params);
+        ShadowSandbox(GLWindow& window, const GLSandboxParameters& params);
 
         /////////////////////////////////////////
         ///                                   ///
@@ -58,34 +58,28 @@ class ShadowSandbox : public GLSandbox
         ///                                   ///
         /////////////////////////////////////////
 
-		/// @brief Set up the window prior to running the example. Will be
+		/// @brief Set up the window prior to running the example. Must be
 		/// called from the main thread.
-		///
-		/// @param window Pointer to the window to initialize.
 		virtual void setUp();
 
-        /// @brief Run something in the provided GL window. To be executed by
-		/// a separate thread.
-		///
-		/// @param window Pointer to the window to run stuff in.
+        /// @brief Run something in the provided GL window. Must be run by a
+		/// separate thread.
 		virtual void run();
 
 		/// @brief Restore the window back to how it was before the example ran.
 		/// The contents of this function should be the opposite from those in
-		/// setUp(). Will be called from the main thread once run() has returned.
-		///
-		/// @param window Pointer to the window to detach from.
+		/// setUp(). Must be called from the main thread once run() has returned.
 		virtual void tearDown();
 };
 
 class ShadowSandboxScript : public Script, public InputProcessor
 {
     private:
-        /// @brief Pointer to the torus object to animate over time.
-        SceneObjectPtr _torusObj;
+        /// @brief Reference to the torus object to animate over time.
+        SceneObject& _torusObj;
 
-        /// @brief Pointer to the light object to animate over time.
-        SceneObjectPtr _lightObj;
+        /// @brief Reference to the light object to animate over time.
+        SceneObject& _lightObj;
 
         /// @brief Starting position of the light object.
         glm::vec3 _lightStartingPos;
@@ -105,7 +99,9 @@ class ShadowSandboxScript : public Script, public InputProcessor
         static constexpr float LightMovementFrequency = 1.f;
         static constexpr glm::vec3 TorusRotationAxis = {0.f, 1.f, 0.f};
 
-        ShadowSandboxScript(SceneObjectPtr lightObj, SceneObjectPtr torusObj);
+        /// @param lightObj Reference to the torus object to animate over time.
+        /// @param torusObj Reference to the light object to animate over time.
+        ShadowSandboxScript(SceneObject& lightObj, SceneObject& torusObj);
 
         virtual ~ShadowSandboxScript() = default;
 
@@ -136,7 +132,7 @@ class ShadowSandboxScript : public Script, public InputProcessor
 
         /// @brief Callback for a keyboard event.
         ///
-        /// @param window Pointer to the GLWindow in which the event was
+        /// @param window Reference to the GLWindow in which the event was
         /// triggered.
         /// @param key Literal describing which key triggered the event.
         /// @param scancode Scancode of the key which triggered the event. 
@@ -146,7 +142,7 @@ class ShadowSandboxScript : public Script, public InputProcessor
         /// @param mods Bit field describing which modifiers were enabled 
         /// during the key event (Ctrl, Shift, etc).
         void processKeyboard(
-            const GLWindowPtr window,
+            GLWindow& window,
             const Window::Input::Key key,
             const int scancode,
             const Window::Input::Action action,

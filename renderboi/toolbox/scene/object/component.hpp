@@ -10,8 +10,7 @@ namespace Renderboi
 {
 
 class SceneObject;
-using SceneObjectPtr = std::shared_ptr<SceneObject>;
-using SceneObjectWPtr = std::weak_ptr<SceneObject>;
+using SceneObjectPtr = std::unique_ptr<SceneObject>;
 
 class ComponentMap;
 
@@ -69,18 +68,15 @@ private:
     Component& operator=(const Component& other) = delete;
 
 protected:
-    /// @param sceneObject Pointer to the SceneObject instance this 
+    /// @param sceneObject Reference to the SceneObject instance this 
     /// component belongs to.
     ///
     /// @exception If the provided scene object pointer is null, the constructor
     /// will throw an std::runtime_error.
-    Component(const SceneObjectPtr sceneObject);
+    Component(SceneObject& sceneObject);
 
-    /// @brief Pointer to the SceneObject this component belongs to.
-    SceneObjectPtr _sceneObject;
-
-    /// @brief Release held references to shared resources.
-    virtual void _release();
+    /// @brief Reference to the SceneObject this component belongs to.
+    SceneObject& _sceneObject;
 
 public:
     virtual ~Component();
@@ -88,7 +84,7 @@ public:
     /// @brief Get a pointer to the parent scene object of this component.
     ///
     /// @return A pointer to the parent scene object of this component.
-    SceneObjectPtr getSceneObject() const;
+    SceneObject& sceneObject();
 
     /// @brief Get a raw pointer to a new component instance cloned 
     /// from this one. Ownership and responsibility for the allocated 
@@ -99,7 +95,7 @@ public:
     ///
     /// @return A raw pointer to the component instance cloned from this 
     /// one.
-    virtual Component* clone(const SceneObjectPtr newParent) const = 0;
+    virtual Component* clone(SceneObject& newParent) const = 0;
 
     /// @brief Returns whether more than one instance of this component type can
     /// be present on a same scene object.
@@ -112,7 +108,6 @@ public:
     /// @return Whether or not more than one instance of this component type can
     /// be present on a same scene object.
     static bool MultipleInstancesAllowed(const ComponentType type);
-
 };
 
 /// @brief Templated meta data meant to be specialized by inheriting
@@ -137,8 +132,7 @@ struct ComponentMeta
 template<class T>
 struct ComponentTypeToEnum {};
 
-using ComponentPtr = std::shared_ptr<Component>;
-using ComponentWPtr = std::weak_ptr<Component>;
+using ComponentPtr = std::unique_ptr<Component>;
 
 } // namespace Renderboi
 

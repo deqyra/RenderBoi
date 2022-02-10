@@ -4,6 +4,8 @@
 #include <initializer_list>
 #include <map>
 #include <memory>
+#include <stdexcept>
+#include <type_traits>
 #include <utility>
 
 #include "render_trait.hpp"
@@ -13,7 +15,7 @@ namespace Renderboi
 {
 
 class SceneObject;
-using SceneObjectPtr = std::shared_ptr<SceneObject>;
+using SceneObjectPtr = std::unique_ptr<SceneObject>;
 
 class RenderTraitConfigMap
 {
@@ -32,30 +34,31 @@ private:
     /// @brief Actual map to store pointers render trait configs.
     MapType _map;
 
-    /// @brief Pointer to the parent scene object.
-    SceneObjectPtr _sceneObject;
-
-    /// @brief Release held references to shared resources.
-    void _release();
+    /// @brief Reference to the parent scene object.
+    SceneObject& _sceneObject;
 
 public:
-    RenderTraitConfigMap(const SceneObjectPtr);
+    /// @param sceneObject Reference to the scene object parent to this config
+    /// map.
+    RenderTraitConfigMap(SceneObject& sceneObject);
 
+    /// @param sceneObject Reference to the scene object parent to this config
+    /// map.
     /// @param other RenderTraitConfigMap instance to copy trait configs from
-    RenderTraitConfigMap(const SceneObjectPtr, const RenderTraitConfigMap& other);
+    RenderTraitConfigMap(SceneObject& sceneObject, const RenderTraitConfigMap& other);
 
     /// @brief Get a pointer to the parent scene object of this instance.
     ///
     /// @return A pointer to the parent scene object of this instance.
-    SceneObjectPtr sceneObject() const;
+    SceneObject& sceneObject();
 
     /// @brief Get the config pointer for the given config trait.
     ///
     /// @param trait Render trait to get the config for.
     ///
-    /// @return Pointer to the config for the given render trait (can be
+    /// @return Reference to the config for the given render trait (can be
     /// nullptr).
-    RenderTraitConfigPtr getConfigForTrait(const RenderTrait trait) const;
+    RenderTraitConfig& getConfigForTrait(const RenderTrait trait) const;
 
     /// @brief Return whether there is a registered config for the given config
     /// trait.
@@ -65,11 +68,38 @@ public:
     /// @return Whether there is a registered config for the given config trait.
     bool hasConfigForTrait(const RenderTrait trait) const;
 
-    /// @brief Set the config pointer for the given config trait.
+    /// @brief Add config for a given trait.
     ///
-    /// @param trait Render trait to set the config for.
-    /// @param config Pointer to the config to set for the given render trait.
-    void setConfigForTrait(const RenderTrait trait, const RenderTraitConfigPtr config);
+    /// @tparam Tr Literal describing which trait to add a config for.
+    /// @tparam T Concrete type of the config trait to instantiate. Leave for
+    /// deduction.
+    /// @tparam ArgTypes Types of the arguments to pass to the config trait
+    /// constructor. Leave for deduction.
+    ///
+    /// @param args Arguments to pass to the config constructor.
+    template<
+        RenderTrait Tr,
+        typename T = typename RenderTraitMeta<Tr>::Config::type,
+        typename... ArgTypes,
+        typename = std::enable_if_t<std::is_base_of_v<RenderTraitConfig, T>, void>
+    >
+    T& addConfigForTrait(ArgTypes&&... args);
+
+    /// @brief Set the config a given trait.
+    ///
+    /// @tparam Tr Literal describing which trait to add a config for.
+    /// @tparam T Concrete type of the config trait to instantiate. Leave for
+    /// deduction.
+    /// @tparam ArgTypes Types of the arguments to pass to the config trait
+    /// constructor. Leave for deduction.
+    ///
+    /// @param config Reference to the config to set for the given render trait.
+    template<
+        RenderTrait Tr,
+        typename T = typename RenderTraitMeta<Tr>::Config::type,
+        typename = std::enable_if_t<std::is_base_of_v<RenderTraitConfig, T>, void>
+    >
+    T& setConfigForTrait(std::unique_ptr<T>&& config);
 
     /// @brief Remove the config pointer for the given config trait.
     ///
@@ -80,7 +110,47 @@ public:
     void clear();
 };
 
-using RenderTraitConfigMapPtr = std::shared_ptr<RenderTraitConfigMap>;
+template<
+    RenderTrait Tr,
+    typename T,
+    typename... ArgTypes,
+    typename
+>
+T& RenderTraitConfigMap::addConfigForTrait(ArgTypes&&... args)
+{
+    auto it = _map.insert({
+        Tr,
+        std::make_unique<T>(std::forward(args)...)
+    });
+
+    return *(it->second);
+}
+
+template<
+    RenderTrait Tr,
+    typename T,
+    typename
+>
+T& RenderTraitConfigMap::setConfigForTrait(std::unique_ptr<T>&& config)
+{
+    if (!config)
+    {
+        std::string s = "RenderTraitConfigMap: cannot set null config for "
+        "trait " + to_string(Tr) + ".";
+
+        throw std::runtime_error(s.c_str());
+    }
+
+    auto it = _map.insert({
+        Tr,
+        std::move(config)
+    });
+
+    return *(it->second);
+}
+
+
+using RenderTraitConfigMapPtr = std::unique_ptr<RenderTraitConfigMap>;
 
 } // namespace Renderboi
 

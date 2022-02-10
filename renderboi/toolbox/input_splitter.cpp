@@ -12,7 +12,7 @@ InputSplitter::InputSplitter() :
 
 }
 
-unsigned int InputSplitter::registerInputProcessor(const InputProcessorPtr inputProcessor)
+unsigned int InputSplitter::registerInputProcessor(InputProcessor* const inputProcessor)
 {
     if (!inputProcessor)
     {
@@ -33,7 +33,7 @@ void InputSplitter::detachAllInputProcessors()
     _subscribers.clear();
 }
 
-unsigned int InputSplitter::registerGamepadInputProcessor(const GamepadInputProcessorPtr inputProcessor)
+unsigned int InputSplitter::registerGamepadInputProcessor(GamepadInputProcessor* const inputProcessor)
 {
     if (!inputProcessor)
     {
@@ -54,7 +54,7 @@ void InputSplitter::detachAllIGamepadnputProcessors()
     _gamepadSubscribers.clear();
 }
 
-void InputSplitter::processFramebufferResize(const GLWindowPtr window, const unsigned int width, const unsigned int height)
+void InputSplitter::processFramebufferResize(GLWindow& window, const unsigned int width, const unsigned int height)
 {
     for (const auto& [_, inputProc] : _subscribers)
     {
@@ -63,7 +63,7 @@ void InputSplitter::processFramebufferResize(const GLWindowPtr window, const uns
 }
 
 void InputSplitter::processKeyboard(
-    const GLWindowPtr window, 
+    GLWindow& window, 
     const Key key, 
     const int scancode, 
     const Action action, 
@@ -77,7 +77,7 @@ void InputSplitter::processKeyboard(
 }
 
 void InputSplitter::processMouseButton(
-    const GLWindowPtr window, 
+    GLWindow& window, 
     const MButton button, 
     const Action action, 
     const int mods
@@ -89,7 +89,7 @@ void InputSplitter::processMouseButton(
     }
 }
 
-void InputSplitter::processMouseCursor(const GLWindowPtr window, const double xpos, const double ypos)
+void InputSplitter::processMouseCursor(GLWindow& window, const double xpos, const double ypos)
 {
     for (const auto [_, inputProc] : _subscribers)
     {
@@ -97,7 +97,7 @@ void InputSplitter::processMouseCursor(const GLWindowPtr window, const double xp
     }
 }
 
-void InputSplitter::processConnected(const GamepadPtr gamepad)
+void InputSplitter::processConnected(const Gamepad& gamepad)
 {
     for (const auto [_, inputProc] : _gamepadSubscribers)
     {
@@ -105,7 +105,7 @@ void InputSplitter::processConnected(const GamepadPtr gamepad)
     }
 }
 
-void InputSplitter::processDisconnected(const GamepadPtr gamepad)
+void InputSplitter::processDisconnected(const Gamepad& gamepad)
 {
     for (const auto [_, inputProc] : _gamepadSubscribers)
     {
@@ -113,7 +113,7 @@ void InputSplitter::processDisconnected(const GamepadPtr gamepad)
     }
 }
 
-void InputSplitter::processButton(const GamepadPtr gamepad, const GButton button, const Action action)
+void InputSplitter::processButton(const Gamepad& gamepad, const GButton button, const Action action)
 {
     for (const auto [_, inputProc] : _gamepadSubscribers)
     {
@@ -121,7 +121,7 @@ void InputSplitter::processButton(const GamepadPtr gamepad, const GButton button
     }
 }
 
-void InputSplitter::processAxis(const GamepadPtr gamepad, const Axis axis, const float value)
+void InputSplitter::processAxis(const Gamepad& gamepad, const Axis axis, const float value)
 {
     for (const auto [_, inputProc] : _gamepadSubscribers)
     {

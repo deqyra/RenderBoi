@@ -160,7 +160,7 @@ void ShadowSandbox::run()
 
     // LIGHT
     SceneObjectPtr lightObj = Factory::MakeSceneObjectWithMesh<MeshType::Cube>(scene, "Light cube", {0.3f, {0.f, 0.f, 0.f}, false}, Materials::Default, fullLightShader);
-    std::shared_ptr<PointLight> light = std::make_shared<PointLight>(LightBaseRange);
+    std::unique_ptr<PointLight> light = std::make_shared<PointLight>(LightBaseRange);
     lightObj->componentMap()->addComponent<ComponentType::Light>(light);
 
     // CAMERA
@@ -210,27 +210,27 @@ void ShadowSandbox::run()
     /////////////////////////////////////
 
     // Link camera to MouseCameraManager
-    std::shared_ptr<MouseCameraManager> cameraManager = std::make_shared<MouseCameraManager>(camera);
+    std::unique_ptr<MouseCameraManager> cameraManager = std::make_shared<MouseCameraManager>(camera);
 
     // Link camera to CameraAspectRatioManager
-    std::shared_ptr<CameraAspectRatioManager> cameraAspectRatioManager = std::make_shared<CameraAspectRatioManager>(camera);
+    std::unique_ptr<CameraAspectRatioManager> cameraAspectRatioManager = std::make_shared<CameraAspectRatioManager>(camera);
 
     // Attach object movement script to scene
-    std::shared_ptr<ShadowSandboxScript> sandboxScript = std::make_shared<ShadowSandboxScript>(lightObj, torusObj);
+    std::unique_ptr<ShadowSandboxScript> sandboxScript = std::make_shared<ShadowSandboxScript>(lightObj, torusObj);
     scene->registerScript(std::static_pointer_cast<Script>(sandboxScript));
     
-    std::shared_ptr<BasisProvider> cameraAsBasisProvider = std::static_pointer_cast<BasisProvider>(camera);
+    std::unique_ptr<BasisProvider> cameraAsBasisProvider = std::static_pointer_cast<BasisProvider>(camera);
 
     // Add script component to camera: KeyboardMovementScript
     ControlledEntityManager<KeyboardMovementScript> keyboardMovementScriptManager(cameraAsBasisProvider);
     cameraObj->componentMap()->addComponent<ComponentType::Script>(std::static_pointer_cast<Script>(keyboardMovementScriptManager.getEntity()));
 
     // Add script component to camera: GamepadMovementScript
-    std::shared_ptr<GamepadMovementScript> gamepadMovementScript = std::make_shared<GamepadMovementScript>(cameraAsBasisProvider);
+    std::unique_ptr<GamepadMovementScript> gamepadMovementScript = std::make_shared<GamepadMovementScript>(cameraAsBasisProvider);
     cameraObj->componentMap()->addComponent<ComponentType::Script>(std::static_pointer_cast<Script>(gamepadMovementScript));
 
     // Add script component to scene: GamepadCameraManager
-    std::shared_ptr<GamepadCameraManager> gamepadCameraManager = std::make_shared<GamepadCameraManager>(camera);
+    std::unique_ptr<GamepadCameraManager> gamepadCameraManager = std::make_shared<GamepadCameraManager>(camera);
     scene->registerScript(std::static_pointer_cast<Script>(gamepadCameraManager));
 
     // Window script

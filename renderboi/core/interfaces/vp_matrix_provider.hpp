@@ -39,7 +39,7 @@ public:
     virtual glm::mat4 getViewProjectionMatrix() const = 0;
 };
 
-using VPMatrixProviderPtr = std::shared_ptr<VPMatrixProvider>;
+using VPMatrixProviderPtr = std::unique_ptr<VPMatrixProvider>;
 
 } // namespace Renderboi
 

@@ -9,7 +9,7 @@ namespace Renderboi
 {
 
 class SceneObject;
-using SceneObjectPtr = std::shared_ptr<SceneObject>;
+using SceneObjectPtr = std::unique_ptr<SceneObject>;
 
 class RenderTraitConfigMap;
 
@@ -21,36 +21,32 @@ friend RenderTraitConfigMap;
 
 private:
     /// @brief Reference to the parent scene object of the trait config.
-    SceneObjectPtr _sceneObject;
-
-protected:
-    /// @brief Release held references to shared resources.
-    virtual void _release();
+    SceneObject& _sceneObject;
 
 public:
     /// @param parentSceneObject Reference to the parent scene object.
-    RenderTraitConfig(SceneObjectPtr parentSceneObject);
+    RenderTraitConfig(SceneObject& parentSceneObject);
 
     virtual ~RenderTraitConfig();
 
-    /// @brief Get a pointer to the parent scene object of this instance.
+    /// @brief Get a reference to the parent scene object of this instance.
     ///
-    /// @return A pointer to the parent scene object of this instance.
-    SceneObjectPtr sceneObject() const;
+    /// @return A reference to the parent scene object of this instance.
+    SceneObject& sceneObject();
 
     /// @brief Get a raw pointer to a new render trait config instance cloned 
     /// from this one. Ownership and responsibility for the allocated 
     /// resources are fully transferred to the caller.
     ///
-    /// @param newParent Pointer the scene object which will be parent to
+    /// @param newParent Reference to the scene object which will be parent to
     /// the cloned render trait config instance.
     ///
     /// @return A raw pointer to the render trait config instance cloned from 
     /// this one.
-    virtual RenderTraitConfig* clone(const SceneObjectPtr newParent) const = 0;
+    virtual RenderTraitConfig* clone(SceneObject& newParent) const = 0;
 };
 
-using RenderTraitConfigPtr = std::shared_ptr<RenderTraitConfig>;
+using RenderTraitConfigPtr = std::unique_ptr<RenderTraitConfig>;
 
 } // namespace Renderboi
 

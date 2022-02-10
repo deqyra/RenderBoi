@@ -136,7 +136,7 @@ MeshPtr TorusGenerator::generateMesh() const
         indices[index + 1] = nextVertex;
     }
 
-    return std::make_shared<Mesh>(GL_TRIANGLE_STRIP, vertices, indices);
+    return std::make_unique<Mesh>(GL_TRIANGLE_STRIP, vertices, indices);
 }
 
 } // namespace Renderboi

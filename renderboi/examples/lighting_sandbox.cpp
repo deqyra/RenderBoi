@@ -84,7 +84,7 @@ void LightingSandbox::run()
         (CubeGenerator::Parameters){0.3f, {0.f, 0.f, 0.f}, false},
         Materials::Default, lightingShader
     );
-    std::shared_ptr<PointLight> light = std::make_shared<PointLight>(LightBaseRange);
+    std::unique_ptr<PointLight> light = std::make_shared<PointLight>(LightBaseRange);
     cubeObj->componentMap()->addComponent<ComponentType::Light>(light);
 
     // TETRAHEDRON
@@ -104,13 +104,13 @@ void LightingSandbox::run()
     // scene->registerObject(cameraObj);
 
     // Link camera to MouseCameraManager
-    std::shared_ptr<MouseCameraManager> cameraManager = std::make_shared<MouseCameraManager>(camera);
+    std::unique_ptr<MouseCameraManager> cameraManager = std::make_shared<MouseCameraManager>(camera);
 
     // Link camera to CameraAspectRatioManager
-    std::shared_ptr<CameraAspectRatioManager> cameraAspectRatioManager = std::make_shared<CameraAspectRatioManager>(camera);
+    std::unique_ptr<CameraAspectRatioManager> cameraAspectRatioManager = std::make_shared<CameraAspectRatioManager>(camera);
 
     // Attach object movement script to scene
-    std::shared_ptr<LightingSandboxScript> rotationScript = std::make_shared<LightingSandboxScript>(cubeObj, bigTorusObj, smallTorusObj, tetrahedronObj, cameraObj, light, LightBaseRange);
+    std::unique_ptr<LightingSandboxScript> rotationScript = std::make_shared<LightingSandboxScript>(cubeObj, bigTorusObj, smallTorusObj, tetrahedronObj, cameraObj, light, LightBaseRange);
     scene->registerScript(std::static_pointer_cast<Script>(rotationScript));
     
     // Add script component to camera: KeyboardMovementScript
@@ -185,7 +185,7 @@ void LightingSandbox::tearDown()
     _window->setTitle(_title);
 }
 
-LightingSandboxScript::LightingSandboxScript(SceneObjectPtr cubeObj, SceneObjectPtr bigTorusObj, SceneObjectPtr smallTorusObj, SceneObjectPtr tetrahedronObj, SceneObjectPtr cameraObj, std::shared_ptr<PointLight> light, float baseLightRange) :
+LightingSandboxScript::LightingSandboxScript(SceneObjectPtr cubeObj, SceneObjectPtr bigTorusObj, SceneObjectPtr smallTorusObj, SceneObjectPtr tetrahedronObj, SceneObjectPtr cameraObj, std::unique_ptr<PointLight> light, float baseLightRange) :
     _cubeObj(cubeObj),
     _bigTorusObj(bigTorusObj),
     _smallTorusObj(smallTorusObj),

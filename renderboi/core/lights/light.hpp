@@ -55,8 +55,7 @@ private:
     virtual glm::mat4 _computeViewMatrix() const = 0;
 };
 
-using LightPtr = std::shared_ptr<Light>;
-using LightWPtr = std::weak_ptr<Light>;
+using LightPtr = std::unique_ptr<Light>;
 
 } // namespace Renderboi
 

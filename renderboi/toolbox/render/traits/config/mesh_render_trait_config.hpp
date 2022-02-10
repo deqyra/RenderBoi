@@ -11,24 +11,17 @@
 namespace Renderboi
 {
 
-/// @brief POD struct meant to represent a configuration to be used by the
+/// @brief Class meant to represent a configuration to be used by the
 /// MeshTraitRenderer class.
 class MeshRenderTraitConfig : public RenderTraitConfig
 {
-protected:
-    /// @brief Release held references to shared resources.
-    virtual void _release() override;
-
+private:
     /// @brief Reference to the MeshComponent that is to be used for rendering.
-    std::shared_ptr<MeshComponent> _mesh;
+    MeshComponent& _mesh;
 
 public:
     /// @param parentSceneObject Reference to the parent scene object.
-    MeshRenderTraitConfig(const SceneObjectPtr parentSceneObject);
-
-    /// @brief Constant reference to the MeshComponent which is to be used for
-    /// rendering.
-    const std::shared_ptr<MeshComponent>& Mesh = _mesh;
+    MeshRenderTraitConfig(SceneObject& parentSceneObject);
 
     /////////////////////////////////////////////////
     ///                                           ///
@@ -40,12 +33,12 @@ public:
     /// from this one. Ownership and responsibility for the allocated 
     /// resources are fully transferred to the caller.
     ///
-    /// @param newParent Pointer the scene object which will be parent to
+    /// @param newParent Reference the scene object which will be parent to
     /// the cloned render trait config instance.
     ///
     /// @return A raw pointer to the render trait config instance cloned from 
     /// this one.
-    virtual MeshRenderTraitConfig* clone(const SceneObjectPtr newParent) const override;
+    virtual MeshRenderTraitConfig* clone(SceneObject& newParent) const override;
 };
 
 template<>
