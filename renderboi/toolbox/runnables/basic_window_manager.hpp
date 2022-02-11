@@ -4,12 +4,14 @@
 #include <string>
 
 #include <cpptools/oo/interfaces/action_event_receiver.hpp>
+#include <cpptools/oo/interfaces/argument_provider.hpp>
 
 #include <renderboi/window/input_processor.hpp>
+#include <renderboi/window/gl_window.hpp>
 
 #include "../controls/control_scheme.hpp"
 #include "../interfaces/default_control_scheme_provider.hpp"
-#include "renderboi/window/gl_window.hpp"
+
 
 namespace Renderboi
 {
@@ -37,7 +39,8 @@ class BasicWindowManager :
     public cpptools::ActionEventReceiver<
         BasicWindowManagerAction,
         GLWindow&
-    >
+    >,
+    public cpptools::ArgumentProvider<GLWindow&>
 {
 private:
     using GLWindow = Window::GLWindow;
@@ -54,6 +57,7 @@ private:
 public:
     BasicWindowManager();
 
+<<<<<<< HEAD
     /////////////////////////////////////////////////////////////////////////////
     ///                                                                       ///
     /// Methods overridden from ActionEventReceiver<BasicWindowManagerAction> ///
@@ -70,6 +74,8 @@ public:
     /// @param action Object describing the action to stop processing.
     void stopAction(const BasicWindowManagerAction& action, GLWindow& window) override;
 
+=======
+>>>>>>> 7099499de60fe2ccffb3788153ea484006b6da19
     //////////////////////////////////////////////
     ///                                        ///
     /// Methods overridden from InputProcessor ///
@@ -95,6 +101,31 @@ public:
     ///
     /// @return The default control scheme for the keyboard movement script.
     const ControlScheme<BasicWindowManagerAction>& getDefaultControlScheme() const override;
+<<<<<<< HEAD
+=======
+
+    /////////////////////////////////////////////////////////////////////////////
+    ///                                                                       ///
+    /// Methods overridden from ActionEventReceiver<BasicWindowManagerAction> ///
+    ///                                                                       ///
+    /////////////////////////////////////////////////////////////////////////////
+
+    /// @brief Start the processing for an action.
+    ///
+    /// @param action Object describing the action to start processing.
+    void triggerAction(const BasicWindowManagerAction& action, GLWindow& window) override;
+
+    /// @brief Stop the processing for an action.
+    ///
+    /// @param action Object describing the action to stop processing.
+    void stopAction(const BasicWindowManagerAction& action, GLWindow& window) override;
+
+    ///////////////////////////////////////////////////////////
+    ///                                                     ///
+    /// Methods overridden from ArgumentProvider<GLWindow&> ///
+    ///                                                     ///
+    ///////////////////////////////////////////////////////////
+>>>>>>> 7099499de60fe2ccffb3788153ea484006b6da19
 };
 
 std::string to_string(const BasicWindowManagerAction action);

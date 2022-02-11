@@ -6,6 +6,7 @@
 
 #include <cpptools/utility/type_traits.hpp>
 #include <cpptools/oo/interfaces/action_event_receiver.hpp>
+#include <cpptools/oo/interfaces/argument_provider.hpp>
 
 #include "../interfaces/default_control_scheme_provider.hpp"
 #include "control_scheme.hpp"
@@ -20,23 +21,37 @@ namespace Renderboi
 ///
 /// @tparam T Type of the entity to manage. It must have a public ActionType
 /// typedef, and inherit from DefaultControlSchemeProvider<ActionType>, as well
-/// as from ActionEventReceiver<ActionType, ArgTypes...>.
+/// as from ActionEventReceiver<ActionType, ArgTypes...>. Leave all other types
+/// for deductions.
 template<
     class T,
+    typename ActionEventReceiverType = typename type_utils::apply_types<
+        typename cpptools::ActionEventReceiver,
+        typename type_utils::make_type_list<
+            typename T::ActionType,
+            typename T::ArgTypes
+        >::type
+    >::type,
+    typename ArgumentProviderType = typename type_utils::apply_types<
+        typename cpptools::ArgumentProvider,
+        typename T::ArgTypes
+    >::type,
+    typename ControlEventTranslatorType = typename type_utils::apply_types<
+        ControlEventTranslator,
+        typename type_utils::make_type_list<
+            typename T::ActionType,
+            typename T::ArgTypes
+        >::type
+    >::type,
     typename = std::enable_if_t<
-        std::is_base_of_v<
-            T,
-            DefaultControlSchemeProvider<typename T::ActionType>
-        >
+        std::is_base_of_v<T,DefaultControlSchemeProvider<typename T::ActionType>>
     >,
     typename = std::enable_if_t<
-        std::is_base_of_v<
-            T,
-            typename type_utils::apply_types<
-                typename cpptools::ActionEventReceiver,
-                typename T::TemplateTypes
-            >::type
-        >
+        std::is_base_of_v<T, ActionEventReceiverType>
+    >,
+    typename = std::enable_if_t<
+        ActionEventReceiverType::ActionHasArgs ||
+        std::is_base_of_v<T, ArgumentProviderType>
     >
 >
 class ControlledEntityManager
@@ -50,27 +65,47 @@ private:
 
     /// @brief Object to translate events to actions and forward them to the
     /// managed entity.
-    ControlEventTranslator<typename T::ActionType> _translator;
+    ControlEventTranslatorType _translator;
 
 public:
-    using ActionEventReceiverType = type_utils::apply_types<
-        typename cpptools::ActionEventReceiver,
-        type_utils::type_list<
-            typename T::ActionType,
-            typename T::ArgTypes
-        >
-    >;
-
     /// @tparam ArgTypes Types of the arguments to forward to the 
     /// constructor of the managed entity.
     ///
+    /// @note Constructor variant for when the event requires no arguments.
+    ///
     /// @param args Arguments to forward to the constructor of the managed 
     /// entity.
-    template<typename... ArgTypes>
+    template<
+        typename... ArgTypes,
+        std::enable_if_t<!ActionEventReceiverType::ActionHasArgs, void>
+    >
     ControlledEntityManager(ArgTypes&&... args) :
         _entity(std::forward<ArgTypes>(args)...),
         _controlScheme(_entity.getDefaultControlScheme()),
         _translator(_controlScheme, (const ActionEventReceiverType&)(_entity))
+    {
+        
+    }
+
+    /// @tparam ArgTypes Types of the arguments to forward to the 
+    /// constructor of the managed entity.
+    ///
+    /// @note Constructor variant for when the event requires arguments.
+    ///
+    /// @param args Arguments to forward to the constructor of the managed 
+    /// entity.
+    template<
+        typename... ArgTypes,
+        std::enable_if_t<ActionEventReceiverType::ActionHasArgs, void>
+    >
+    ControlledEntityManager(ArgTypes&&... args) :
+        _entity(std::forward<ArgTypes>(args)...),
+        _controlScheme(_entity.getDefaultControlScheme()),
+        _translator(
+            _controlScheme,
+            (const ActionEventReceiverType&)(_entity),
+            (const ArgumentProviderType&)(_entity)
+        )
     {
         
     }

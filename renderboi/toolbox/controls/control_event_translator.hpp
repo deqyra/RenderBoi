@@ -6,10 +6,14 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <tuple>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
 #include <cpptools/oo/interfaces/action_event_receiver.hpp>
+#include <cpptools/oo/interfaces/argument_provider.hpp>
+#include <cpptools/utility/type_traits.hpp>
 
 #include <renderboi/window/gl_window.hpp>
 #include <renderboi/window/input_processor.hpp>
@@ -22,15 +26,28 @@ namespace Renderboi
 
 /// @brief Class to be plugged in directly into the window. Will receive and
 /// filter control events, translate them into actions if appropriate, and
-/// forward those to their listener.
-template<typename T>
+/// forward those to their listener, with arguments fetched from a third party
+/// if required.
+///
+/// @tparam T Required. Type of the action to translate controls to.
+/// @tparam ArgTypes Required. Pack of the types of the arguments to fetch and
+/// forward along with actions triggered by event.
+template<
+    typename T,
+    typename... ArgTypes
+>
 class ControlEventTranslator : public InputProcessor
 {
 private:
-    using ActionEventReceiverType = type_utils::apply_types<
+    using ActionEventReceiverType = typename type_utils::apply_types<
         typename cpptools::ActionEventReceiver,
-        typename T::TemplateTypes
-    >;
+        type_utils::type_list<T, ArgTypes...>
+    >::type;
+
+    using ArgumentProviderType = typename type_utils::apply_types<
+        typename cpptools::ArgumentProvider,
+        type_utils::type_list<ArgTypes...>
+    >::type;
 
     /// @brief Structure mapping actions to the control they are bound to.
     const std::multimap<T, Control>& _controlBindings;
@@ -39,28 +56,51 @@ private:
     /// by their bound controls.
     ActionEventReceiverType& _listener;
 
-    /// @brief Translate a given control into action(s) and forward those to
-    /// the listener.
-    ///
-    /// @param control Structure of litterals describing the control which 
-    /// just processed.
-    /// @param action Object describing the action that was performed on the
-    /// control.
-    /// @param window Reference to the window on which the control was
-    /// captured.
-    void _translateAndNotify(const Control& control, Window::Input::Action action, GLWindow* const window) const;
-
-    // std::tuple<
+    /// @brief Object which will provide arguments if required by the action.
+    std::reference_wrapper<ArgumentProviderType> _argumentProvider;
 
 public:
     /// @param controlScheme Object which can tell which controls are 
     /// mapped to which actions.
     /// @param listener Object which will be notified of which actions 
     /// were triggered by their bound controls.
+    ///
+    /// @note Constructor variant for when the action requires no arguments.
+    template<
+        std::enable_if_t<!ActionEventReceiverType::ActionHasArgs, void>
+    >
     ControlEventTranslator(
         const ControlScheme<T>& controlScheme,
         const ActionEventReceiverType& listener
-    );
+    ) :
+        _controlBindings(controlScheme.getAllBoundControls()),
+        _listener(listener)
+    {
+        
+    }
+
+    /// @param controlScheme Object which can tell which controls are 
+    /// mapped to which actions.
+    /// @param listener Object which will be notified of which actions 
+    /// were triggered by their bound controls.
+    /// @param argumentProvider Object which will provide the arguments to the
+    /// action if necessary.
+    ///
+    /// @note Constructor variant for when the action requires arguments.
+    template<
+        std::enable_if_t<ActionEventReceiverType::ActionHasArgs, void>
+    >
+    ControlEventTranslator(
+        const ControlScheme<T>& controlScheme,
+        const ActionEventReceiverType& listener,
+        ArgumentProviderType& argumentProvider
+    ) :
+        _controlBindings(controlScheme.getAllBoundControls()),
+        _listener(listener),
+        _argumentProvider(argumentProvider)
+    {
+        
+    }
 
     //////////////////////////////////////////////
     ///                                        ///
@@ -103,21 +143,112 @@ public:
         const Window::Input::Action action, 
         const int mods
     ) override;
+
+private:
+    /// @brief Translate a given control into action(s) and forward those to
+    /// the listener.
+    ///
+    /// @param control Structure of litterals describing the control which 
+    /// just processed.
+    /// @param action Object describing the action that was performed on the
+    /// control.
+    ///
+    /// @note Variant for when the action requires no arguments.
+    template<
+        std::enable_if_t<!ActionEventReceiverType::ActionHasArgs, void>
+    >
+    void _translateAndNotify(const Control& control, Window::Input::Action action) const
+    {
+        using Iter = typename std::multimap<Control, T>::const_iterator;
+        const std::pair<Iter, Iter> range = _controlBindings.equal_range(control);
+
+        if (action == Window::Input::Action::Release)
+        {
+            for (Iter it = range.first; it != range.second; it++)
+            {
+                _listener->stopAction(it->second);
+            }
+        }
+        else // if (action == Window::Input::Action::Press)
+        {
+            for (Iter it = range.first; it != range.second; it++)
+            {
+                _listener->triggerAction(it->second);
+            }
+        }
+    }
+
+    /// @brief Translate a given control into action(s) and forward those to
+    /// the listener.
+    ///
+    /// @param control Structure of litterals describing the control which 
+    /// just processed.
+    /// @param action Object describing the action that was performed on the
+    /// control.
+    ///
+    /// @note Variant for when the action requires arguments.
+    template<
+        std::enable_if_t<ActionEventReceiverType::ActionHasArgs, void>
+    >
+    void _translateAndNotify(
+        const Control& control,
+        Window::Input::Action action
+    ) const
+    {
+        ArgumentProviderType& argumentProvider = _argumentProvider.get();
+        const auto& actionArgs = argumentProvider.getArguments();
+
+        _unpackTupleAndNotify<>(
+            control,
+            action,
+            actionArgs,
+            std::make_index_sequence<ArgumentProviderType::ArgTupleSize>{}
+        );
+    }
+
+    /// @brief Translate a given control into action(s) and forward those to
+    /// the listener.
+    ///
+    /// @param control Structure of litterals describing the control which 
+    /// just processed.
+    /// @param action Object describing the action that was performed on the
+    /// control.
+    ///
+    /// @note Variant for when the action requires arguments.
+    template<
+        typename Tuple = typename ArgumentProviderType::ArgTuple,
+        std::enable_if_t<ActionEventReceiverType::ActionHasArgs, void>,
+        std::size_t... I
+    >
+    void _unpackTupleAndNotify(
+        const Control& control,
+        Window::Input::Action action,
+        Tuple& tuple,
+        std::index_sequence<I...>    
+    ) const
+    {
+        using Iter = typename std::multimap<Control, T>::const_iterator;
+        const std::pair<Iter, Iter> range = _controlBindings.equal_range(control);
+
+        if (action == Window::Input::Action::Release)
+        {
+            for (Iter it = range.first; it != range.second; it++)
+            {
+                _listener->stopAction(it->second, std::get<I>(tuple)...);
+            }
+        }
+        else // if (action == Window::Input::Action::Press)
+        {
+            for (Iter it = range.first; it != range.second; it++)
+            {
+                _listener->triggerAction(it->second, std::get<I>(tuple)...);
+            }
+        }
+    }
 };
 
-template<typename T>
-ControlEventTranslator<T>::ControlEventTranslator(
-    const ControlScheme<T>& controlScheme,
-    const ActionEventReceiverType& listener
-) :
-    _controlBindings(controlScheme.getAllBoundControls()),
-    _listener(listener)
-{
-
-}
-
-template<typename T>
-void ControlEventTranslator<T>::processKeyboard(
+template<typename T, typename... ArgTypes>
+void ControlEventTranslator<T, ArgTypes...>::processKeyboard(
     GLWindow& window,
     const Window::Input::Key key,
     const int scancode,
@@ -125,48 +256,22 @@ void ControlEventTranslator<T>::processKeyboard(
     const int mods
 )
 {
-    _translateAndNotify(Control(key), action, window);
+    _translateAndNotify(Control(key), action);
 }
 
-template<typename T>
-void ControlEventTranslator<T>::processMouseButton(
+template<typename T, typename... ArgTypes>
+void ControlEventTranslator<T, ArgTypes...>::processMouseButton(
     GLWindow& window,
     const Window::Input::MouseButton button,
     const Window::Input::Action action,
     const int mods
 )
 {
-    _translateAndNotify(Control(button), action, window);
+    _translateAndNotify(Control(button), action);
 }
 
-template<typename T>
-void ControlEventTranslator<T>::_translateAndNotify(
-    const Control& control,
-    Window::Input::Action action,
-    GLWindow* const window
-) const
-{
-    using Iter = typename std::multimap<Control, T>::const_iterator;
-    const std::pair<Iter, Iter> range = _controlBindings.equal_range(control);
-    
-    if (action == Window::Input::Action::Release)
-    {
-        for (Iter it = range.first; it != range.second; it++)
-        {
-            _listener->stopAction(it->second, window);
-        }
-    }
-    else // if (action == Window::Input::Action::Press)
-    {
-        for (Iter it = range.first; it != range.second; it++)
-        {
-            _listener->triggerAction(it->second, window);
-        }
-    }    
-}
-
-template<typename T>
-using ControlEventTranslatorPtr = std::unique_ptr<ControlEventTranslator<T>>;
+template<typename T, typename... ArgTypes>
+using ControlEventTranslatorPtr = std::unique_ptr<ControlEventTranslator<T, ArgTypes...>>;
 
 } // namespace Renderboi
 
