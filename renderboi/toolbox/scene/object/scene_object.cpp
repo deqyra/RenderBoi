@@ -9,7 +9,7 @@
 #include "../scene.hpp"
 #include "component.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 unsigned int SceneObject::_count = 0;
@@ -83,4 +83,4 @@ SceneObjectPtr SceneObject::clone() const
     return SceneObjectPtr(new SceneObject(*this));
 }
 
-} // namespace Renderboi
+} // namespace renderboi

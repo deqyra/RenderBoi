@@ -3,7 +3,7 @@
 
 #include "../enums.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 namespace Window
 {
@@ -139,6 +139,6 @@ public:
 
 using GamepadState = Window::GamepadState;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__WINDOW__GAMEPAD__GAMEPAD_STATE_HPP

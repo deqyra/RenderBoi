@@ -13,7 +13,7 @@
 #include "event/gl_context_event_manager.hpp"
 #include "gamepad/gamepad_manager.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
     
 namespace Window
@@ -108,7 +108,7 @@ public:
     /// from any thread.
     ///
     /// @return A pointer to the gamepad manager.
-    virtual const GamepadManager& getGamepadManager();
+    virtual GamepadManager& getGamepadManager();
 
     /// @brief Register an entity to which context events should be forwarded
     /// when they occur.
@@ -367,6 +367,6 @@ using GLWindowPtr = std::unique_ptr<GLWindow>;
 using GLWindow = Window::GLWindow;
 using GLWindowPtr = std::unique_ptr<GLWindow>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__WINDOW__GL_WINDOW_HPP

@@ -8,51 +8,52 @@
 #include <renderboi/window/gl_window.hpp>
 #include <renderboi/window/enums.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
-BasicWindowManager::BasicWindowManager()
+BasicWindowManager::BasicWindowManager(GLWindow& window) :
+    _window(window)
 {
     
 }
 
-void BasicWindowManager::triggerAction(const BasicWindowManagerAction& action, GLWindow& window)
+void BasicWindowManager::triggerAction(const BasicWindowManagerAction& action)
 {
     switch (action)
     {
     case BasicWindowManagerAction::Terminate:
-        window.signalExit();
+        _window.signalExit();
         break;
 
     case BasicWindowManagerAction::PolygonFill:
-        _setPolygonMode(window, PolygonMode::Fill);
+        _setPolygonMode(PolygonMode::Fill);
         break;
 
     case BasicWindowManagerAction::PolygonLine:
-        _setPolygonMode(window, PolygonMode::Line);
+        _setPolygonMode(PolygonMode::Line);
         break;
 
     case BasicWindowManagerAction::PolygonPoint:
-        _setPolygonMode(window, PolygonMode::Point);
+        _setPolygonMode(PolygonMode::Point);
         break;
         
     case BasicWindowManagerAction::ToggleFullscreen:
-        _toggleFullscreen(window);
+        _toggleFullscreen();
     }
 }
 
-void BasicWindowManager::stopAction(const BasicWindowManagerAction& action, GLWindow& window)
+void BasicWindowManager::stopAction(const BasicWindowManagerAction& action)
 {
 
 }
 
 void BasicWindowManager::processFramebufferResize(
-    GLWindow& window,
+    GLWindow& _window,
     const unsigned int width,
     const unsigned int height
 )
 {
-    window.forwardContextEvent(Window::GLContextEvent::FitFramebufferToWindow);
+    _window.forwardContextEvent(Window::GLContextEvent::FitFramebufferToWindow);
 }
 
 const ControlScheme<BasicWindowManagerAction>& BasicWindowManager::getDefaultControlScheme() const
@@ -76,34 +77,34 @@ const ControlScheme<BasicWindowManagerAction>& BasicWindowManager::getDefaultCon
     return scheme;
 }
 
-void BasicWindowManager::_toggleFullscreen(GLWindow& window) const
+void BasicWindowManager::_toggleFullscreen() const
 {
-    if (window.isFullscreen())
+    if (_window.isFullscreen())
     {
-        window.exitFullscreen();
+        _window.exitFullscreen();
     }
     else
     {
-        window.goFullscreen(true);
+        _window.goFullscreen(true);
     }
 }
 
-void BasicWindowManager::_setPolygonMode(GLWindow& window, const PolygonMode mode) const
+void BasicWindowManager::_setPolygonMode(const PolygonMode mode) const
 {
     using Window::GLContextEvent;
 
     switch (mode)
     {
     case PolygonMode::Fill:
-        window.forwardContextEvent(GLContextEvent::PolygonModeFill);
+        _window.forwardContextEvent(GLContextEvent::PolygonModeFill);
         break;
 
     case PolygonMode::Line:
-        window.forwardContextEvent(GLContextEvent::PolygonModeLine);
+        _window.forwardContextEvent(GLContextEvent::PolygonModeLine);
         break;
 
     case PolygonMode::Point:
-        window.forwardContextEvent(GLContextEvent::PolygonModePoint);
+        _window.forwardContextEvent(GLContextEvent::PolygonModePoint);
         break;
     }
 }
@@ -125,4 +126,4 @@ std::string to_string(const BasicWindowManagerAction action)
         : "Unknown";
 }
 
-} // namespace Renderboi
+} // namespace renderboi

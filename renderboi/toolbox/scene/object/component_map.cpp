@@ -5,7 +5,7 @@
 
 #include "scene_object.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 ComponentMap::ComponentMap(SceneObject& sceneObject) :

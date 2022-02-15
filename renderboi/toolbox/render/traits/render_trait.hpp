@@ -1,7 +1,7 @@
 #ifndef RENDERBOI__TOOLBOX__SCENE__RENDERER__RENDER_TRAIT_HPP
 #define RENDERBOI__TOOLBOX__SCENE__RENDERER__RENDER_TRAIT_HPP
 
-namespace Renderboi
+namespace renderboi
 {
 
 /*           ╔════════════╗
@@ -63,6 +63,6 @@ struct RenderTraitMeta
     struct Config {};
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__SCENE__RENDERER__RENDER_TRAIT_HPP

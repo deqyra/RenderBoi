@@ -5,7 +5,7 @@
 
 #include "mesh_type.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /*            ╔════════════╗
@@ -45,6 +45,6 @@ public:
     virtual MeshPtr generateMesh() const = 0;
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__MESH_GENERATOR_HPP

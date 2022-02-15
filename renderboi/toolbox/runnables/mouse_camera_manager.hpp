@@ -6,7 +6,7 @@
 #include <renderboi/window/input_processor.hpp>
 #include <renderboi/window/gl_window.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Provides event callbacks to manage a camera as in a FPS game. This 
@@ -56,6 +56,6 @@ public:
     void processMouseCursor(GLWindow& window, const double xpos, const double ypos) override;
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__RUNNABLES__MOUSE_CAMERA_MANAGER_HPP

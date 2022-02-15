@@ -6,7 +6,7 @@
 
 #include <cpptools/utility/string_tools.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 ShaderConfig::ShaderConfig() :
@@ -249,4 +249,4 @@ const std::unordered_map<ShaderFeature, std::vector<ShaderFeature>>& ShaderConfi
     return map;
 }
 
-} // namespace Renderboi
+} // namespace renderboi

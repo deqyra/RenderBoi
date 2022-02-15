@@ -4,7 +4,7 @@
 
 #include <renderboi/utilities/gl_utilities.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 GLSandbox::GLSandbox(GLWindow& window, const GLSandboxParameters params) :

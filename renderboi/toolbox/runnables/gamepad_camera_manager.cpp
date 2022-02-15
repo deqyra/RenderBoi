@@ -1,6 +1,6 @@
 #include "gamepad_camera_manager.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 GamepadCameraManager::GamepadCameraManager(Camera& camera, const float sensitivity) :
@@ -41,4 +41,4 @@ void GamepadCameraManager::processAxis(const Gamepad& gamepad, const Window::Inp
         _direction.y = -value;
 }
 
-} // namespace Renderboi
+} // namespace renderboi

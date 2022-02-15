@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace Renderboi
+namespace renderboi
 {
 
 namespace Window
@@ -291,6 +291,6 @@ std::string to_string(const Window::Input::Joystick joystick);
 std::string to_string(const Window::Input::Gamepad::Button gamepadButton);
 std::string to_string(const Window::Input::Gamepad::Axis gamepadAxis);
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__WINDOW__ENUMS_HPP

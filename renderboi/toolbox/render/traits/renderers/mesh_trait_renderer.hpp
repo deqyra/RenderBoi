@@ -4,7 +4,7 @@
 #include "../trait_renderer.hpp"
 #include "../config/mesh_render_trait_config.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Concrete trait renderer for meshes.
@@ -28,6 +28,6 @@ struct RenderTraitMeta<RenderTrait::Mesh>::Renderer
 
 using MeshTraitRendererPtr = std::unique_ptr<MeshTraitRenderer>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__RENDER__TRAITS__RENDERERS__MESH_TRAIT_RENDERER_HPP

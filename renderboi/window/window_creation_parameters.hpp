@@ -7,7 +7,7 @@
 #include "gl_window.hpp"
 #include "monitor.hpp"
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 struct WindowCreationParameters
@@ -109,6 +109,6 @@ const WindowCreationParameters DefaultWindowCreationParameters = {
     .debug                      = false
 };
 
-} // namespace Renderboi::Window
+} // namespace renderboi::Window
 
 #endif//RENDERBOI__WINDOW__WINDOW_CREATION_PARAMETERS_HPP

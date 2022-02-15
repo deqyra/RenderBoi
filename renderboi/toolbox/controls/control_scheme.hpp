@@ -16,14 +16,13 @@
 #include "control.hpp"
 #include "../interfaces/control_binding_provider.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Given an enum of actions, this class allows easy management of
 /// controls bound to these actions.
 ///
 /// @tparam T Class representing the action to which a control can be bound. 
-/// @tparam U Class responsible for hashing T.
 template<typename T>
 class ControlScheme : public ControlBindingProvider<T>
 {
@@ -127,6 +126,12 @@ public:
     ///
     /// @return The array of all controls bound to an action.
     const std::multimap<T, Control>& getAllBoundControls() const override;
+
+    /// @brief Returns the array of all controls which are bound to an 
+    /// action, paired with the action they are bound to.
+    ///
+    /// @return The array of all controls bound to an action.
+    const std::unordered_map<Control, T, ControlHash>& getAllBoundActions() const override;
 };
 
 template<typename T>
@@ -230,8 +235,7 @@ bool ControlScheme<T>::actionIsBound(const T action) const
 template<typename T>
 std::vector<Control> ControlScheme<T>::getControlsBoundToAction(const T action) const
 {
-    using Iter = typename std::multimap<T, Control>::iterator;
-    std::pair<Iter, Iter> range = _controlsBoundToAction.equal_range(action);
+    auto range = _controlsBoundToAction.equal_range(action);
 
     std::function<Control(std::pair<const T, Control>)> controlFromPair = [](const std::pair<const T, Control>& p) -> Control
     {
@@ -251,8 +255,14 @@ const std::multimap<T, Control>& ControlScheme<T>::getAllBoundControls() const
 }
 
 template<typename T>
+const std::unordered_map<Control, T, ControlHash>& ControlScheme<T>::getAllBoundActions() const
+{
+    return _actionBoundToControl;
+}
+
+template<typename T>
 using ControlSchemePtr = std::unique_ptr<ControlScheme<T>>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__CONTROLS__CONTROL_SCHEME_HPP

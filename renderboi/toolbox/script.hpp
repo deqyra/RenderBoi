@@ -5,7 +5,7 @@
 
 #include "scene/object/scene_object.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Abstract class to autonomously update scene objects.
@@ -59,6 +59,6 @@ class Script
 
 using ScriptPtr = std::unique_ptr<Script>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__SCENE__SCRIPT_HPP

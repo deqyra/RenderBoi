@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <utility>
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 using Axis = Window::Input::Gamepad::Axis;
@@ -339,4 +339,4 @@ bool Gamepad::_valueIsInAxisDeadZone(const float value, const Axis axis) const
     return (value >= _axisDeadZones.at(axis).first) && (value <= _axisDeadZones.at(axis).second);
 }
 
-} // namespace Renderboi::Window
+} // namespace renderboi::Window

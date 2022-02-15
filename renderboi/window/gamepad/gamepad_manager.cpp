@@ -1,6 +1,6 @@
 #include "gamepad_manager.hpp"
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 unsigned int GamepadManager::_count = 0;
@@ -26,4 +26,4 @@ void GamepadManager::setGamepadDisconnected(Gamepad& gamepad)
     gamepad._processDisconnected();
 }
 
-} // namespace Renderboi::Window
+} // namespace renderboi::Window

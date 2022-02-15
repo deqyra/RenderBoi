@@ -13,7 +13,7 @@
 #include "../controls/control_scheme.hpp"
 #include "../interfaces/default_control_scheme_provider.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Litterals describing the actions which can be performed by the
@@ -149,6 +149,6 @@ public:
 
 std::string to_string(const KeyboardMovementAction action);
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__RUNNABLES__KEYBOARD_MOVEMENT_SCRIPT_HPP

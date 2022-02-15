@@ -10,7 +10,7 @@
 
 #include "../script.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Provides event callbacks to manage a camera as in a FPS game. This 
@@ -82,6 +82,6 @@ public:
     virtual void processAxis(const Gamepad& gamepad, const Window::Input::Gamepad::Axis axis, const float value) override;
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__RUNNABLES__GAMEPAD_CAMERA_MANAGER_HPP

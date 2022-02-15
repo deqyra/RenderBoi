@@ -8,7 +8,7 @@
 #include "../component.hpp"
 #include "../component_type.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Component allowing to attach a camera to a scene object.
@@ -113,6 +113,6 @@ struct ComponentTypeToEnum<CameraComponent>
     static constexpr ComponentType value = ComponentType::Camera;
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__SCENE__COMPONENTS__CAMERA_COMPONENT_HPP

@@ -4,7 +4,7 @@
 #include "../scene_object.hpp"
 #include "../object_transform.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 CameraComponent::CameraComponent(SceneObject& sceneObject, CameraPtr&& camera) :
@@ -62,4 +62,4 @@ CameraComponent* CameraComponent::clone(SceneObject& newParent) const
     return new CameraComponent(newParent, std::make_unique<Camera>(_camera));
 }
 
-} // namespace Renderboi
+} // namespace renderboi

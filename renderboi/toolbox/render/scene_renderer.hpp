@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <chrono>
 #include <memory>
+#include <type_traits>
 #include <vector>
 
 #include <renderboi/core/lights/light.hpp>
@@ -17,7 +18,7 @@
 #include "../scene/object/scene_object.hpp"
 #include "../scene/object/component.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Manages the render process of a scene.
@@ -85,6 +86,6 @@ public:
 
 using SceneRendererPtr = std::unique_ptr<SceneRenderer>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__SCENE__SCENE_RENDERER_HPP

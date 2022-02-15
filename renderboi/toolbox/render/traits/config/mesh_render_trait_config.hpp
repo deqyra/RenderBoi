@@ -8,7 +8,7 @@
 #include "../../../scene/object/scene_object.hpp"
 #include "../render_trait_config.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Class meant to represent a configuration to be used by the
@@ -52,6 +52,6 @@ struct RenderTraitMeta<RenderTrait::Mesh>
     };
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__RENDER__TRAITS__CONFIG__MESH_RENDER_TRAIT_CONFIG_HPP

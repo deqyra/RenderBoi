@@ -10,7 +10,7 @@
 #include "interfaces/basis_provider.hpp"
 #include "transform.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief A camera managing its own orientation and providing view and projection matrices.
@@ -181,6 +181,6 @@ protected:
 
 using CameraPtr = std::unique_ptr<Camera>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__CAMERA_HPP

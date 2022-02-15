@@ -15,7 +15,7 @@
 #include "glfw3_monitor.hpp"
 #include "glfw3_window_factory.hpp"
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 using GLFW3WindowFactory = WindowFactory<WindowBackend::GLFW3>;
@@ -251,4 +251,4 @@ bool GLFW3Window::extensionSupported(const std::string extName)
     return (bool)glfwExtensionSupported(extName.c_str());
 }
 
-} // namespace Renderboi::Window
+} // namespace renderboi::Window

@@ -7,7 +7,7 @@
 
 #include "enums.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 namespace Window
@@ -104,6 +104,6 @@ namespace Window
 using InputProcessor = Window::InputProcessor;
 using InputProcessorPtr = std::unique_ptr<InputProcessor>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__WINDOW__INPUT_PROCESSOR_HPP

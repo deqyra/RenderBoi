@@ -225,8 +225,6 @@ set(RB_WINDOW_SOURCE_FILES
     enums.cpp
     enums.hpp
     env_info.hpp
-    gl_context_client.cpp
-    gl_context_client.hpp
     gl_window.cpp
     gl_window.hpp
     input_processor.cpp
@@ -263,8 +261,7 @@ set(RB_WINDOW_SOURCE_FILES
 )
 
 set(RB_TOOLBOX_SOURCE_FILES
-    common_macros.hpp
-    factory.cpp
+    common.hpp
     factory.hpp
     input_splitter.cpp
     input_splitter.hpp 
@@ -273,9 +270,8 @@ set(RB_TOOLBOX_SOURCE_FILES
     controls/control.cpp
     controls/control.hpp
     controls/control_event_translator.hpp
-    controls/control_scheme_manager.hpp
+    controls/control_scheme.hpp
     controls/controlled_entity_manager.hpp
-    interfaces/action_event_receiver.hpp
     interfaces/control_binding_provider.hpp
     interfaces/default_control_scheme_provider.hpp
     mesh_generators/all_mesh_generators.hpp
@@ -291,32 +287,10 @@ set(RB_TOOLBOX_SOURCE_FILES
     mesh_generators/torus_generator.cpp
     mesh_generators/torus_generator.hpp
     mesh_generators/mesh_type.hpp
-    scene/scene.cpp
-    scene/scene.hpp 
-    scene/object/component.cpp
-    scene/object/component.hpp 
-    scene/object/component_map.cpp
-    scene/object/component_map.hpp 
-    scene/object/component_type.cpp 
-    scene/object/component_type.hpp 
-    scene/object/object_transform.cpp
-    scene/object/object_transform.hpp
-    scene/object/scene_object_metadata.hpp 
-    scene/object/scene_object.cpp
-    scene/object/scene_object.hpp 
-    scene/object/components/all_components.cpp 
-    scene/object/components/all_components.hpp 
-    scene/object/components/camera_component.cpp
-    scene/object/components/camera_component.hpp 
-    scene/object/components/light_component.cpp
-    scene/object/components/light_component.hpp 
-    scene/object/components/mesh_component.cpp
-    scene/object/components/mesh_component.hpp 
-    scene/object/components/script_component.cpp
-    scene/object/components/script_component.hpp 
+    render/composite_renderer.hpp
     render/scene_renderer.cpp
     render/scene_renderer.hpp 
-    render/composite_renderer.hpp
+    render/traits/all_trait_renderers.hpp
     render/traits/render_trait.hpp
     render/traits/render_trait_config.cpp
     render/traits/render_trait_config.hpp
@@ -341,6 +315,29 @@ set(RB_TOOLBOX_SOURCE_FILES
     runnables/keyboard_movement_script.hpp 
     runnables/mouse_camera_manager.cpp
     runnables/mouse_camera_manager.hpp 
+    scene/scene.cpp
+    scene/scene.hpp 
+    scene/object/component.cpp
+    scene/object/component.hpp 
+    scene/object/component_map.cpp
+    scene/object/component_map.hpp 
+    scene/object/component_type.cpp 
+    scene/object/component_type.hpp 
+    scene/object/object_transform.cpp
+    scene/object/object_transform.hpp
+    scene/object/scene_object_metadata.hpp 
+    scene/object/scene_object.cpp
+    scene/object/scene_object.hpp 
+    scene/object/components/all_components.cpp 
+    scene/object/components/all_components.hpp 
+    scene/object/components/camera_component.cpp
+    scene/object/components/camera_component.hpp 
+    scene/object/components/light_component.cpp
+    scene/object/components/light_component.hpp 
+    scene/object/components/mesh_component.cpp
+    scene/object/components/mesh_component.hpp 
+    scene/object/components/script_component.cpp
+    scene/object/components/script_component.hpp 
 )
 
 set(RB_EXAMPLES_SOURCE_FILES

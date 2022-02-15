@@ -7,9 +7,9 @@
 #include <renderboi/core/mesh.hpp>
 #include <renderboi/core/vertex.hpp>
 
-#include "../common_macros.hpp"
+#include "../common.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 PlaneGenerator::PlaneGenerator() :
@@ -46,8 +46,7 @@ MeshPtr PlaneGenerator::generateMesh() const
     const Parameters& p(parameters);
     const unsigned int nVertices = (p.tileAmountX + 1) * (p.tileAmountY + 1);
 
-    std::vector<Vertex> vertices;
-    vertices.reserve(nVertices);
+    std::vector<Vertex> vertices(nVertices);
 
     for (unsigned int j = 0; j < p.tileAmountY + 1; j++)
     {
@@ -120,4 +119,4 @@ MeshPtr PlaneGenerator::generateMesh() const
     return std::make_unique<Mesh>(GL_TRIANGLE_STRIP, vertices, indices, primitiveSizes, primitiveOffsets);
 }
 
-} // namespace Renderboi
+} // namespace renderboi

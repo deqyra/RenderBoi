@@ -6,7 +6,7 @@
 
 #include "component_type.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 class SceneObject;
@@ -134,6 +134,6 @@ struct ComponentTypeToEnum {};
 
 using ComponentPtr = std::unique_ptr<Component>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__SCENE__OBJECT__COMPONENT_HPP

@@ -1,6 +1,6 @@
 #include "script.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 unsigned int Script::_count = 0;
@@ -26,4 +26,4 @@ void Script::setSceneObject(SceneObject* const sceneObject)
     _sceneObject = sceneObject;
 }
 
-} // namespace Renderboi
+} // namespace renderboi

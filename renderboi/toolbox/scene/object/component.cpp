@@ -6,7 +6,7 @@
 #include "scene_object.hpp"
 #include "component_type.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 Component::Component(SceneObject& sceneObject) :
@@ -25,4 +25,4 @@ SceneObject& Component::sceneObject()
     return _sceneObject;
 }
 
-} // namespace Renderboi
+} // namespace renderboi

@@ -1,6 +1,6 @@
 #include "input_processor.hpp"
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 // Initialize static stuff
@@ -45,4 +45,4 @@ void InputProcessor::processMouseCursor(GLWindow& window, const double xpos, con
 
 }
 
-} // namespace Renderboi::Window
+} // namespace renderboi::Window

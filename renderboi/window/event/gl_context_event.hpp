@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace Renderboi
+namespace renderboi
 {
 
 namespace Window
@@ -23,6 +23,6 @@ enum class GLContextEvent
 
 std::string to_string(const Window::GLContextEvent event);
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__WINDOW__EVENT__GL_CONTEXT_EVENT_HPP

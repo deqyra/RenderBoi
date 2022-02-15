@@ -1,7 +1,7 @@
 #include "render_trait_config.hpp"
 #include "renderboi/toolbox/scene/object/object_transform.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 RenderTraitConfig::RenderTraitConfig(SceneObject& sceneObject) :
@@ -20,4 +20,4 @@ SceneObject& RenderTraitConfig::sceneObject()
     return _sceneObject;
 }
 
-} // namespace Renderboi
+} // namespace renderboi

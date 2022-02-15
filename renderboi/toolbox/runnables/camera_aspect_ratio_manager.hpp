@@ -6,7 +6,7 @@
 #include <renderboi/window/input_processor.hpp>
 #include <renderboi/window/gl_window.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Provides event callbacks to manage the aspect ratio of a camera as 
@@ -41,6 +41,6 @@ public:
     void processFramebufferResize(GLWindow& window, const unsigned int width, const unsigned int height) override;
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__RUNNABLES__CAMERA_ASPECT_RATIO_MANAGER_HPP

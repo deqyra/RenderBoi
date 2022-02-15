@@ -1,6 +1,6 @@
 #include "camera_aspect_ratio_manager.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 CameraAspectRatioManager::CameraAspectRatioManager(Camera& camera) :
@@ -17,4 +17,4 @@ void CameraAspectRatioManager::processFramebufferResize(GLWindow& window, const 
     }
 }
 
-} // namespace Renderboi
+} // namespace renderboi

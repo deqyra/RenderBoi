@@ -15,7 +15,7 @@
 #include "scene/object/components/mesh_component.hpp"
 #include "scene/object/components/script_component.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Provides static methods to facilitate complex object instantiation.
@@ -162,6 +162,6 @@ T& Factory::CreateScriptAndAttachToObject(SceneObject& object, ArgTypes&&... arg
     return *concreteScript;
 }
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__FACTORY_HPP

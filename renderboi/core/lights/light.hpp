@@ -9,7 +9,7 @@
 #include "../transform.hpp"
 #include "light_type.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Abstract light.
@@ -57,6 +57,6 @@ private:
 
 using LightPtr = std::unique_ptr<Light>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__LIGHTS__LIGHT_HPP

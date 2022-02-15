@@ -4,7 +4,7 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 LightUBO::LightUBO()
@@ -87,4 +87,4 @@ void LightUBO::setDirectionalCount(const unsigned int count)
     glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(unsigned int), &count);
 }
 
-} // namespace Renderboi
+} // namespace renderboi

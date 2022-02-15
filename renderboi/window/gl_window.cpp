@@ -7,7 +7,7 @@
 #include "input_processor.hpp"
 #include "renderboi/window/event/gl_context_event_manager.hpp"
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 const InputProcessorPtr GLWindow::_DefaultInputProcessor = std::make_unique<InputProcessor>();
@@ -65,7 +65,7 @@ bool GLWindow::exitSignaled()
     return _exitSignaled;
 }
 
-const GamepadManager& GLWindow::getGamepadManager()
+GamepadManager& GLWindow::getGamepadManager()
 {
     return *_gamepadManager;
 }
@@ -127,4 +127,4 @@ void GLWindow::startPollingLoop()
     }
 }
 
-} // namespace Renderboi::Window
+} // namespace renderboi::Window

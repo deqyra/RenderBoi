@@ -12,7 +12,7 @@
 
 #include "../script.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Provides bindings to move an entity using a gamepad.
@@ -106,6 +106,6 @@ public:
     virtual void processAxis(const Gamepad& gamepad, const Window::Input::Gamepad::Axis axis, const float value) override;
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__RUNNABLES__GAMEPAD_MOVEMENT_SCRIPT_HPP

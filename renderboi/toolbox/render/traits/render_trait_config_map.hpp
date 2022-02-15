@@ -11,7 +11,7 @@
 #include "render_trait.hpp"
 #include "render_trait_config.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 class SceneObject;
@@ -152,6 +152,6 @@ T& RenderTraitConfigMap::setConfigForTrait(std::unique_ptr<T>&& config)
 
 using RenderTraitConfigMapPtr = std::unique_ptr<RenderTraitConfigMap>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__RENDER__TRAITS__RENDER_TRAIT_CONFIG_MAP_HPP

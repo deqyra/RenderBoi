@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace Renderboi
+namespace renderboi
 {
 
 namespace Window::Input
@@ -335,4 +335,4 @@ std::string to_string(const Window::Input::Gamepad::Axis gamepadAxis)
         : "Unknown gamepad axis";
 }
 
-} // namespace Renderboi
+} // namespace renderboi

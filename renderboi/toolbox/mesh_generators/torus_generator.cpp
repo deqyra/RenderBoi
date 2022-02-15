@@ -9,9 +9,9 @@
 #include <renderboi/core/mesh.hpp>
 #include <renderboi/core/vertex.hpp>
 
-#include "../common_macros.hpp"
+#include "../common.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 constexpr double Pi = glm::pi<double>();
@@ -51,7 +51,9 @@ TorusGenerator::TorusGenerator(const Parameters parameters) :
 
 MeshPtr TorusGenerator::generateMesh() const
 {
-    const Parameters& p(parameters);
+    using namespace common;
+
+    const Parameters& p = parameters;
 
     unsigned int nVertex = (unsigned int)(p.toroidalVertexRes * p.poloidalVertexRes);
     std::vector<Vertex> vertices = std::vector<Vertex>(nVertex);
@@ -85,7 +87,7 @@ MeshPtr TorusGenerator::generateMesh() const
             float normalZ = -cos(pAngle) * sin(tAngle);
 
             glm::vec3 position = glm::vec3(vertexX, vertexY, vertexZ);
-            glm::vec3 color    = glm::vec3(WHITE);
+            glm::vec3 color    = vec(White);
             glm::vec3 normal   = glm::vec3(normalX, normalY, normalZ);
             glm::vec2 texCoord = glm::vec2(0.f);
 
@@ -139,4 +141,4 @@ MeshPtr TorusGenerator::generateMesh() const
     return std::make_unique<Mesh>(GL_TRIANGLE_STRIP, vertices, indices);
 }
 
-} // namespace Renderboi
+} // namespace renderboi

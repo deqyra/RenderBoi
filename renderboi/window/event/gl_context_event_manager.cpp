@@ -4,7 +4,7 @@
 
 #include "../gl_window.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 namespace Window
@@ -73,4 +73,4 @@ void GLContextEventManager::_processEvent(const GLContextEvent event)
 
 }// namespace Window
 
-}// namespace Renderboi
+}// namespace renderboi

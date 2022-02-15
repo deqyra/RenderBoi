@@ -8,7 +8,7 @@
 
 #include "gl_sandbox_parameters.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Abstract class to run any 3D scene in a GL window.
@@ -48,6 +48,6 @@ class GLSandbox
 		GLSandboxParameters _parameters;
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__EXAMPLES__GL_SANDBOX_HPP

@@ -5,7 +5,7 @@
 
 #include <glm/vec3.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Interface for a class able to provide basis vectors.
@@ -33,6 +33,6 @@ public:
 
 using BasisProviderPtr = std::unique_ptr<BasisProvider>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__INTERFACES__BASIS_PROVIDER_HPP

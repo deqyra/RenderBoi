@@ -7,7 +7,7 @@
 
 #include "mesh_generator.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Generates vertices for a multi- or single-colored cube.
@@ -70,6 +70,6 @@ struct MeshTypeMeta<MeshType::Cube>
     };
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__MESH_GENERATORS__CUBE_GENERATOR_HPP

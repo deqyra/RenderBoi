@@ -1,6 +1,6 @@
 #include "gamepad_input_processor.hpp"
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 unsigned int GamepadInputProcessor::_count = 0;
@@ -31,4 +31,4 @@ void GamepadInputProcessor::processAxis(const Gamepad& gamepad, const Window::In
 
 }
 
-} // namespace Renderboi::Window
+} // namespace renderboi::Window

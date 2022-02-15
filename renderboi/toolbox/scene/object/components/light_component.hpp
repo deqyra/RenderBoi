@@ -6,7 +6,7 @@
 #include "../component.hpp"
 #include "../component_type.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Component allowinf to attach any light to a scene object.
@@ -88,6 +88,6 @@ struct ComponentTypeToEnum<LightComponent>
     static constexpr ComponentType value = ComponentType::Light;
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__SCENE__COMPONENTS__LIGHT_COMPONENT

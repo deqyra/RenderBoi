@@ -11,7 +11,7 @@
 #include "material.hpp"
 #include "vertex.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief A mesh holding vertices to be rendered using indexed drawing.
@@ -96,6 +96,6 @@ public:
 
 using MeshPtr = std::unique_ptr<Mesh>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__MESH_HPP

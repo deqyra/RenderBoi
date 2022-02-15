@@ -1,7 +1,7 @@
 #include "render_trait_config.hpp"
 #include "render_trait_config_map.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 RenderTraitConfigMap::RenderTraitConfigMap(SceneObject& sceneObject) :

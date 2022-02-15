@@ -54,7 +54,7 @@
  * More details in object_transform.cpp.
  */
 
-namespace Renderboi
+namespace renderboi
 {
 
 class SceneObject;
@@ -244,6 +244,6 @@ public:
 
 using ObjectTransformPtr = std::unique_ptr<ObjectTransform>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__OBJECT__OBJECT_TRANSFORM_HPP

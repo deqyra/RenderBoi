@@ -2,6 +2,7 @@
 #define RENDERBOI__EXAMPLES__SHADOW_SANDBOX_HPP
 
 #include <string>
+#include <type_traits>
 
 #include <glm/glm.hpp>
 
@@ -23,7 +24,7 @@
 #include "gl_sandbox.hpp"
 #include "gl_sandbox_parameters.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 class ShadowSandbox : public GLSandbox
@@ -33,11 +34,8 @@ class ShadowSandbox : public GLSandbox
         std::string _title;
 
         /// @brief Reference to a gamepad instance.
-        Gamepad& _gamepad;
+        Gamepad* _gamepad;
         
-        /// @brief Whether or not a gamepad could be retrieved.
-        bool _gamepadPresent;
-
     public:
         static constexpr float LightBaseRange = 10.f;
         static constexpr Camera::CameraParameters CameraParams = {-45.f, -35.f, 1.f};
@@ -151,6 +149,6 @@ class ShadowSandboxScript : public Script, public InputProcessor
 
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__EXAMPLES__SHADOW_SANDBOX_HPP

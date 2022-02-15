@@ -6,7 +6,7 @@
 #include "light.hpp"
 #include "light_type.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Collection of parameters representing a directional light.
@@ -60,6 +60,6 @@ public:
     virtual glm::mat4 _computeViewMatrix() const override;
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__LIGHTS__DIRECTIONAL_LIGHT_HPP

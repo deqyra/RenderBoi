@@ -5,7 +5,7 @@
 
 #include <glad/gl.h>
 
-namespace Renderboi
+namespace renderboi
 {
 
 std::string to_string(const ShaderStage v)
@@ -22,4 +22,4 @@ std::string to_string(const ShaderStage v)
         : "Unknown shader stage";
 }
 
-} // namespace Renderboi
+} // namespace renderboi

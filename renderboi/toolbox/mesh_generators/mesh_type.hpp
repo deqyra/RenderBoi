@@ -1,7 +1,7 @@
 #ifndef RENDERBOI__TOOLBOX__MESH_GENERATORS__MESH_TYPE_HPP
 #define RENDERBOI__TOOLBOX__MESH_GENERATORS__MESH_TYPE_HPP
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Collection of literals describing the different shapes a mesh can 
@@ -24,6 +24,6 @@ struct MeshTypeMeta
     struct Generator {};
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__MESH_GENERATORS__MESH_TYPE_HPP

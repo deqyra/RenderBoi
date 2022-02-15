@@ -3,7 +3,7 @@
 #include "../../scene.hpp"
 #include <memory>
 
-namespace Renderboi
+namespace renderboi
 {
 
 ScriptComponent::ScriptComponent(SceneObject& sceneObject, Script& script) :
@@ -18,19 +18,6 @@ ScriptComponent::ScriptComponent(SceneObject& sceneObject, Script& script) :
 ScriptComponent::ScriptComponent(SceneObject& sceneObject, ScriptPtr&& script) :
     Component(sceneObject),
     _scriptPtr(std::move(script)),
-    _script(*_scriptPtr)
-{
-
-}
-
-template<
-    typename T,
-    typename... ArgTypes,
-    typename
->
-ScriptComponent::ScriptComponent(SceneObject& sceneObject, ArgTypes&& ...args) :
-    Component(sceneObject),
-    _scriptPtr(std::make_unique<T>(std::forward(args)...)),
     _script(*_scriptPtr)
 {
 
@@ -59,4 +46,4 @@ void ScriptComponent::_detachScript()
     _sceneObject.scene.detachScript(_script.id);
 }
 
-} // namespace Renderboi
+} // namespace renderboi

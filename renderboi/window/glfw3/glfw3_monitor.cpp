@@ -6,7 +6,7 @@
 #include <cstring>
 #include <vector>
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 GLFW3Monitor::GLFW3Monitor(GLFWmonitor* monitor) :
@@ -156,4 +156,4 @@ GLFW3Monitor::VideoMode GLFW3Monitor::_LargestVideoMode(const std::vector<VideoM
     return v;
 }
 
-} // namespace Renderboi::Window
+} // namespace renderboi::Window

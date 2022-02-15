@@ -8,7 +8,7 @@
 #include "../component_type.hpp"
 #include "../../../script.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Component allowing a scene object to self-update through time.
@@ -63,7 +63,7 @@ public:
     >
     ScriptComponent(SceneObject& sceneObject, ArgTypes&& ...args);
 
-    ~ScriptComponent();
+    ~ScriptComponent() = default;
 
     /// @brief Get a reference to the script used by the component.
     ///
@@ -87,6 +87,19 @@ public:
     /// one.
     ScriptComponent* clone(SceneObject& newParent) const override;
 };
+
+template<
+    typename T,
+    typename... ArgTypes,
+    typename
+>
+ScriptComponent::ScriptComponent(SceneObject& sceneObject, ArgTypes&& ...args) :
+    Component(sceneObject),
+    _scriptPtr(std::make_unique<T>(std::forward(args)...)),
+    _script(*_scriptPtr)
+{
+
+}
 
 template<>
 struct ComponentMeta<ComponentType::Script>
@@ -113,6 +126,6 @@ struct ComponentTypeToEnum<ScriptComponent>
     static constexpr ComponentType value = ComponentType::Script;
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__SCENE__COMPONENTS__SCRIPT_COMPONENT_HPP

@@ -7,6 +7,7 @@
 #include <limits>
 #include <memory>
 #include <tuple>
+#include <type_traits>
 #include <unordered_map>
 #include <vector>
 
@@ -19,7 +20,7 @@
 #include "object/scene_object.hpp"
 #include "object/scene_object_metadata.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 class Factory;
@@ -56,7 +57,7 @@ private:
     /// @brief Map scene object IDs to object metadata structs.
     std::unordered_map<unsigned int, SceneObjectMetadata> _objectMetadata;
 
-    /// @brief Map script IDs to script pointers.
+    /// @brief Map script IDs to script references.
     std::unordered_map<unsigned int, Script&> _scripts;
 
     /// @brief Last time a scene update was triggered.
@@ -341,6 +342,6 @@ std::vector<std::reference_wrapper<SceneObject>> Scene::getObjectsWithComponent(
 
 using ScenePtr = std::unique_ptr<Scene>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__SCENE__SCENE_HPP

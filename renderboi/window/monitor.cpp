@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <vector>
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 unsigned int Monitor::_count = 0;
@@ -120,4 +120,4 @@ Monitor::GammaRamp Monitor::GammaRamp::FromExponents(
     return GammaRamp(size, red, green, blue);
 }
 
-} // namespace Renderboi::Window
+} // namespace renderboi::Window

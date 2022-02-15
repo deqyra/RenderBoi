@@ -5,7 +5,7 @@
 
 #include "mesh_generator.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Generates the vertex data for a torus.
@@ -89,6 +89,6 @@ struct MeshTypeMeta<MeshType::Torus>
     };
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__MESH_GENERATORS__TORUS_GENERATOR_HPP

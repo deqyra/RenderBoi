@@ -2,7 +2,7 @@
 
 #include <unordered_map>
 
-namespace Renderboi
+namespace renderboi
 {
 
 using Window::GLContextEvent;
@@ -22,4 +22,4 @@ std::string to_string(const GLContextEvent event)
         : "Unknown";
 }
 
-} // namespace Renderboi
+} // namespace renderboi

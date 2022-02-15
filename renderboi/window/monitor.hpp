@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 /// @brief Class to represent a monitor on the system. All methods of this class 
@@ -197,6 +197,6 @@ public:
 
 using MonitorPtr = std::unique_ptr<Monitor>;
 
-} // namespace Renderboi::Window
+} // namespace renderboi::Window
 
 #endif//RENDERBOI__WINDOW__MONITOR_HPP

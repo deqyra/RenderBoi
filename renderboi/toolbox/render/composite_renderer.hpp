@@ -6,7 +6,7 @@
 #include "traits/render_trait.hpp"
 #include "traits/trait_renderer.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Component in charge of rendering all aspects of an object.
@@ -20,6 +20,6 @@ public:
     void render() const;
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__SCENE__RENDER__COMPOSITE_RENDERER_HPP

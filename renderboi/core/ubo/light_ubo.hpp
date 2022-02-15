@@ -21,7 +21,7 @@
  * };                                                          // Size: 11532
  **/
 
-namespace Renderboi
+namespace renderboi
 {
 
 class LightUBO
@@ -105,6 +105,6 @@ public:
     void setDirectionalCount(const unsigned int count);
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__UBO__LIGHT_UBO_HPP

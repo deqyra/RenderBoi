@@ -8,7 +8,7 @@
 #include "../window_backend.hpp"
 #include "../gl_window.hpp"
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 template<WindowBackend W>
@@ -227,6 +227,6 @@ public:
 
 using GLFW3WindowPtr = std::unique_ptr<GLFW3Window>;
 
-} // namespace Renderboi::Window
+} // namespace renderboi::Window
 
 #endif//RENDERBOI__WINDOW__GLFW3__GLFW3_WINDOW_HPP

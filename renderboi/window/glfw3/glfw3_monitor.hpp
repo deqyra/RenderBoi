@@ -10,7 +10,7 @@
 #include "../window_factory.hpp"
 
 /// @brief Wrapper for a monitor resource in GLFW3.
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 template<>
@@ -126,6 +126,6 @@ public:
 
 using GLFW3MonitorPtr = std::unique_ptr<GLFW3Monitor>;
 
-} // namespace Renderboi::Window
+} // namespace renderboi::Window
 
 #endif//RENDERBOI__WINDOW__GLFW3__GLFW3_MONITOR_HPP

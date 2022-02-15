@@ -14,7 +14,7 @@
 #include "gl_sandbox.hpp"
 #include "gl_sandbox_parameters.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Encapsulates the instantiation, set-up, execution and tear-down of a 
@@ -56,9 +56,9 @@ public:
     /// @brief Get a pointer to the sandbox being ran.
     ///
     /// @return A pointer to the sandbox being ran.
-    SandboxPtr getSandbox()
+    SandboxType& getSandbox()
     {
-        return _sandbox;
+        return *_sandbox;
     }
 
     /// @brief Poll the input of the window repeatedly, until the window's exit
@@ -68,7 +68,7 @@ public:
     {
         _sandbox->setUp();
 
-		std::thread th(&GLSandbox::run, _sandbox);
+		std::thread th(&GLSandbox::run, _sandbox.get());
 		_window.startPollingLoop();
 
 		th.join();

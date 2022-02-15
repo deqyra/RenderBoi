@@ -2,7 +2,7 @@
 
 #include <renderboi/core/frame_of_reference.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 using Ref = FrameOfReference;
@@ -40,4 +40,4 @@ void MouseCameraManager::processMouseCursor(GLWindow& window, const double xpos,
     _lastMouseY = (float)ypos;
 }
 
-} // namespace Renderboi
+} // namespace renderboi

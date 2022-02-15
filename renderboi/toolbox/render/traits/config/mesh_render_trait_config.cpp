@@ -6,7 +6,7 @@
 #include "../../../scene/object/component_type.hpp"
 #include "../render_trait_config.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 MeshRenderTraitConfig::MeshRenderTraitConfig(SceneObject& parentSceneObject) :
@@ -24,4 +24,4 @@ MeshRenderTraitConfig* MeshRenderTraitConfig::clone(SceneObject& newParent) cons
     return new MeshRenderTraitConfig(newParent);
 }
 
-} // namespace Renderboi
+} // namespace renderboi

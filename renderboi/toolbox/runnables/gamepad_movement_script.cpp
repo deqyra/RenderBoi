@@ -6,7 +6,7 @@
 
 #include <renderboi/window/enums.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 using Ref = FrameOfReference;
@@ -74,4 +74,4 @@ void GamepadMovementScript::processAxis(const Gamepad& gamepad, const Window::In
         _direction.y = -value;
 }
 
-} // namespace Renderboi
+} // namespace renderboi

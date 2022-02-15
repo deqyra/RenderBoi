@@ -6,7 +6,7 @@
 
 #include "../enums.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 namespace Window
 {
@@ -75,6 +75,6 @@ public:
 using GamepadInputProcessor = Window::GamepadInputProcessor;
 using GamepadInputProcessorPtr = std::unique_ptr<GamepadInputProcessor>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__WINDOW__GAMEPAD__GAMEPAD_INPUT_PROCESSOR_HPP

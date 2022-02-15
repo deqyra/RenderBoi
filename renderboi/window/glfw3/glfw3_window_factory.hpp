@@ -13,7 +13,7 @@
 
 #include "glfw3_monitor.hpp"
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 /// @brief GLFW3 specialization of the window factory. These functions may be 
@@ -67,6 +67,6 @@ public:
     static void DestroyWindow(GLWindowPtr&& window);
 };
 
-} // namespace Renderboi::Window
+} // namespace renderboi::Window
 
 #endif//RENDERBOI__WINDOW__GLFW3__GLFW3_WINDOW_FACTORY_HPP

@@ -5,7 +5,7 @@
 
 #include "render_trait.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 class SceneObject;
@@ -48,6 +48,6 @@ public:
 
 using RenderTraitConfigPtr = std::unique_ptr<RenderTraitConfig>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__RENDER__TRAITS__RENDER_TRAIT_CONFIG_HPP

@@ -13,10 +13,10 @@
 #include "glfw3_adapter.hpp"
 #include "glfw3_utilities.hpp"
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
-std::unordered_map<unsigned int, const GamepadManager*> GLFW3GamepadManager::_GamepadManagers = std::unordered_map<unsigned int, const GamepadManager*>();
+std::unordered_map<unsigned int, GamepadManager&> GLFW3GamepadManager::_GamepadManagers = std::unordered_map<unsigned int, GamepadManager&>();
 std::unordered_map<int, std::atomic<bool>> GLFW3GamepadManager::_PresentJoysticks = std::unordered_map<int, std::atomic<bool>>();
 std::unordered_map<int, std::atomic<bool>> GLFW3GamepadManager::_PresentGamepads = std::unordered_map<int, std::atomic<bool>>();
 std::atomic<bool> GLFW3GamepadManager::_JoystickStatusRefreshFlag = true;
@@ -117,7 +117,7 @@ void GLFW3GamepadManager::refreshGamepadStatuses() const
                 // Fire connection events to registered gamepad managers
                 for (const auto& [mId, manager] : _GamepadManagers)
                 {
-                    manager->gamepadConnected(Window::GLFW3Adapter::getEnum<Window::Input::Joystick>(mId));
+                    manager.gamepadConnected(Window::GLFW3Adapter::getEnum<Window::Input::Joystick>(mId));
                 }
             }
         }
@@ -172,4 +172,4 @@ GamepadState GLFW3GamepadManager::_GamepadStateFromGlfwGamepadState(const GLFWga
     return state;
 }
 
-} // namespace Renderboi::Window
+} // namespace renderboi::Window

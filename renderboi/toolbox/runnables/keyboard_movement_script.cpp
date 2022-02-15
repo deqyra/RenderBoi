@@ -6,7 +6,7 @@
 
 #include <renderboi/window/enums.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 using Ref = FrameOfReference;
@@ -152,4 +152,4 @@ std::string to_string(const KeyboardMovementAction action)
         : "Unknown";
 }
 
-} // namespace Renderboi
+} // namespace renderboi

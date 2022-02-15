@@ -14,7 +14,7 @@
 #include "../component_type.hpp"
 #include "renderboi/core/shader/shader_builder.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Component allowing to attach a mesh to a scene object.
@@ -126,6 +126,6 @@ struct ComponentTypeToEnum<MeshComponent>
     static constexpr ComponentType value = ComponentType::Mesh;
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__SCENE__COMPONENTS__MESH_COMPONENT_HPP

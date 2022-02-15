@@ -22,7 +22,7 @@
 #include "../scene/object/components/light_component.hpp"
 #include "../scene/object/components/camera_component.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 SceneRenderer::SceneRenderer(const unsigned int framerateLimit) :
@@ -37,7 +37,6 @@ SceneRenderer::SceneRenderer(const unsigned int framerateLimit) :
 void SceneRenderer::renderScene(Scene& scene) const
 {
     scene.updateAllTransforms();
-
 
     // Get pointers to meshes, lights, and the scene camera
     const ObjectVector meshObjects = scene.getObjectsWithComponent<ComponentType::Mesh>();
@@ -204,4 +203,4 @@ void SceneRenderer::drawMesh(SceneObject& meshObject, const glm::mat4& viewMatri
     meshComponent.mesh().draw();
 }
 
-} // namespace Renderboi
+} // namespace renderboi

@@ -3,7 +3,7 @@
 
 #include <renderboi/window/gl_window.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief POD struct storing parameters to run a sandbox with.

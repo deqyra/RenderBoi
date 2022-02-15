@@ -6,7 +6,7 @@
 #include "../interfaces/vp_matrix_provider.hpp"
 #include "../transform.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Partial implementation of the VPMatrixProvider interface which relies
@@ -107,6 +107,6 @@ protected:
     virtual glm::mat4 _computeViewMatrix() const = 0;
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__COMMON__PARENT_DEPENDENT_VP_MATRIX_PROVIDER_HPP

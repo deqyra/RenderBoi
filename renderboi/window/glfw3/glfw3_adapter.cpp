@@ -6,7 +6,7 @@
 
 #include "../enums.hpp"
 
-namespace Renderboi::Window::GLFW3Adapter
+namespace renderboi::Window::GLFW3Adapter
 {
 
 namespace EnumMaps
@@ -680,4 +680,4 @@ int getValue(OpenGLProfile literal)
     return ValueMaps::GlProfileValues().at(literal);
 }
 
-} // namespace Renderboi::Window::GLFW3Adapter
+} // namespace renderboi::Window::GLFW3Adapter

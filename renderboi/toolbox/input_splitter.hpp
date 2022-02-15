@@ -8,7 +8,7 @@
 #include <renderboi/window/gl_window.hpp>
 #include <renderboi/window/gamepad/gamepad_input_processor.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Forwards all input it receives to multiple subscribers.
@@ -26,10 +26,10 @@ private:
     unsigned int _subscriberRollingCount;
 
     /// @brief Array of subscribers to which input must be forwarded.
-    std::unordered_map<unsigned int, InputProcessor*> _subscribers;
+    std::unordered_map<unsigned int, InputProcessor&> _subscribers;
 
     /// @brief Array of subscribers to which gamepad input must be forwarded.
-    std::unordered_map<unsigned int, GamepadInputProcessor*> _gamepadSubscribers;
+    std::unordered_map<unsigned int, GamepadInputProcessor&> _gamepadSubscribers;
 
 public:
     InputSplitter();
@@ -41,7 +41,7 @@ public:
     ///
     /// @return The subscription ID, used to unsubscribe the registered
     /// input processor.
-    unsigned int registerInputProcessor(InputProcessor* const inputProcessor);
+    unsigned int registerInputProcessor(InputProcessor& inputProcessor);
 
     /// @brief Unsubscribe an input processor.
     ///
@@ -59,7 +59,7 @@ public:
     ///
     /// @return The subscription ID, used to unsubscribe the registered
     /// input processor.
-    unsigned int registerGamepadInputProcessor(GamepadInputProcessor* const gamepadInputProcessor);
+    unsigned int registerGamepadInputProcessor(GamepadInputProcessor& gamepadInputProcessor);
 
     /// @brief Unsubscribe an input processor.
     ///
@@ -156,6 +156,6 @@ public:
 
 using InputSplitterPtr = std::unique_ptr<InputSplitter>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__INPUT_SPLITTER_HPP

@@ -7,7 +7,7 @@
 
 #include "mesh_generator.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Generates vertices for a multi- or single-colored tetrahedron.
@@ -72,6 +72,6 @@ struct MeshTypeMeta<MeshType::Tetrahedron>
     };
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__MESH_GENERATORS__TETRAHEDRON_GENERATOR_HPP

@@ -7,7 +7,7 @@
 
 #include "mesh_generator.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Generates vertices for the three regular X, Y and Z axes,
@@ -59,6 +59,6 @@ struct MeshTypeMeta<MeshType::Axes>
     };
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__MESH_GENERATORS__AXES_GENERATOR_HPP

@@ -5,7 +5,7 @@
 
 #include "shader_stage.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 const std::unordered_map<ShaderFeature, ShaderStage>& FeatureStages()
@@ -61,4 +61,4 @@ std::string to_string(const ShaderFeature v)
         : "Unknown shader feature";
 }
 
-} // namespace Renderboi
+} // namespace renderboi

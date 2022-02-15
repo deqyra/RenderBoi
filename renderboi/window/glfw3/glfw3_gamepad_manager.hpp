@@ -13,7 +13,7 @@
 #include "../gamepad/gamepad_manager.hpp"
 #include "glfw3_utilities.hpp"
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 /// @brief Specialization of a GamepadManager for GLFW3.
@@ -36,7 +36,7 @@ private:
     mutable std::map<Joystick, std::atomic<bool>> _enabledGamepads;
     
     /// @brief Structure mapping gamepad manager IDs to the instances with those IDs.
-    static std::unordered_map<unsigned int, const GamepadManager*> _GamepadManagers;
+    static std::unordered_map<unsigned int, GamepadManager&> _GamepadManagers;
 
     /// @brief Structure mapping joystick IDs to whether or not they are present
     /// on the system.
@@ -83,7 +83,7 @@ public:
     ///
     /// @return An array filled with litterals representing handles to present 
     /// gamepads.
-    std::vector<Joystick> pollPresentGamepads(const bool& mustBeUnused = true) const override;
+    std::vector<Joystick> pollPresentGamepads(const bool mustBeUnused = true) const override;
 
     /// @brief Get a gamepad plugged into a certain slot. This function may be 
     /// called only from the main thread.
@@ -115,7 +115,7 @@ public:
     void pollGamepadStates() const override;
 };
 
-} // namespace Renderboi::Window
+} // namespace renderboi::Window
 
 
 #endif//RENDERBOI__WINDOW__GLFW3__GLFW3_GAMEPAD_MANAGER_HPP

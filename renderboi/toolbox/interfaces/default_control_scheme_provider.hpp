@@ -5,7 +5,7 @@
 
 #include "../controls/control_scheme.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 template<typename T>
@@ -18,6 +18,6 @@ public:
     virtual const ControlScheme<T>& getDefaultControlScheme() const = 0;
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__INTERFACES__DEFAULT_CONTROL_SCHEME_PROVIDER_HPP

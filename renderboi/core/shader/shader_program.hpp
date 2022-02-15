@@ -14,7 +14,7 @@
 #include "../material.hpp"
 #include "shader_feature.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 class ShaderBuilder;
@@ -144,6 +144,6 @@ public:
     bool supports(const ShaderFeature feature) const;
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__CORE__SHADER__SHADER_PROGRAM_HPP

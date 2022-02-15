@@ -4,7 +4,7 @@
 
 #include "../scene_object.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 LightComponent::LightComponent(SceneObject& sceneObject, LightPtr&& light) :
@@ -43,4 +43,4 @@ LightComponent* LightComponent::clone(SceneObject& newParent) const
     );
 }
 
-} // namespace Renderboi
+} // namespace renderboi

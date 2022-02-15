@@ -19,7 +19,7 @@
 #include "gl_sandbox.hpp"
 #include "gl_sandbox_parameters.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Example class to display lit moving objects.
@@ -165,6 +165,6 @@ class LightingSandboxScript : public InputProcessor, public Script
         ) override;
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__EXAMPLES__LIGHTING_EXAMPLE_HPP

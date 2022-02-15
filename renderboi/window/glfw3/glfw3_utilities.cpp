@@ -13,7 +13,7 @@
 #include "glfw3_window.hpp"
 #include "glfw3_gamepad_manager.hpp"
 
-namespace Renderboi::Window::GLFW3Utilities
+namespace renderboi::Window::GLFW3Utilities
 {
 
 void globalGlfwFramebufferResizeCallback(GLFWwindow* const window, const int width, const int height)
@@ -51,8 +51,8 @@ void globalGlfwErrorCallback(const int error, const char* description)
 
 void subscribeToGlfwJoystickStatus(GLWindow* const window)
 {
-    const GamepadManager& manager = window->getGamepadManager();
-    GLFW3GamepadManager::_GamepadManagers[manager.id] = &manager;
+    GamepadManager& manager = window->getGamepadManager();
+    GLFW3GamepadManager::_GamepadManagers.insert({manager.id, manager});
 }
 
 void unsubscribeFromGlfwJoystickStatus(GLWindow* const window)
@@ -74,7 +74,7 @@ void globalGlfwJoystickCallback(int jid, int event)
         {
             for (const auto& [_, manager] : GLFW3GamepadManager::_GamepadManagers)
             {
-                manager->gamepadDisconnected(Window::GLFW3Adapter::getEnum<Window::Input::Joystick>(jid));
+                manager.gamepadDisconnected(Window::GLFW3Adapter::getEnum<Window::Input::Joystick>(jid));
             }
 
             GLFW3GamepadManager::_PresentGamepads[jid] = false;
@@ -95,4 +95,4 @@ void initGamepadStatuses()
     }
 }
 
-} // namespace Renderboi::GLFW3Utilities
+} // namespace renderboi::GLFW3Utilities

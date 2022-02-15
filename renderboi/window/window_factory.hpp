@@ -10,7 +10,7 @@
 #include "window_backend.hpp"
 #include "window_creation_parameters.hpp"
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 /// @brief Collection of functions to instantiate a window on the OS-level. 
@@ -83,6 +83,6 @@ public:
     static void DestroyWindow(GLWindowPtr&& window) = delete;
 };
 
-} // namespace Renderboi::Window
+} // namespace renderboi::Window
 
 #endif//RENDERBOI__WINDOW__WINDOW_FACTORY_HPP

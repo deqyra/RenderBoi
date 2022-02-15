@@ -10,7 +10,7 @@
 #include "../gl_window.hpp"
 
 /// @brief Collection of free functions that are useful when working with GLFW3.
-namespace Renderboi::Window::GLFW3Utilities
+namespace renderboi::Window::GLFW3Utilities
 {
 
 /// @brief Callback for a framebuffer resize event. Will get the GLWindow instance
@@ -106,6 +106,6 @@ void globalGlfwJoystickCallback(const int jid, const int event);
 /// those.
 void initGamepadStatuses();
 
-} // namespace Renderboi::Window::GLFW3Utilities
+} // namespace renderboi::Window::GLFW3Utilities
 
 #endif//RENDERBOI__WINDOW__GLFW3__GLFW3_UTILITIES_HPP

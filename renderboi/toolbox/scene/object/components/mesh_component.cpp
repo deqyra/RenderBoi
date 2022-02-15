@@ -5,7 +5,7 @@
 #include <renderboi/core/materials.hpp>
 #include <renderboi/core/shader/shader_builder.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 MeshComponent::MeshComponent(
@@ -20,7 +20,7 @@ MeshComponent::MeshComponent(
     _material(material),
     _shader(shader)
 {
-    if (!mesh)
+    if (!_meshPtr)
     {
         throw std::runtime_error("MeshComponent: cannot construct from null mesh pointer.");
     }
@@ -71,4 +71,4 @@ MeshComponent* MeshComponent::clone(SceneObject& newParent) const
     );
 }
 
-} // namespace Renderboi
+} // namespace renderboi

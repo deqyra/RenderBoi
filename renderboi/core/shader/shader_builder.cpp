@@ -13,7 +13,6 @@
 
 #include <glad/gl.h>
 
-#include <renderboi/utilities/to_string.hpp>
 #include <renderboi/utilities/resource_locator.hpp>
 
 #include <cpptools/utility/string_tools.hpp>
@@ -23,7 +22,7 @@
 
 #define INFO_BUFFER_SIZE 2048
 
-namespace Renderboi
+namespace renderboi
 {
 
 using ReLoc = ResourceLocator;
@@ -623,4 +622,4 @@ ShaderBuilder::_GenerateDefineDirectives(const std::vector<ShaderFeature>& featu
     );
 }
 
-} // namespace Renderboi
+} // namespace renderboi

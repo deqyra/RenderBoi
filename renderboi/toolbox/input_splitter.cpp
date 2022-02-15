@@ -2,24 +2,20 @@
 
 #include <stdexcept>
 
-namespace Renderboi
+namespace renderboi
 {
 
 InputSplitter::InputSplitter() :
     _subscriberRollingCount(0),
-    _subscribers()
+    _subscribers(),
+    _gamepadSubscribers()
 {
 
 }
 
-unsigned int InputSplitter::registerInputProcessor(InputProcessor* const inputProcessor)
+unsigned int InputSplitter::registerInputProcessor(InputProcessor& inputProcessor)
 {
-    if (!inputProcessor)
-    {
-        throw std::runtime_error("InputSplitter: cannot register null input processor pointer.");
-    }
-
-    _subscribers[_subscriberRollingCount] = inputProcessor;
+    _subscribers.insert({_subscriberRollingCount, inputProcessor});
     return _subscriberRollingCount++;
 }
 
@@ -33,14 +29,9 @@ void InputSplitter::detachAllInputProcessors()
     _subscribers.clear();
 }
 
-unsigned int InputSplitter::registerGamepadInputProcessor(GamepadInputProcessor* const inputProcessor)
+unsigned int InputSplitter::registerGamepadInputProcessor(GamepadInputProcessor& inputProcessor)
 {
-    if (!inputProcessor)
-    {
-        throw std::runtime_error("InputSplitter: cannot register null input processor pointer.");
-    }
-
-    _gamepadSubscribers[_subscriberRollingCount] = inputProcessor;
+    _gamepadSubscribers.insert({_subscriberRollingCount, inputProcessor});
     return _subscriberRollingCount++;
 }
 
@@ -56,9 +47,9 @@ void InputSplitter::detachAllIGamepadnputProcessors()
 
 void InputSplitter::processFramebufferResize(GLWindow& window, const unsigned int width, const unsigned int height)
 {
-    for (const auto& [_, inputProc] : _subscribers)
+    for (auto& [_, inputProc] : _subscribers)
     {
-        inputProc->processFramebufferResize(window, width, height);
+        inputProc.processFramebufferResize(window, width, height);
     }
 }
 
@@ -70,9 +61,9 @@ void InputSplitter::processKeyboard(
     const int mods
 )
 {
-    for (const auto [_, inputProc] : _subscribers)
+    for (auto& [_, inputProc] : _subscribers)
     {
-        inputProc->processKeyboard(window, key, scancode, action, mods);
+        inputProc.processKeyboard(window, key, scancode, action, mods);
     }
 }
 
@@ -83,50 +74,50 @@ void InputSplitter::processMouseButton(
     const int mods
 )
 {
-    for (const auto [_, inputProc] : _subscribers)
+    for (auto& [_, inputProc] : _subscribers)
     {
-        inputProc->processMouseButton(window, button, action, mods);
+        inputProc.processMouseButton(window, button, action, mods);
     }
 }
 
 void InputSplitter::processMouseCursor(GLWindow& window, const double xpos, const double ypos)
 {
-    for (const auto [_, inputProc] : _subscribers)
+    for (auto& [_, inputProc] : _subscribers)
     {
-        inputProc->processMouseCursor(window, xpos, ypos);
+        inputProc.processMouseCursor(window, xpos, ypos);
     }
 }
 
 void InputSplitter::processConnected(const Gamepad& gamepad)
 {
-    for (const auto [_, inputProc] : _gamepadSubscribers)
+    for (auto& [_, inputProc] : _gamepadSubscribers)
     {
-        inputProc->processConnected(gamepad);
+        inputProc.processConnected(gamepad);
     }
 }
 
 void InputSplitter::processDisconnected(const Gamepad& gamepad)
 {
-    for (const auto [_, inputProc] : _gamepadSubscribers)
+    for (auto& [_, inputProc] : _gamepadSubscribers)
     {
-        inputProc->processDisconnected(gamepad);
+        inputProc.processDisconnected(gamepad);
     }
 }
 
 void InputSplitter::processButton(const Gamepad& gamepad, const GButton button, const Action action)
 {
-    for (const auto [_, inputProc] : _gamepadSubscribers)
+    for (auto& [_, inputProc] : _gamepadSubscribers)
     {
-        inputProc->processButton(gamepad, button, action);
+        inputProc.processButton(gamepad, button, action);
     }
 }
 
 void InputSplitter::processAxis(const Gamepad& gamepad, const Axis axis, const float value)
 {
-    for (const auto [_, inputProc] : _gamepadSubscribers)
+    for (auto& [_, inputProc] : _gamepadSubscribers)
     {
-        inputProc->processAxis(gamepad, axis, value);
+        inputProc.processAxis(gamepad, axis, value);
     }
 }
 
-} // namespace Renderboi
+} // namespace renderboi

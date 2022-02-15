@@ -1,6 +1,6 @@
 #include "component_type.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 std::string to_string(const ComponentType type)

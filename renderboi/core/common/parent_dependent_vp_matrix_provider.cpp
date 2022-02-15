@@ -1,6 +1,6 @@
 #include "parent_dependent_vp_matrix_provider.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 ParentDependentVPMatrixProvider::ParentDependentVPMatrixProvider(Transform parentWorldTransform) :

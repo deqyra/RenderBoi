@@ -23,7 +23,7 @@
 
 #include <renderboi/window/env_info.hpp>
 
-namespace rb = Renderboi;
+namespace rb = renderboi;
 namespace rbw = rb::Window;
 
 using AppWindowFactory = rbw::WindowFactory<AppBackend>;

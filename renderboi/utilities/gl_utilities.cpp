@@ -5,7 +5,7 @@
 
 #include <glad/gl.h>
 
-namespace Renderboi
+namespace renderboi
 {
 static std::unordered_set<int> ignoredMessageTypes;
 
@@ -82,4 +82,4 @@ float glGetAspectRatio()
 
     return (float)(dims[2]) / (float)(dims[3]);
 }
-} // namespace Renderboi
+} // namespace renderboi

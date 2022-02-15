@@ -32,12 +32,12 @@
     #include <renderboi/window/glfw3/glfw3_window_factory.hpp>
     #include <renderboi/window/glfw3/glfw3_utilities.hpp>
           
-    static const void* AppWindowErrorCallback = (void*)(&Renderboi::Window::GLFW3Utilities::globalGlfwErrorCallback);
+    static const void* AppWindowErrorCallback = (void*)(&renderboi::Window::GLFW3Utilities::globalGlfwErrorCallback);
 #endif
 
 #include "window_backend.hpp"
 
-namespace rb = Renderboi;
+namespace rb = renderboi;
 namespace rbw = rb::Window;
 
 static constexpr rbw::WindowBackend AppBackend = rbw::WindowBackend::@WINDOW_BACKEND_NAME@;

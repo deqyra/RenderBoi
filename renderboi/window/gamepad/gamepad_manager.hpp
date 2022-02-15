@@ -7,7 +7,7 @@
 #include "gamepad.hpp"
 #include "../enums.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 namespace Window
 {
@@ -24,6 +24,7 @@ private:
 
 public:
     GamepadManager();
+    virtual ~GamepadManager() = default;
 
     /// @brief Callback for when a gamepad is connected on a slot.
     /// 
@@ -45,7 +46,7 @@ public:
     ///
     /// @return An array filled with litterals representing handles to present 
     /// gamepads.
-    virtual std::vector<Joystick> pollPresentGamepads(const bool& unused = true) const = 0;
+    virtual std::vector<Joystick> pollPresentGamepads(const bool unused = true) const = 0;
 
     /// @brief Get a gamepad plugged into a certain slot. The gamepad can then
     /// be enabled to start receiving input from the main thread. This function 
@@ -110,7 +111,7 @@ protected:
 template<typename ...ArgTypes>
 GamepadPtr GamepadManager::createGamepad(ArgTypes&& ...args)
 {
-    return std::make_unique<Gamepad>(std::forward(args)...);
+    return GamepadPtr(new Gamepad(std::forward<ArgTypes>(args)...));
 }
 
 } // namespace Window
@@ -118,6 +119,6 @@ GamepadPtr GamepadManager::createGamepad(ArgTypes&& ...args)
 using GamepadManager = Window::GamepadManager;
 using GamepadManagerPtr = std::unique_ptr<GamepadManager>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__WINDOW__GAMEPAD__GAMEPAD_MANAGER_HPP

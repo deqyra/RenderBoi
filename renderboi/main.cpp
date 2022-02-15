@@ -26,7 +26,7 @@
 #include "main_functions.hpp"
 #include "renderboi_parameters.hpp"
 
-namespace rb = Renderboi;
+namespace rb = renderboi;
 namespace rbw = rb::Window;
 namespace fs = std::filesystem;
 
@@ -134,14 +134,14 @@ int main(int argc, char** argv)
 		if (false)
 		{
 			rb::GLSandboxRunner<rb::LightingSandbox> lightingSandbox =
-			rb::GLSandboxRunner<rb::LightingSandbox>(window.get(), sbParams);
+				rb::GLSandboxRunner<rb::LightingSandbox>(*window, sbParams);
 
 			lightingSandbox.run();
 		}
 
 		{
 			rb::GLSandboxRunner<rb::ShadowSandbox> shadowSandbox =
-			rb::GLSandboxRunner<rb::ShadowSandbox>(window.get(), sbParams);
+				rb::GLSandboxRunner<rb::ShadowSandbox>(*window, sbParams);
 
 			shadowSandbox.run();
 		}

@@ -31,7 +31,7 @@
 #include "glfw3_window.hpp"
 #include "glfw3_utilities.hpp"
 
-namespace Renderboi::Window
+namespace renderboi::Window
 {
 
 using ReLoc = ResourceLocator;
@@ -277,4 +277,4 @@ void WindowFactory<WindowBackend::GLFW3>::_GlobalGlfwMonitorCallback(GLFWmonitor
     }
 }
 
-} // namespace Renderboi::Window
+} // namespace renderboi::Window

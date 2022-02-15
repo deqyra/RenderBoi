@@ -53,7 +53,7 @@
  * these arguments.
  */
 
-namespace Renderboi
+namespace renderboi
 {
 
 using Ref = FrameOfReference;
@@ -492,4 +492,4 @@ Transform ObjectTransform::_getParentTransform() const
     return scene.getWorldTransform(parentId);
 }
 
-} // namespace Renderboi
+} // namespace renderboi

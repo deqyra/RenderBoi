@@ -4,7 +4,6 @@
 #include <string>
 
 #include <cpptools/oo/interfaces/action_event_receiver.hpp>
-#include <cpptools/oo/interfaces/argument_provider.hpp>
 
 #include <renderboi/window/input_processor.hpp>
 #include <renderboi/window/gl_window.hpp>
@@ -13,7 +12,7 @@
 #include "../interfaces/default_control_scheme_provider.hpp"
 
 
-namespace Renderboi
+namespace renderboi
 {
 
 enum class BasicWindowManagerAction
@@ -36,11 +35,7 @@ enum class PolygonMode
 class BasicWindowManager : 
     public InputProcessor,
     public DefaultControlSchemeProvider<BasicWindowManagerAction>,
-    public cpptools::ActionEventReceiver<
-        BasicWindowManagerAction,
-        GLWindow&
-    >,
-    public cpptools::ArgumentProvider<GLWindow&>
+    public cpptools::ActionEventReceiver<BasicWindowManagerAction>
 {
 private:
     using GLWindow = Window::GLWindow;
@@ -49,33 +44,17 @@ private:
     BasicWindowManager& operator=(const BasicWindowManager& other) = delete;
 
     /// @brief Toggles the fullscreen state of the managed window.
-    void _toggleFullscreen(GLWindow& window) const;
+    void _toggleFullscreen() const;
 
     /// @brief Queues an event to set the polygon mode of the render context.
-    void _setPolygonMode(GLWindow& window, const PolygonMode mode) const;
+    void _setPolygonMode(const PolygonMode mode) const;
+
+    /// @brief Windows on which the actions should be carried out.
+    GLWindow& _window;
 
 public:
-    BasicWindowManager();
+    BasicWindowManager(GLWindow& window);
 
-<<<<<<< HEAD
-    /////////////////////////////////////////////////////////////////////////////
-    ///                                                                       ///
-    /// Methods overridden from ActionEventReceiver<BasicWindowManagerAction> ///
-    ///                                                                       ///
-    /////////////////////////////////////////////////////////////////////////////
-
-    /// @brief Start the processing for an action.
-    ///
-    /// @param action Object describing the action to start processing.
-    void triggerAction(const BasicWindowManagerAction& action, GLWindow& window) override;
-
-    /// @brief Stop the processing for an action.
-    ///
-    /// @param action Object describing the action to stop processing.
-    void stopAction(const BasicWindowManagerAction& action, GLWindow& window) override;
-
-=======
->>>>>>> 7099499de60fe2ccffb3788153ea484006b6da19
     //////////////////////////////////////////////
     ///                                        ///
     /// Methods overridden from InputProcessor ///
@@ -101,35 +80,33 @@ public:
     ///
     /// @return The default control scheme for the keyboard movement script.
     const ControlScheme<BasicWindowManagerAction>& getDefaultControlScheme() const override;
-<<<<<<< HEAD
-=======
 
-    /////////////////////////////////////////////////////////////////////////////
-    ///                                                                       ///
-    /// Methods overridden from ActionEventReceiver<BasicWindowManagerAction> ///
-    ///                                                                       ///
-    /////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////
+    ///                                                          ///
+    ///                  Methods overridden from                 ///
+    /// ActionEventReceiver<BasicWindowManagerAction, GLWindow&> ///
+    ///                                                          ///
+    ////////////////////////////////////////////////////////////////
 
     /// @brief Start the processing for an action.
     ///
     /// @param action Object describing the action to start processing.
-    void triggerAction(const BasicWindowManagerAction& action, GLWindow& window) override;
+    void triggerAction(const BasicWindowManagerAction& action) override;
 
     /// @brief Stop the processing for an action.
     ///
     /// @param action Object describing the action to stop processing.
-    void stopAction(const BasicWindowManagerAction& action, GLWindow& window) override;
+    void stopAction(const BasicWindowManagerAction& action) override;
 
     ///////////////////////////////////////////////////////////
     ///                                                     ///
     /// Methods overridden from ArgumentProvider<GLWindow&> ///
     ///                                                     ///
     ///////////////////////////////////////////////////////////
->>>>>>> 7099499de60fe2ccffb3788153ea484006b6da19
 };
 
 std::string to_string(const BasicWindowManagerAction action);
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__RUNNABLES__BASIC_INPUT_MANAGER_HPP

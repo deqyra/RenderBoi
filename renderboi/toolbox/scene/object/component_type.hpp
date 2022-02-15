@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Literals describing types of available components.
@@ -21,7 +21,7 @@ enum class ComponentType
 
 std::string to_string(const ComponentType type);
 
-} // namespace Renderboi
+} // namespace renderboi
 
 // New literals representing new classes derived from Component must be added here
 

@@ -15,7 +15,7 @@
 #include "../script.hpp"
 #include "object/scene_object.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 Scene::Scene() :
@@ -339,7 +339,7 @@ void Scene::_performObjectRegistration(SceneObjectPtr&& object, const SceneObjec
 
     // Create nodes in graphs, using parent node IDs from retrieved metadata
     const unsigned int objectNodeId = _objects.addNode(std::move(object), parentMeta.objectNodeId);
-    const unsigned int transformNodeId = _transforms.addNode(newTransform, parentMeta.transformNodeId);
+    const unsigned int transformNodeId = _transforms.addNode(std::move(newTransform), parentMeta.transformNodeId);
     const unsigned int updateNodeId = _updateMarkers.addNode(false, parentMeta.updateNodeId);
 
     // Hook up the notification receiver of the scene with the notifier of the object transform
@@ -490,4 +490,4 @@ bool Scene::_hasDisabledParent(const unsigned int id) const
     return false;
 }
 
-} // namespace Renderboi
+} // namespace renderboi

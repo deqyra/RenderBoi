@@ -12,7 +12,7 @@
 #include "component.hpp"
 #include "component_type.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 class SceneObject;
@@ -211,9 +211,14 @@ CTy& ComponentMap::getComponent() const
 {
     auto it = _singleComponentMap.find(Ty);
 
-    if (it == _singleComponentMap.end()) return nullptr;
+    if (it == _singleComponentMap.end())
+    {
+        std::string s = "ComponentMap: cannot get component \"" + to_string(Ty)
+        + "\" from object.";
+        throw std::runtime_error(s.c_str());
+    }
 
-    return *(it->second);
+    return (CTy&)(*(it->second));
 }
 
 template<
@@ -271,12 +276,15 @@ CTy& ComponentMap::addComponent(ArgTypes&&... args)
     }
 
     // Construct component from passed arguments
-    auto it = _singleComponentMap.insert({
+    std::unique_ptr<CTy> component = std::make_unique<CTy>(_sceneObject, std::forward<ArgTypes>(args)...);
+    CTy& componentRef = *component;
+
+    auto [it, _] = _singleComponentMap.insert({
         Ty,
-        std::make_unique<CTy>(_sceneObject, std::forward(args)...)
+        std::move(component)
     });
 
-    return *(it->second);
+    return componentRef;
 }
 
 template<
@@ -288,12 +296,15 @@ template<
 CTy& ComponentMap::addComponent(ArgTypes&&... args)
 {
     // Construct component from passed arguments
+    std::unique_ptr<CTy> component = std::make_unique<CTy>(_sceneObject, std::forward<ArgTypes>(args)...);
+    CTy& componentRef = *component;
+
     auto it = _multiComponentMap.insert({
         Ty,
-        std::make_unique<CTy>(_sceneObject, std::forward(args)...)
+        std::move(component)
     });
 
-    return *(it->second);
+    return componentRef;
 }
 
 template<
@@ -357,6 +368,6 @@ void ComponentMap::clear()
 }
 
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__SCENE__OBJECT__COMPONENT_MAP_HPP

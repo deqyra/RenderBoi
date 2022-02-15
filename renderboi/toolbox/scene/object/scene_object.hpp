@@ -21,7 +21,7 @@
 #include "component_map.hpp"
 #include "component_type.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 class Scene;
@@ -115,6 +115,6 @@ public:
 
 using SceneObjectPtr = std::unique_ptr<SceneObject>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__SCENE__OBJECT__SCENE_OBJECT_HPP

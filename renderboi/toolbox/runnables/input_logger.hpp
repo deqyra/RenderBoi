@@ -9,7 +9,7 @@
 #include <renderboi/window/gl_window.hpp>
 #include <renderboi/window/gamepad/gamepad_input_processor.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 class InputLogger : public InputProcessor, public GamepadInputProcessor
@@ -176,6 +176,6 @@ public:
 
 using InputLoggerPtr = std::unique_ptr<InputLogger>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__RUNNABLES__INPUT_LOGGER_HPP

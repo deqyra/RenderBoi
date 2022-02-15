@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace Renderboi
+namespace renderboi
 {
 
 bool Component::MultipleInstancesAllowed(const ComponentType type)

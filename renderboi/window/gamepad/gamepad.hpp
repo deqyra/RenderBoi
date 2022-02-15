@@ -10,7 +10,7 @@
 #include "gamepad_state.hpp"
 #include "gamepad_input_processor.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 namespace Window
 {
@@ -166,6 +166,6 @@ public:
 using Gamepad = Window::Gamepad;
 using GamepadPtr = std::unique_ptr<Gamepad>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__WINDOW__GAMEPAD__GAMEPAD_HPP

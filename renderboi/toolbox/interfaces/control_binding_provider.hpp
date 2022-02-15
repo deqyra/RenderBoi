@@ -6,19 +6,14 @@
 
 #include "../controls/control.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Interface for a class which provides bindings between controls
 /// and an enum describing actions.
 ///
 /// @tparam T Enum whose literal describe the actions to be taken.
-/// @tparam S Type of storage to be used by the implementation to store and
-/// return the bindings.
-template<
-    typename T,
-    template<typename...> class S = std::multimap
->
+template<typename T>
 class ControlBindingProvider
 {
 public:
@@ -64,12 +59,18 @@ public:
     /// action, paired with the action they are bound to.
     ///
     /// @return A pointer to the container of all controls bound to an action.
-    virtual const S<T, Control>& getAllBoundControls() const = 0;
+    virtual const std::multimap<T, Control>& getAllBoundControls() const = 0;
+
+    /// @brief Returns a container of all actions to which a control is bound,
+    /// paired with the bound control.
+    ///
+    /// @return A pointer to the container of all actions with a bound control.
+    virtual const std::unordered_map<Control, T, ControlHash>& getAllBoundActions() const = 0;
 };
 
 template<typename T>
 using ControlBindingProviderPtr = std::unique_ptr<ControlBindingProvider<T>>;
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__INTERFACES__CONTROL_BINDING_PROVIDER_HPP

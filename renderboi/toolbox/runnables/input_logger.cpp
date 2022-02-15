@@ -6,7 +6,7 @@
 
 #include <renderboi/window/gl_window.hpp>
 
-namespace Renderboi
+namespace renderboi
 {
 
 InputLogger::InputLogger(std::ostream& outputStream) :
@@ -153,4 +153,4 @@ void InputLogger::processAxis(const Gamepad& gamepad, const Axis axis, const flo
                      "New value: " << value << "\n" << std::endl;
 }
 
-} // namespace Renderboi
+} // namespace renderboi

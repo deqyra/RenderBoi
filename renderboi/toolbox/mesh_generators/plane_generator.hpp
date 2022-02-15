@@ -7,7 +7,7 @@
 
 #include "mesh_generator.hpp"
 
-namespace Renderboi
+namespace renderboi
 {
 
 /// @brief Generates vertices for a tiled plane.
@@ -97,6 +97,6 @@ struct MeshTypeMeta<MeshType::Plane>
     };
 };
 
-} // namespace Renderboi
+} // namespace renderboi
 
 #endif//RENDERBOI__TOOLBOX__MESH_GENERATORS__PLANE_GENERATOR_HPP
