@@ -46,7 +46,8 @@ MeshPtr PlaneGenerator::generateMesh() const
     const Parameters& p(parameters);
     const unsigned int nVertices = (p.tileAmountX + 1) * (p.tileAmountY + 1);
 
-    std::vector<Vertex> vertices(nVertices);
+    std::vector<Vertex> vertices;
+    vertices.reserve(nVertices);
 
     for (unsigned int j = 0; j < p.tileAmountY + 1; j++)
     {

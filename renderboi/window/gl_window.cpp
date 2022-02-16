@@ -16,7 +16,8 @@ GLWindow::GLWindow(std::string title) :
     _inputProcessor(_DefaultInputProcessor.get()),
     _title(title),
     _exitSignaled(false),
-    _gamepadManager(nullptr)
+    _gamepadManager(nullptr),
+    _glContextEventManager(std::make_unique<GLContextEventManager>(*this))
 {
 
 }

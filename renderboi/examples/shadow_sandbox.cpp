@@ -125,6 +125,8 @@ void ShadowSandbox::run()
     );
     Texture2D floorTex = Texture2D("wood.png", PixelSpace::sRGB);
     floorMaterial.pushDiffuseMap(floorTex);
+    SceneObject* fp = nullptr;
+
     SceneObject& floorObj = Factory::MakeSceneObjectWithMesh<MeshType::Plane>(scene, "Floor", planeParameters, floorMaterial, blinnPhongShader);
 
     // WALLS

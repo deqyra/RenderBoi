@@ -31,6 +31,19 @@ class Scene;
 /// contains information on how to draw itself.
 class SceneObject
 {
+public:
+    /// @brief Unique ID of the object.
+    const unsigned int id;
+
+    /// @brief Reference to the parent scene of this object.
+    Scene& scene;
+
+    /// @brief Whether this object is enabled in its parent scene.
+    bool enabled;
+
+    /// @brief Name of the object in the scene.
+    const std::string name;
+
 private:
     SceneObject& operator=(const SceneObject& other) = delete;
 
@@ -99,18 +112,6 @@ public:
     ///
     /// @return A unique pointer to the cloned scene object instance.
     SceneObjectPtr clone() const;
-
-    /// @brief Unique ID of the object.
-    const unsigned int id;
-
-    /// @brief Reference to the parent scene of this object.
-    Scene& scene;
-
-    /// @brief Whether this object is enabled in its parent scene.
-    bool enabled;
-
-    /// @brief Name of the object in the scene.
-    const std::string name;
 };
 
 using SceneObjectPtr = std::unique_ptr<SceneObject>;

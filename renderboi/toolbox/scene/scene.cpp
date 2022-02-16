@@ -73,7 +73,7 @@ SceneObject& Scene::newObject(const std::string& name)
     const ObjectTree::NodePtr node = _objects.getRoot();
     const unsigned int rootId = node->value->id;
 
-    SceneObjectPtr object = std::make_unique<SceneObject>(*this);
+    SceneObjectPtr object = std::make_unique<SceneObject>(*this, name);
     SceneObject& objectRef = *object;
 
     _performObjectRegistration(std::move(object), _objectMetadata[rootId]);
