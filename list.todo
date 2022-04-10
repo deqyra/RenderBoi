@@ -116,6 +116,8 @@ RenderBoi:
             ☐ Implement transform optimisations using object tags
             ☐ Get rid of _findObjectMetaOrThrow code duplication for const variant
             ☐ Serialisation
+            ☐ Use the C++23 "deducing this" paper to fix const variant of methods
+            ☐ Transform notification subscription is terribly inefficient
         SceneObject:
             ✔ Add name for debugging purposes @done(20-10-19 12:04)
             ✔ Return shared pointers instead of weak pointers where possible @done(20-10-20 16:17)

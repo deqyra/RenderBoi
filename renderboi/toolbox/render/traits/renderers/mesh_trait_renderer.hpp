@@ -17,8 +17,8 @@ public:
     ///                                       ///
     /////////////////////////////////////////////
 
-    /// @brief Render a mesh?
-    virtual void render() const override;
+    /// @brief Render a mesh
+    virtual void render(const RenderTraitConfig& config) const override;
 };
 
 struct RenderTraitMeta<RenderTrait::Mesh>::Renderer

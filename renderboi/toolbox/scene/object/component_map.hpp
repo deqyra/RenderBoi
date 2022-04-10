@@ -218,7 +218,7 @@ CTy& ComponentMap::getComponent() const
         throw std::runtime_error(s.c_str());
     }
 
-    return (CTy&)(*(it->second));
+    return static_cast<CTy&>(*(it->second));
 }
 
 template<

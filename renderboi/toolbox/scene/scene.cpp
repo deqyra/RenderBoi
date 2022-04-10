@@ -358,6 +358,8 @@ void Scene::_performObjectRegistration(SceneObjectPtr&& object, const SceneObjec
         .updateNodeId           = updateNodeId,
         .transformSubscriberId  = transformSubscriberId
     };
+
+    // Register object in dynamic collections
 }
 
 void Scene::_worldTransformDFSUpdate(const unsigned int startingId) const

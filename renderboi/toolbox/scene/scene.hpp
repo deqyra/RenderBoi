@@ -14,6 +14,7 @@
 #include <glm/glm.hpp>
 
 #include <cpptools/container/tree.hpp>
+#include <cpptools/container/hive.hpp>
 
 #include "../script.hpp"
 #include "object/component_type.hpp"
@@ -23,16 +24,12 @@
 namespace renderboi
 {
 
-class Factory;
-
 /// @brief A scene containing 3D objects organised in a tree structure. Handles
 /// self-updating scripts and processes input from the application. Use Factory
 /// to instantiate and terminate.
 
 class Scene
 {
-friend Factory;
-
 public:
     using ObjectTree = cpptools::Tree<SceneObjectPtr>;
     using TransformTree = cpptools::Tree<Transform>;
@@ -59,6 +56,10 @@ private:
 
     /// @brief Map script IDs to script references.
     std::unordered_map<unsigned int, Script&> _scripts;
+
+    /// @brief Map keeping track of which objects currently have a given component.
+    std::unordered_map<ComponentType, cpptools::hive<SceneObject*>>
+    _enabledComponentCollections;
 
     /// @brief Last time a scene update was triggered.
     std::chrono::time_point<std::chrono::system_clock> _lastTime;
@@ -304,7 +305,7 @@ public:
     /// all registered scripts.
     void triggerUpdate();
 
-    /// @brief Get pointers to all scene objects which have a certain 
+    /// @brief Get references to all scene objects which have a certain 
     /// component.
     ///
     /// @tparam T Literal describing the type of component to query.
@@ -315,11 +316,11 @@ public:
     /// @return An array filled with pointers to all the objects in the 
     /// scene which meet the criteria.
     template<ComponentType T>
-    std::vector<std::reference_wrapper<SceneObject>> getObjectsWithComponent(const bool mustBeEnabled = true) const;
+    const std::vector<std::reference_wrapper<SceneObject>>& getObjectsWithComponent(const bool mustBeEnabled = true) const;
 };
 
 template<ComponentType T>
-std::vector<std::reference_wrapper<SceneObject>> Scene::getObjectsWithComponent(const bool mustBeEnabled) const
+const std::vector<std::reference_wrapper<SceneObject>>& Scene::getObjectsWithComponent(const bool mustBeEnabled) const
 {
     const std::vector<std::reference_wrapper<SceneObject>> all = getAllObjects();
     std::vector<std::reference_wrapper<SceneObject>> result;

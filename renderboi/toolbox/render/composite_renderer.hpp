@@ -1,8 +1,11 @@
 #ifndef RENDERBOI__TOOLBOX__SCENE__RENDER__COMPOSITE_RENDERER_HPP
 #define RENDERBOI__TOOLBOX__SCENE__RENDER__COMPOSITE_RENDERER_HPP
 
+#include <array>
+#include <type_traits>
 #include <unordered_map>
 
+#include "../scene/object/components/mesh_component.hpp"
 #include "traits/render_trait.hpp"
 #include "traits/trait_renderer.hpp"
 
@@ -16,8 +19,10 @@ private:
     std::unordered_map<RenderTrait, TraitRendererPtr> _renderers;
 
 public:
+    CompositeRenderer();
+
     /// @brief Render something?
-    void render() const;
+    void render(const SceneObject& object) const;
 };
 
 } // namespace renderboi
