@@ -231,8 +231,8 @@ public:
     /// @return The resulting transform.
     Transform applyOver(const ObjectTransform& other) const;
 
-    /// @brief Compute and return the differential transform between [*this] and
-    /// [other]. If X is such a Transform, then [X.applyOver(other) == *this]
+    /// @brief Compute and return the differential transform between `*this` and
+    /// `other`. If X is such a Transform, then `X.applyOver(other) == *this`
     /// is true.
     ///
     /// @param other The transform from which the differential transform

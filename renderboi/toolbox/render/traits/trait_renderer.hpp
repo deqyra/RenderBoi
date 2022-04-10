@@ -3,7 +3,9 @@
 
 #include <memory>
 
+#include "../../scene/object/components/mesh_component.hpp"
 #include "render_trait.hpp"
+#include "render_trait_config.hpp"
 
 namespace renderboi
 {
@@ -13,8 +15,8 @@ namespace renderboi
 class TraitRenderer
 {
 public:
-    /// @brief Render something?
-    virtual void render() const = 0;
+    /// @brief Render something
+    virtual void render(const RenderTraitConfig& config) const = 0;
 };
 
 using TraitRendererPtr = std::unique_ptr<TraitRenderer>;

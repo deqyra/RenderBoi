@@ -118,20 +118,14 @@ void KeyboardMovementScript::stopAction(const KeyboardMovementAction& action)
 
 const ControlScheme<KeyboardMovementAction>& KeyboardMovementScript::getDefaultControlScheme() const
 {
-    static ControlScheme<KeyboardMovementAction> scheme;
-    static bool runOnce = false;
-
-    if (!runOnce)
-    {
-        using Window::Input::Key;
-        scheme.bindControl(Control(Key::W), KeyboardMovementAction::Forward);
-        scheme.bindControl(Control(Key::A), KeyboardMovementAction::Left);
-        scheme.bindControl(Control(Key::S), KeyboardMovementAction::Backward);
-        scheme.bindControl(Control(Key::D), KeyboardMovementAction::Right);
-        scheme.bindControl(Control(Key::LeftShift), KeyboardMovementAction::Sprint);
-
-        runOnce = true;
-    }
+    using Window::Input::Key;
+    static ControlScheme<KeyboardMovementAction> scheme = {
+        { Control(Key::W),          KeyboardMovementAction::Forward },
+        { Control(Key::A),          KeyboardMovementAction::Left },
+        { Control(Key::S),          KeyboardMovementAction::Backward },
+        { Control(Key::D),          KeyboardMovementAction::Right },
+        { Control(Key::LeftShift),  KeyboardMovementAction::Sprint }
+    };
 
     return scheme;
 }

@@ -9,7 +9,10 @@ file(WRITE ${CMAKE_BINARY_DIR}/cp_${RB_UTILITIES_LIB_NAME}_headers.cmake
 
 # Build utilities lib
 add_library(${RB_UTILITIES_LIB_NAME} ${STATIC_OR_SHARED}
-    ${RB_UTILITIES_SOURCE_FILES}
+    gl_utilities.cpp
+    gl_utilities.hpp
+    resource_locator.cpp
+    resource_locator.hpp
 )
 add_dependencies(${RB_UTILITIES_LIB_NAME}
     "export_${CPPTOOLS_LIB_NAME}_headers"

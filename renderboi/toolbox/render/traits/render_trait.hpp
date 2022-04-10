@@ -1,6 +1,8 @@
 #ifndef RENDERBOI__TOOLBOX__SCENE__RENDERER__RENDER_TRAIT_HPP
 #define RENDERBOI__TOOLBOX__SCENE__RENDERER__RENDER_TRAIT_HPP
 
+#include <array>
+
 namespace renderboi
 {
 
@@ -11,7 +13,8 @@ namespace renderboi
  *     WRITING A NEW RENDER TRAIT
  * ==================================
  *
- * - Add literal to RenderTrait
+ * - Add literal to RenderTrait enum below
+ * - Add literal to OrderedRenderTraits array
  * - Write renderer for new trait, inheriting from TraitRenderer
  * - Write render config for new trait, inheriting from RenderTraitConfig
  * - Below declaration of new config, specialize RenderTraitMeta like so:
@@ -61,6 +64,12 @@ struct RenderTraitMeta
     /// @brief Use ::type to get the type of config expected by the concrete 
     /// trait renderer for T.
     struct Config {};
+};
+
+static inline constexpr std::array<RenderTrait, 3> OrderedRenderTraits = {
+    RenderTrait::Mesh,
+    RenderTrait::Outline,
+    RenderTrait::CastShadows
 };
 
 } // namespace renderboi

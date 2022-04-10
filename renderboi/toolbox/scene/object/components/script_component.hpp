@@ -4,15 +4,13 @@
 #include <string>
 #include <type_traits>
 
-#include "../component.hpp"
-#include "../component_type.hpp"
 #include "../../../script.hpp"
 
 namespace renderboi
 {
 
 /// @brief Component allowing a scene object to self-update through time.
-class ScriptComponent : public Component
+class ScriptComponent
 {
 private:
     ScriptComponent(ScriptComponent& other) = delete;
@@ -37,7 +35,7 @@ public:
     /// to this component.
     /// @param script Reference to the input processing script which the 
     /// component will use.
-    ScriptComponent(SceneObject& sceneObject, Script& script);
+    ScriptComponent(Script& script);
 
     /// @param sceneObject Reference to the scene object which will be parent
     /// to this component.
@@ -46,7 +44,7 @@ public:
     ///
     /// @exception If the passed script pointer is null, the function will 
     /// throw a std::runtime_error.
-    ScriptComponent(SceneObject& sceneObject, ScriptPtr&& script);
+    ScriptComponent(ScriptPtr&& script);
 
     /// @param sceneObject Reference to the scene object which will be parent
     /// to this component.
@@ -61,31 +59,14 @@ public:
         typename... ArgTypes,
         typename = std::enable_if_t<std::is_base_of_v<Script, T>, void>
     >
-    ScriptComponent(SceneObject& sceneObject, ArgTypes&& ...args);
+    ScriptComponent(ArgTypes&& ...args);
 
     ~ScriptComponent() = default;
 
     /// @brief Get a reference to the script used by the component.
     ///
     /// @return Reference to the script used by the component.
-    Script& script() const;
-
-    /////////////////////////////////////////
-    ///                                   ///
-    /// Methods overridden from Component ///
-    ///                                   ///
-    /////////////////////////////////////////
-
-    /// @brief Get a raw reference to a new component instance cloned 
-    /// from this one. Ownership and responsibility for the allocated 
-    /// resources are fully transferred to the caller.
-    ///
-    /// @param newParent Reference the scene object which will be parent to
-    /// the cloned component instance.
-    ///
-    /// @return A raw reference to the component instance cloned from this 
-    /// one.
-    ScriptComponent* clone(SceneObject& newParent) const override;
+    Script& script();
 };
 
 template<
@@ -93,38 +74,12 @@ template<
     typename... ArgTypes,
     typename
 >
-ScriptComponent::ScriptComponent(SceneObject& sceneObject, ArgTypes&& ...args) :
-    Component(sceneObject),
+ScriptComponent::ScriptComponent(ArgTypes&& ...args) :
     _scriptPtr(std::make_unique<T>(std::forward(args)...)),
     _script(*_scriptPtr)
 {
 
 }
-
-template<>
-struct ComponentMeta<ComponentType::Script>
-{
-    struct MultipleInstancesAllowed
-    {
-        static constexpr bool value = true;
-    };
-
-    struct ConcreteType
-    {
-        using type = ScriptComponent;
-    };
-
-    struct Name
-    {
-        static constexpr const char* value = "ScriptComponent";
-    };
-};
-
-template<>
-struct ComponentTypeToEnum<ScriptComponent>
-{
-    static constexpr ComponentType value = ComponentType::Script;
-};
 
 } // namespace renderboi
 

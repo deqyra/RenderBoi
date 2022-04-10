@@ -1,5 +1,5 @@
 Renderboi was written with a few things in mind, regarding architecture as well as code style:
-* **Keep things simple.** If it makes sense, go for it. If it's convoluted, break it down. Even if it does make sense as is. Complex is better than complicated.
+* **Keep things simple.** If it makes sense, go for it. If it's convoluted, break it down. Complex is better than complicated.
 * **Explicit over implicit.** Verbosity is (almost) never a problem. `using` directives for whole namespaces are frowned upon, especially in the global scope.
 * Naming stuff:
   * Make it clear. Explicit over implicit.

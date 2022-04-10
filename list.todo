@@ -14,11 +14,11 @@ RenderBoi:
         ✔ Move tools to external repo and update CMake to use it @done(20-12-17 14:20)
         ☐ Set up continuous integration
         ✔ Better documentation @done(20-10-19 19:22)
-        ☐ In all accessor functions using local-statically generated data: provide a refresh argument
-        ☐ In all functions using the `bool runOnce` trick to generate local static data once: use initialiser syntax instead
+        ✘ In all accessor functions using local-statically generated data: provide a refresh argument @cancelled(22-05-18 13:11)
+        ✔ In all functions using the `bool runOnce` trick to generate local static data once: use initialiser syntax instead @done(22-05-18 13:10)
         ☐ ADL behaves badly on to_string methods (these REALLY need to be fixed they're a mess rn)
         ☐ Investigate move semantics usage
-        ☐ Change shared_ptr to unique_ptr where ownership is due and to naked pointer where it's just being used
+        ✔ Change shared_ptr to unique_ptr where ownership is due and to naked pointer where it's just being used @done(22-05-08 20:29)
         ☐ Destructors with an empty body should just be defaulted
         ✘ Put #pragma region directives in files @cancelled(22-02-02 13:42)
         ☐ Remove friends or if not possible restrict to certain methods
@@ -84,6 +84,7 @@ RenderBoi:
             ☐ Make a concept out of components, simplify template usage in SceneObject
             ✔ Implement template meta to have componentMap.addComponent<Camera> instead of componentMap.addComponent<CameraComponent> @done(22-01-29 18:13)
             ☐ Is MeshRenderTags necessary?
+            ☐ Remove MeshComponent::_meshPtr somehow
         ComponentMap:
             ✔ Better naming for template parameters @done(22-02-02 00:16)
         Controls:
@@ -114,8 +115,11 @@ RenderBoi:
             ☐ triggerUpdate() should not update scripts attached to disabled scene objects (or which have a disabled parent)
             ☐ remove() recursively calls itself instead of a more efficient, check-free private routine
             ☐ Implement transform optimisations using object tags
-            ☐ Get rid of _findObjectMetaOrThrow code duplication for const variant
             ☐ Serialisation
+            ☐ Get rid of _findObjectMetaOrThrow code duplication for const variant
+            ☐ Use the C++23 "deducing this" paper to fix const variant of methods
+            ☐ Transform notification subscription is terribly inefficient
+            ☐ Integrate EnTT
         SceneObject:
             ✔ Add name for debugging purposes @done(20-10-19 12:04)
             ✔ Return shared pointers instead of weak pointers where possible @done(20-10-20 16:17)

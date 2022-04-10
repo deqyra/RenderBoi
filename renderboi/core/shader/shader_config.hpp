@@ -2,6 +2,7 @@
 #define RENDERBOI__CORE__SHADER__SHADER_CONFIG_HPP
 
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "shader_feature.hpp"
@@ -49,6 +50,19 @@ private:
 
 public:
     ShaderConfig();
+
+    /// @param list Ordered list of literals describing which features to 
+    /// include in the config. The individual features will be added to the
+    /// config in the provided order, and conflicts will be checked for while
+    /// doing so. Feature requirements will NOT be automatically included in the
+    /// config.
+    ///
+    /// @exception If one of the features in the list conflicts with another
+    /// feature in the list, the function will throw an std::runtime_exception.
+    /// @exception If one of the features in the list does not have its required
+    /// features included as previous elements in the list, the function will 
+    /// throw an std::runtime_exception.
+    ShaderConfig(std::initializer_list<ShaderFeature> list);
 
     /// @brief Get a config object for the minimum functionality a 
     /// shader should provide.

@@ -93,7 +93,42 @@ file(WRITE ${CMAKE_BINARY_DIR}/cp_${RB_WINDOW_LIB_NAME}_headers.cmake
 
 # Build window lib
 add_library(${RB_WINDOW_LIB_NAME} ${STATIC_OR_SHARED}
-    ${RB_WINDOW_SOURCE_FILES}
+    enums.cpp
+    enums.hpp
+    env_info.hpp
+    gl_window.cpp
+    gl_window.hpp
+    input_processor.cpp
+    input_processor.hpp
+    monitor.cpp
+    monitor.hpp
+    window_backend.hpp
+    window_creation_parameters.hpp
+    window_factory.hpp
+    event/gl_context_event_manager.cpp
+    event/gl_context_event_manager.hpp
+    event/gl_context_event.cpp
+    event/gl_context_event.hpp
+    gamepad/gamepad_input_processor.cpp
+    gamepad/gamepad_input_processor.hpp
+    gamepad/gamepad_manager.cpp
+    gamepad/gamepad_manager.hpp
+    gamepad/gamepad_state.cpp
+    gamepad/gamepad_state.hpp
+    gamepad/gamepad.cpp
+    gamepad/gamepad.hpp
+    glfw3/glfw3_adapter.cpp
+    glfw3/glfw3_adapter.hpp
+    glfw3/glfw3_gamepad_manager.cpp
+    glfw3/glfw3_gamepad_manager.hpp
+    glfw3/glfw3_monitor.cpp
+    glfw3/glfw3_monitor.hpp
+    glfw3/glfw3_utilities.cpp
+    glfw3/glfw3_utilities.hpp
+    glfw3/glfw3_window_factory.cpp
+    glfw3/glfw3_window_factory.hpp
+    glfw3/glfw3_window.cpp
+    glfw3/glfw3_window.hpp
 )
 add_dependencies(${RB_WINDOW_LIB_NAME}
     "window_backend_source"

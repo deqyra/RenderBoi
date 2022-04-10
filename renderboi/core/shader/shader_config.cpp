@@ -17,16 +17,24 @@ ShaderConfig::ShaderConfig() :
 
 }
 
+ShaderConfig::ShaderConfig(std::initializer_list<ShaderFeature> list) :
+    _requestedFeatures(),
+    _problems(),
+    _configVectorOutdated(false)
+{
+    for (auto feature : list)
+    {
+        addFeature(feature);
+    }
+}
+
+
 const ShaderConfig& ShaderConfig::MinimalConfig()
 {
-    static bool runOnce = false;
-    static ShaderConfig config;
-    if (!runOnce)
-    {
-        config.addFeature(ShaderFeature::VertexMVP);
-        config.addFeature(ShaderFeature::FragmentFullLight);
-        runOnce = true;
-    }
+    static ShaderConfig config = {
+        ShaderFeature::VertexMVP,
+        ShaderFeature::FragmentFullLight
+    };
 
     return config;
 }

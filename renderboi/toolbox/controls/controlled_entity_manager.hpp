@@ -65,7 +65,7 @@ public:
     ControlledEntityManager(ArgTypes&&... args) :
         _entity(std::forward<ArgTypes>(args)...),
         _controlScheme(_entity.getDefaultControlScheme()),
-        _translator(_controlScheme, (ActionEventReceiverType&)(_entity))
+        _translator(_controlScheme, static_cast<ActionEventReceiverType&>(_entity))
     {
         
     }
@@ -73,7 +73,7 @@ public:
     /// @brief Get a pointer to the managed entity.
     ///
     /// @return A pointer to the managed entity.
-    const T& entity() const
+    T& entity() const
     {
         return _entity;
     }
@@ -93,7 +93,7 @@ public:
     ///
     /// @return A pointer to the control event translator of the managed 
     /// entity.
-    const ControlEventTranslator<typename T::ActionType>& eventTranslator() const
+    ControlEventTranslator<typename T::ActionType>& eventTranslator() const
     {
         return _translator;
     }

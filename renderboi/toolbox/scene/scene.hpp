@@ -12,18 +12,16 @@
 #include <vector>
 
 #include <glm/glm.hpp>
+#include <entt/entt.hpp>
 
 #include <cpptools/container/tree.hpp>
 
 #include "../script.hpp"
-#include "object/component_type.hpp"
 #include "object/scene_object.hpp"
 #include "object/scene_object_metadata.hpp"
 
 namespace renderboi
 {
-
-class Factory;
 
 /// @brief A scene containing 3D objects organised in a tree structure. Handles
 /// self-updating scripts and processes input from the application. Use Factory
@@ -31,28 +29,24 @@ class Factory;
 
 class Scene
 {
-friend Factory;
-
 public:
-    using ObjectTree = cpptools::Tree<SceneObjectPtr>;
-    using TransformTree = cpptools::Tree<Transform>;
-    using BoolTree = cpptools::Tree<bool>;
+<<<<<<< Updated upstream
+    using ObjectTree = cpptools::Tree<SceneObject>;
+=======
+    using ObjectTree = cpptools::tree<SceneObjectPtr>;
+    using TransformTree = cpptools::tree<Transform>;
+    using BoolTree = cpptools::tree<bool>;
+>>>>>>> Stashed changes
 
 private:
+    entt::registry _registry;
+
     /// @brief Scene graph. Contains all objects in the scene, 
     /// hierarchically organised in a tree.
     ObjectTree _objects;
 
-    /// @brief Tree replicating the structure of the scene graph, containing
-    /// the world transforms of the mirrored scene objects.
-    TransformTree _transforms;
-
-    /// @brief Tree replicating the structure of the scene graph, telling 
-    /// whether the transforms of the mirrored scene objects need an update.
-    BoolTree _updateMarkers;
-
     /// @brief Indicates how many transforms in the scene are out of date.
-    mutable unsigned int _outdatedTransformNodes;
+    mutable unsigned int _outdatedTransformCount;
 
     /// @brief Map scene object IDs to object metadata structs.
     std::unordered_map<unsigned int, SceneObjectMetadata> _objectMetadata;
@@ -62,15 +56,6 @@ private:
 
     /// @brief Last time a scene update was triggered.
     std::chrono::time_point<std::chrono::system_clock> _lastTime;
-
-    /// @brief Initialize the root of object tree in the scene, as well as
-    /// the first scene object metadata entry.
-    void _init();
-
-    /// @brief Prepares the scene for destruction, by releasing strong 
-    /// references in its scene objects, and delting the contents of all
-    /// trees.
-    void _terminate();
 
     /// @brief Callback linked to the transform notifier of every object in 
     /// the scene.
@@ -304,7 +289,7 @@ public:
     /// all registered scripts.
     void triggerUpdate();
 
-    /// @brief Get pointers to all scene objects which have a certain 
+    /// @brief Get references to all scene objects which have a certain 
     /// component.
     ///
     /// @tparam T Literal describing the type of component to query.
@@ -315,11 +300,11 @@ public:
     /// @return An array filled with pointers to all the objects in the 
     /// scene which meet the criteria.
     template<ComponentType T>
-    std::vector<std::reference_wrapper<SceneObject>> getObjectsWithComponent(const bool mustBeEnabled = true) const;
+    const std::vector<std::reference_wrapper<SceneObject>>& getObjectsWithComponent(const bool mustBeEnabled = true) const;
 };
 
 template<ComponentType T>
-std::vector<std::reference_wrapper<SceneObject>> Scene::getObjectsWithComponent(const bool mustBeEnabled) const
+const std::vector<std::reference_wrapper<SceneObject>>& Scene::getObjectsWithComponent(const bool mustBeEnabled) const
 {
     const std::vector<std::reference_wrapper<SceneObject>> all = getAllObjects();
     std::vector<std::reference_wrapper<SceneObject>> result;

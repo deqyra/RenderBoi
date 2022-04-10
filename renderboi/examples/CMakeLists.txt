@@ -11,7 +11,14 @@ file(WRITE ${CMAKE_BINARY_DIR}/cp_${RB_EXAMPLES_LIB_NAME}_headers.cmake
 
 # Build examples lib
 add_library(${RB_EXAMPLES_LIB_NAME} ${STATIC_OR_SHARED}
-    ${RB_EXAMPLES_SOURCE_FILES}
+  gl_sandbox_parameters.hpp
+  gl_sandbox.cpp
+  gl_sandbox.hpp
+  gl_sandbox_runner.hpp
+  lighting_sandbox.cpp
+  lighting_sandbox.hpp
+  shadow_sandbox.cpp
+  shadow_sandbox.hpp
 )
 add_dependencies(${RB_EXAMPLES_LIB_NAME}
     "export_${RB_TOOLBOX_LIB_NAME}_lib"

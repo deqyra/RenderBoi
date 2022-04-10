@@ -22,10 +22,11 @@ Scene::Scene() :
     _objects(std::make_unique<SceneObject>(*this, "SCENE_ROOT")),
     _transforms(Transform()),
     _updateMarkers(false),
-    _outdatedTransformNodes(0),
+    _outdatedTransformCount(0),
     _objectMetadata(),
     _scripts(),
-    _lastTime(std::chrono::system_clock::now())
+    _lastTime(std::chrono::system_clock::now()),
+    _registry()
 {
     const ObjectTree::NodePtr objectRootNode = _objects.getRoot();
     const TransformTree::NodePtr transformRootNode = _transforms.getRoot();
@@ -41,6 +42,7 @@ Scene::Scene() :
         .updateNodeId           = updateRootNode->id,
         .transformSubscriberId  = _MaxUInt
     };
+    
 }
 
 Scene::~Scene()
@@ -118,7 +120,7 @@ void Scene::removeObject(const unsigned int id)
 
     // Within the markers about to be removed, subtract the count of those set 
     // to true from the outdated transform count
-    _outdatedTransformNodes -= _updateMarkers.countValue(true, meta.updateNodeId);
+    _outdatedTransformCount -= _updateMarkers.countValue(true, meta.updateNodeId);
 
     // Remove nodes in graphs
     _objects.removeBranch(meta.objectNodeId);
@@ -173,7 +175,7 @@ SceneObject& Scene::getParent(const unsigned int id) const
 
 void Scene::updateAllTransforms()
 {
-    if (_outdatedTransformNodes)
+    if (_outdatedTransformCount)
     {
         const ObjectTree::NodePtr objectRootNode = _objects.getRoot();
         const std::vector<ObjectTree::NodePtr> childNodes = objectRootNode->getChildren();
@@ -185,7 +187,7 @@ void Scene::updateAllTransforms()
             _worldTransformDFSUpdate(object.id);
         }
 
-        _outdatedTransformNodes = 0;
+        _outdatedTransformCount = 0;
     }
 }
 
@@ -194,7 +196,7 @@ Transform Scene::getWorldTransform(const unsigned int id, const bool cascadeUpda
     const SceneObjectMetadata& meta = _findObjectMetaOrThrow(id, "cannot retrieve world transform of this object");
 
     // Update transform if required
-    if (_outdatedTransformNodes > 0)
+    if (_outdatedTransformCount > 0)
     {
         // Find the IDs of parents that make up the longest chain of outdated object
         const std::vector<unsigned int> outdatedIds = _findLongestOutdatedParentIdChain(id);
@@ -301,7 +303,7 @@ void Scene::_markForUpdate(const unsigned int id)
     // Set the marker to true
     if (!updateNode->value)
     {
-        _outdatedTransformNodes++;
+        _outdatedTransformCount++;
         updateNode->value = true;
     }
 }
@@ -358,6 +360,8 @@ void Scene::_performObjectRegistration(SceneObjectPtr&& object, const SceneObjec
         .updateNodeId           = updateNodeId,
         .transformSubscriberId  = transformSubscriberId
     };
+
+    // Register object in dynamic collections
 }
 
 void Scene::_worldTransformDFSUpdate(const unsigned int startingId) const
@@ -432,7 +436,7 @@ void Scene::_worldTransformCascadeUpdate(const unsigned int id) const
     // Retrieve node metadata
     const SceneObjectMetadata& meta = it->second;
 
-    // Get object node pointer
+    // Get object node, update object
     const ObjectTree::NodePtr objectNode = _objects[meta.objectNodeId];
     _worldTransformUpdateNoCascade(id);
     
@@ -449,16 +453,18 @@ void Scene::_worldTransformUpdateNoCascade(const unsigned int id) const
     auto it = _objectMetadata.find(id);
     const SceneObjectMetadata& meta = it->second;
 
-    // Get object node pointer as well as the parent transform node pointer
+    // Get object node and parent transform node
     const ObjectTree::NodePtr objectNode = _objects[meta.objectNodeId];
     const TransformTree::NodePtr transformNode = _transforms[meta.transformNodeId];
     const TransformTree::NodePtr parentTransformNode = transformNode->getParent();
 
     if (parentTransformNode != nullptr)
     {
-        // Apply the parent world transform to the object transform, and save it to the object world transform node
+        // Apply parent world transform to object transform
         const Transform objectTransform = (Transform)(objectNode->value->transform());
         const Transform newTransform = objectTransform.applyOver(parentTransformNode->value);
+        
+        // Save result to object world transform node
         transformNode->value = newTransform;
     }
     else
@@ -470,7 +476,7 @@ void Scene::_worldTransformUpdateNoCascade(const unsigned int id) const
     if (_updateMarkers[meta.updateNodeId]->value)
     {
         _updateMarkers[meta.updateNodeId]->value = false;
-        _outdatedTransformNodes--;
+        _outdatedTransformCount--;
     }
 }
 

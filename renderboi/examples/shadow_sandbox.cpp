@@ -168,14 +168,6 @@ void ShadowSandbox::run()
     //depthShader.setFloat("near", camera->getNearDistance());
     //depthShader.setFloat("far", camera->getFarDistance());
 
-    // Register all objects
-    // scene->registerObject(floorObj);
-    // scene->registerObject(xyWallObj);
-    // scene->registerObject(yzWallObj);
-    // scene->registerObject(torusObj);
-    // scene->registerObject(lightObj);
-    // scene->registerObject(cameraObj);
-
 
 
     ///////////////////////////////
@@ -214,21 +206,21 @@ void ShadowSandbox::run()
 
     // Attach object movement script to scene
     ShadowSandboxScript sandboxScript(lightObj, torusObj);
-    scene.registerScript((Script&)(sandboxScript));
+    scene.registerScript(static_cast<Script&>(sandboxScript));
     
-    BasisProvider& cameraAsBasisProvider = (BasisProvider&)(camera);
+    BasisProvider& cameraAsBasisProvider = static_cast<BasisProvider&>(camera);
 
     // Add script component to camera: KeyboardMovementScript
     ControlledEntityManager<KeyboardMovementScript> keyboardMovementScriptManager(cameraAsBasisProvider);
-    cameraObj.componentMap().addComponent<ComponentType::Script>((Script&)(keyboardMovementScriptManager.entity()));
+    cameraObj.componentMap().addComponent<ComponentType::Script>(static_cast<Script&>(keyboardMovementScriptManager.entity()));
 
     // Add script component to camera: GamepadMovementScript
     GamepadMovementScript gamepadMovementScript(cameraAsBasisProvider);
-    cameraObj.componentMap().addComponent<ComponentType::Script>((Script&)(gamepadMovementScript));
+    cameraObj.componentMap().addComponent<ComponentType::Script>(static_cast<Script&>(gamepadMovementScript));
 
     // Add script component to scene: GamepadCameraManager
     GamepadCameraManager gamepadCameraManager(camera);
-    scene.registerScript((Script&)(gamepadCameraManager));
+    scene.registerScript(static_cast<Script&>(gamepadCameraManager));
 
     // Window script
     ControlledEntityManager<BasicWindowManager> windowManager(_window);
@@ -240,26 +232,26 @@ void ShadowSandbox::run()
 
     // Register all input processors to the splitter
     InputSplitter splitter;
-    splitter.registerInputProcessor((InputProcessor&)(cameraManager));
-    splitter.registerInputProcessor((InputProcessor&)(cameraAspectRatioManager));
-    splitter.registerInputProcessor((InputProcessor&)(sandboxScript));
-    splitter.registerInputProcessor((InputProcessor&)(keyboardMovementScriptManager.eventTranslator()));
-    splitter.registerInputProcessor((InputProcessor&)(windowManager.entity()));
-    splitter.registerInputProcessor((InputProcessor&)(windowManager.eventTranslator()));
+    splitter.registerInputProcessor(static_cast<InputProcessor&>(cameraManager));
+    splitter.registerInputProcessor(static_cast<InputProcessor&>(cameraAspectRatioManager));
+    splitter.registerInputProcessor(static_cast<InputProcessor&>(sandboxScript));
+    splitter.registerInputProcessor(static_cast<InputProcessor&>(keyboardMovementScriptManager.eventTranslator()));
+    splitter.registerInputProcessor(static_cast<InputProcessor&>(windowManager.entity()));
+    splitter.registerInputProcessor(static_cast<InputProcessor&>(windowManager.eventTranslator()));
 
     // Register all gamepad input processors to the splitter
-    splitter.registerGamepadInputProcessor((GamepadInputProcessor&)(gamepadMovementScript));
-    splitter.registerGamepadInputProcessor((GamepadInputProcessor&)(gamepadCameraManager));
+    splitter.registerGamepadInputProcessor(static_cast<GamepadInputProcessor&>(gamepadMovementScript));
+    splitter.registerGamepadInputProcessor(static_cast<GamepadInputProcessor&>(gamepadCameraManager));
 
     // Register the logger as both a classic input processor and a gamepad input processor
-    splitter.registerInputProcessor((InputProcessor&)(logger));
-    splitter.registerGamepadInputProcessor((GamepadInputProcessor&)(logger));
+    splitter.registerInputProcessor(static_cast<InputProcessor&>(logger));
+    splitter.registerGamepadInputProcessor(static_cast<GamepadInputProcessor&>(logger));
     
     // Register the splitter to the window and the gamepad
-    _window.registerInputProcessor((InputProcessor&)(splitter));
+    _window.registerInputProcessor(static_cast<InputProcessor&>(splitter));
     if (_gamepad)
     {
-        _gamepad->registerInputProcessor((GamepadInputProcessor&)(splitter));
+        _gamepad->registerInputProcessor(static_cast<GamepadInputProcessor&>(splitter));
     }
 
     glClearColor(0.0f, 0.0f, 0.1f, 1.0f);

@@ -7,8 +7,7 @@
 namespace renderboi
 {
 
-LightComponent::LightComponent(SceneObject& sceneObject, LightPtr&& light) :
-    Component(sceneObject),
+LightComponent::LightComponent(LightPtr&& light) :
     _lightPtr(std::move(light)),
     _light(*_lightPtr)
 {
@@ -18,8 +17,7 @@ LightComponent::LightComponent(SceneObject& sceneObject, LightPtr&& light) :
     }
 }
 
-LightComponent::LightComponent(SceneObject& sceneObject, Light& light) :
-    Component(sceneObject),
+LightComponent::LightComponent(Light& light) :
     _lightPtr(nullptr),
     _light(light)
 {
@@ -33,14 +31,6 @@ LightComponent::~LightComponent()
 Light& LightComponent::light()
 {
     return _light;
-}
-
-LightComponent* LightComponent::clone(SceneObject& newParent) const
-{
-    return new LightComponent(
-        newParent,
-        std::move(LightPtr(_light.clone()))
-    );
 }
 
 } // namespace renderboi

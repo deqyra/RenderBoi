@@ -100,36 +100,28 @@ void Gamepad::setAxisDeadZone(const Axis axis, std::pair<float, float> deadZone)
 
 const std::unordered_map<Axis, std::pair<float, float>>& Gamepad::DefaultAxisDeadZones()
 {
-    static std::unordered_map<Axis, std::pair<float, float>> defaultDeadZones;
-    static bool runOnce = false;
-
-    if (!runOnce)
-    {
-        defaultDeadZones[Axis::LeftX]        = {-.1f, .1f};
-        defaultDeadZones[Axis::LeftY]        = {-.1f, .1f};
-        defaultDeadZones[Axis::RightX]       = {-.1f, .1f};
-        defaultDeadZones[Axis::RightY]       = {-.1f, .1f};
-        defaultDeadZones[Axis::LeftTrigger]  = {-1.f, -.95f};
-        defaultDeadZones[Axis::RightTrigger] = {-1.f, -.95f};
-    }
+    static std::unordered_map<Axis, std::pair<float, float>> defaultDeadZones = {
+        { Axis::LeftX,        {-.1f, .1f} },
+        { Axis::LeftY,        {-.1f, .1f} },
+        { Axis::RightX,       {-.1f, .1f} },
+        { Axis::RightY,       {-.1f, .1f} },
+        { Axis::LeftTrigger,  {-1.f, -.95f} },
+        { Axis::RightTrigger, {-1.f, -.95f} }
+    };
 
     return defaultDeadZones;
 }
 
 const std::unordered_map<Axis, float>& Gamepad::AxisRestValues()
 {
-    static std::unordered_map<Axis, float> axisRestValues;
-    static bool runOnce = false;
-
-    if (!runOnce)
-    {
-        axisRestValues[Axis::LeftX]         =  0.f;
-        axisRestValues[Axis::LeftY]         =  0.f;
-        axisRestValues[Axis::RightX]        =  0.f;
-        axisRestValues[Axis::RightY]        =  0.f;
-        axisRestValues[Axis::LeftTrigger]   = -1.f;
-        axisRestValues[Axis::RightTrigger]  = -1.f;
-    }
+    static std::unordered_map<Axis, float> axisRestValues = {
+        { Axis::LeftX,          0.f },
+        { Axis::LeftY,          0.f },
+        { Axis::RightX,         0.f },
+        { Axis::RightY,         0.f },
+        { Axis::LeftTrigger,   -1.f },
+        { Axis::RightTrigger,  -1.f }
+    };
 
     return axisRestValues;
 }

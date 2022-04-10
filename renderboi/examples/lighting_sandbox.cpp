@@ -118,14 +118,6 @@ void LightingSandbox::run()
     Camera camera(CameraParams);
     cameraObj.componentMap().addComponent<ComponentType::Camera>(camera);
 
-    // Register everything in scene and create relationships
-    // scene.registerObject(bigTorusObj);
-    // scene.registerObject(smallTorusObj, bigTorusObj->id);
-    // scene.registerObject(axesObj);
-    // scene.registerObject(cubeObj);
-    // scene.registerObject(tetrahedronObj, smallTorusObj->id);
-    // scene.registerObject(cameraObj);
-
     // Link camera to MouseCameraManager
     MouseCameraManager cameraManager(camera);
 
@@ -137,8 +129,8 @@ void LightingSandbox::run()
     scene.registerScript(rotationScript);
     
     // Add script component to camera: KeyboardMovementScript
-    ControlledEntityManager<KeyboardMovementScript> keyboardScriptManager((BasisProvider&)(camera));
-    cameraObj.componentMap().addComponent<ComponentType::Script>((Script&)(keyboardScriptManager.entity()));
+    ControlledEntityManager<KeyboardMovementScript> keyboardScriptManager(static_cast<BasisProvider&>(camera));
+    cameraObj.componentMap().addComponent<ComponentType::Script>(static_cast<Script&>(keyboardScriptManager.entity()));
 
     // Window script
     ControlledEntityManager<BasicWindowManager> windowManager(_window);
@@ -148,20 +140,20 @@ void LightingSandbox::run()
 
     // Register the scene and the control translator to the splitter
     InputSplitter splitter;
-    splitter.registerInputProcessor((InputProcessor&)(logger));
-    splitter.registerInputProcessor((InputProcessor&)(cameraManager));
-    splitter.registerInputProcessor((InputProcessor&)(cameraAspectRatioManager));
-    splitter.registerInputProcessor((InputProcessor&)(rotationScript));
-    splitter.registerInputProcessor((InputProcessor&)(keyboardScriptManager.eventTranslator()));
-    splitter.registerInputProcessor((InputProcessor&)(windowManager.entity()));
-    splitter.registerInputProcessor((InputProcessor&)(windowManager.eventTranslator()));
+    splitter.registerInputProcessor(static_cast<InputProcessor&>(logger));
+    splitter.registerInputProcessor(static_cast<InputProcessor&>(cameraManager));
+    splitter.registerInputProcessor(static_cast<InputProcessor&>(cameraAspectRatioManager));
+    splitter.registerInputProcessor(static_cast<InputProcessor&>(rotationScript));
+    splitter.registerInputProcessor(static_cast<InputProcessor&>(keyboardScriptManager.eventTranslator()));
+    splitter.registerInputProcessor(static_cast<InputProcessor&>(windowManager.entity()));
+    splitter.registerInputProcessor(static_cast<InputProcessor&>(windowManager.eventTranslator()));
     
     // Register the splitter to the window
-    _window.registerInputProcessor((InputProcessor&)(splitter));
+    _window.registerInputProcessor(static_cast<InputProcessor&>(splitter));
 
 
     // Register the splitter to the window
-    _window.registerInputProcessor((InputProcessor&)(splitter));
+    _window.registerInputProcessor(static_cast<InputProcessor&>(splitter));
 
     const glm::vec3 X = Transform::X;
     const glm::vec3 Y = Transform::Y;
