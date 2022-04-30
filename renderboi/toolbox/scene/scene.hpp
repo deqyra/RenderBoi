@@ -12,6 +12,7 @@
 #include <vector>
 
 #include <glm/glm.hpp>
+#include <entt/entt.hpp>
 
 #include <cpptools/container/tree.hpp>
 #include <cpptools/container/hive.hpp>
@@ -36,6 +37,8 @@ public:
     using BoolTree = cpptools::Tree<bool>;
 
 private:
+    entt::registry _registry;
+
     /// @brief Scene graph. Contains all objects in the scene, 
     /// hierarchically organised in a tree.
     ObjectTree _objects;

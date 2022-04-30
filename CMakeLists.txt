@@ -112,8 +112,17 @@ configure_file("${CMAKE_SOURCE_DIR}/renderboi/config/project_env.config.hpp" "${
 ###############################################################################
 
 option(WINDOW_BACKEND_GLFW3 "Use GLFW3 as the window backend" ON)
-option(GLFW3_BORDERLESS_POLICY_NATIVE "Have GLFW3 detect borderless fullscreen parameters upon starting up (default, overrides GLFW3_BORDERLESS_POLICY_MAX_MODE)" ON)
-option(GLFW3_BORDERLESS_POLICY_MAX_MODE "Have GLFW3 use the largest available video mode for borderless fullscreen" OFF)
+option(
+    GLFW3_BORDERLESS_POLICY_NATIVE
+    "Have GLFW3 detect borderless fullscreen parameters upon starting up
+    (default, overrides GLFW3_BORDERLESS_POLICY_MAX_MODE)"
+    ON
+)
+option(
+    GLFW3_BORDERLESS_POLICY_MAX_MODE
+    "Have GLFW3 use the largest available video mode for borderless fullscreen"
+    OFF
+)
 
 
 
@@ -134,10 +143,8 @@ file(MAKE_DIRECTORY ${EXPORT_LOCATION}/lib)
 
 ###############################################################################
 #                                                                             #
-#                  Target names and file names masterlists                    #
+#                                Target names                                 #
 #                                                                             #
-###############################################################################
-#    (easier to browse here than to go and update it in each subdirectory)    #
 ###############################################################################
 
 # cpptools
@@ -166,191 +173,6 @@ set(RB_CORE_LIB_NAME "renderboi.core")
 set(RB_WINDOW_LIB_NAME "renderboi.window")
 set(RB_TOOLBOX_LIB_NAME "renderboi.toolbox")
 set(RB_EXAMPLES_LIB_NAME "renderboi.examples")
-
-set(RB_UTILITIES_SOURCE_FILES
-    gl_utilities.cpp
-    gl_utilities.hpp
-    resource_locator.cpp
-    resource_locator.hpp
-)
-
-set(RB_CORE_SOURCE_FILES
-    camera.cpp
-    camera.hpp
-    material.cpp
-    material.hpp
-    materials.hpp
-    mesh.cpp
-    mesh.hpp
-    pixel_space.hpp
-    transform.cpp
-    transform.hpp
-    texture_2d.cpp
-    texture_2d.hpp
-    vertex.hpp
-    common/parent_dependent_vp_matrix_provider.hpp
-    common/parent_dependent_vp_matrix_provider.cpp
-    interfaces/basis_provider.hpp
-    interfaces/vp_matrix_provider.hpp
-    lights/directional_light.cpp
-    lights/directional_light.hpp
-    lights/light.cpp
-    lights/light.hpp
-    lights/light_type.hpp
-    lights/point_light.cpp
-    lights/point_light.hpp
-    lights/spot_light.cpp
-    lights/spot_light.hpp 
-    lights/tools.cpp
-    lights/tools.hpp 
-    shader/shader.cpp
-    shader/shader.hpp
-    shader/shader_builder.cpp
-    shader/shader_builder.hpp
-    shader/shader_config.cpp
-    shader/shader_config.hpp
-    shader/shader_feature.cpp
-    shader/shader_feature.hpp
-    shader/shader_program.cpp
-    shader/shader_program.hpp
-    shader/shader_stage.cpp
-    shader/shader_stage.hpp
-    ubo/light_ubo.cpp
-    ubo/light_ubo.hpp 
-    ubo/matrix_ubo.cpp
-    ubo/matrix_ubo.hpp 
-)
-
-set(RB_WINDOW_SOURCE_FILES
-    enums.cpp
-    enums.hpp
-    env_info.hpp
-    gl_window.cpp
-    gl_window.hpp
-    input_processor.cpp
-    input_processor.hpp
-    monitor.cpp
-    monitor.hpp
-    window_backend.hpp
-    window_creation_parameters.hpp
-    window_factory.hpp
-    event/gl_context_event_manager.cpp
-    event/gl_context_event_manager.hpp
-    event/gl_context_event.cpp
-    event/gl_context_event.hpp
-    gamepad/gamepad_input_processor.cpp
-    gamepad/gamepad_input_processor.hpp
-    gamepad/gamepad_manager.cpp
-    gamepad/gamepad_manager.hpp
-    gamepad/gamepad_state.cpp
-    gamepad/gamepad_state.hpp
-    gamepad/gamepad.cpp
-    gamepad/gamepad.hpp
-    glfw3/glfw3_adapter.cpp
-    glfw3/glfw3_adapter.hpp
-    glfw3/glfw3_gamepad_manager.cpp
-    glfw3/glfw3_gamepad_manager.hpp
-    glfw3/glfw3_monitor.cpp
-    glfw3/glfw3_monitor.hpp
-    glfw3/glfw3_utilities.cpp
-    glfw3/glfw3_utilities.hpp
-    glfw3/glfw3_window_factory.cpp
-    glfw3/glfw3_window_factory.hpp
-    glfw3/glfw3_window.cpp
-    glfw3/glfw3_window.hpp
-)
-
-set(RB_TOOLBOX_SOURCE_FILES
-    common.hpp
-    factory.hpp
-    input_splitter.cpp
-    input_splitter.hpp 
-    script.cpp
-    script.hpp 
-    controls/control.cpp
-    controls/control.hpp
-    controls/control_event_translator.hpp
-    controls/control_scheme.hpp
-    controls/controlled_entity_manager.hpp
-    interfaces/control_binding_provider.hpp
-    interfaces/default_control_scheme_provider.hpp
-    mesh_generators/all_mesh_generators.hpp
-    mesh_generators/axes_generator.cpp
-    mesh_generators/axes_generator.hpp
-    mesh_generators/cube_generator.cpp
-    mesh_generators/cube_generator.hpp
-    mesh_generators/mesh_generator.hpp
-    mesh_generators/plane_generator.cpp
-    mesh_generators/plane_generator.hpp
-    mesh_generators/tetrahedron_generator.cpp
-    mesh_generators/tetrahedron_generator.hpp
-    mesh_generators/torus_generator.cpp
-    mesh_generators/torus_generator.hpp
-    mesh_generators/mesh_type.hpp
-    render/composite_renderer.hpp
-    render/scene_renderer.cpp
-    render/scene_renderer.hpp 
-    render/traits/all_trait_renderers.hpp
-    render/traits/render_trait.hpp
-    render/traits/render_trait_config.cpp
-    render/traits/render_trait_config.hpp
-    render/traits/render_trait_config_map.cpp
-    render/traits/render_trait_config_map.hpp
-    render/traits/trait_renderer.hpp
-    render/traits/config/mesh_render_trait_config.cpp
-    render/traits/config/mesh_render_trait_config.hpp
-    render/traits/renderers/mesh_trait_renderer.cpp
-    render/traits/renderers/mesh_trait_renderer.hpp
-    runnables/basic_window_manager.cpp
-    runnables/basic_window_manager.hpp 
-    runnables/camera_aspect_ratio_manager.cpp
-    runnables/camera_aspect_ratio_manager.hpp 
-    runnables/gamepad_movement_script.cpp
-    runnables/gamepad_movement_script.hpp 
-    runnables/gamepad_camera_manager.cpp
-    runnables/gamepad_camera_manager.hpp 
-    runnables/input_logger.cpp
-    runnables/input_logger.hpp
-    runnables/keyboard_movement_script.cpp
-    runnables/keyboard_movement_script.hpp 
-    runnables/mouse_camera_manager.cpp
-    runnables/mouse_camera_manager.hpp 
-    scene/scene.cpp
-    scene/scene.hpp 
-    scene/object/component.cpp
-    scene/object/component.hpp 
-    scene/object/component_map.cpp
-    scene/object/component_map.hpp 
-    scene/object/component_type.cpp 
-    scene/object/component_type.hpp 
-    scene/object/object_transform.cpp
-    scene/object/object_transform.hpp
-    scene/object/scene_object_metadata.hpp 
-    scene/object/scene_object.cpp
-    scene/object/scene_object.hpp 
-    scene/object/components/all_components.cpp 
-    scene/object/components/all_components.hpp 
-    scene/object/components/camera_component.cpp
-    scene/object/components/camera_component.hpp 
-    scene/object/components/light_component.cpp
-    scene/object/components/light_component.hpp 
-    scene/object/components/mesh_component.cpp
-    scene/object/components/mesh_component.hpp 
-    scene/object/components/script_component.cpp
-    scene/object/components/script_component.hpp 
-)
-
-set(RB_EXAMPLES_SOURCE_FILES
-    gl_sandbox_parameters.hpp
-    gl_sandbox.cpp
-    gl_sandbox.hpp
-    gl_sandbox_runner.hpp
-    lighting_sandbox.cpp
-    lighting_sandbox.hpp
-    shadow_sandbox.cpp
-    shadow_sandbox.hpp
-)
-
 
 
 ###############################################################################
