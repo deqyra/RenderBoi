@@ -446,23 +446,16 @@ const std::string& ShaderBuilder::_GenerateVersionDirective()
 
 const std::string& ShaderBuilder::_GenerateExtensionDirectives()
 {
-    static bool runOnce = false;
-    static std::string s;
-
-    if (!runOnce)
+    static auto addDirective = [](std::string aggregate, std::pair<std::string, std::string> tuple) -> std::string
     {
-        std::function<std::string(std::string, std::pair<std::string, std::string>)>
-        addDirective = [](std::string aggregate, std::pair<std::string, std::string> tuplet) -> std::string
-        {
-            return aggregate + 
-                "#extension " + tuplet.first + " : " + tuplet.second + "\n";
-        };
-
-        const std::unordered_map<std::string, std::string>& extensions = _ShadingLanguageExtensions(); 
-        s = std::accumulate(extensions.cbegin(), extensions.cend(), (std::string)(""), addDirective);
-
-        runOnce = true;
-    }
+        return aggregate + "#extension " + tuple.first + " : " + tuple.second + '\n';
+    };
+    static const std::unordered_map<std::string, std::string>& extensions = _ShadingLanguageExtensions(); 
+    
+    static std::string s = std::accumulate(
+        extensions.cbegin(), extensions.cend(),
+        (std::string)(""), addDirective
+    );
 
     return s;
 }
@@ -470,15 +463,7 @@ const std::string& ShaderBuilder::_GenerateExtensionDirectives()
 const std::unordered_map<std::string, std::string>&
 ShaderBuilder::_ShadingLanguageExtensions()
 {
-    static bool runOnce = false;
-    static std::unordered_map<std::string, std::string> map;
-
-    if (!runOnce)
-    {
-        // map["GL_ARB_shading_language_include"] = "require";
-
-        runOnce = true;
-    }
+    static std::unordered_map<std::string, std::string> map = {};
 
     return map;
 }

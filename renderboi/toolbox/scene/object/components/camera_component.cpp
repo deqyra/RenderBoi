@@ -7,16 +7,14 @@
 namespace renderboi
 {
 
-CameraComponent::CameraComponent(SceneObject& sceneObject, CameraPtr&& camera) :
-    Component(sceneObject),
+CameraComponent::CameraComponent(CameraPtr&& camera) :
     _cameraPtr(std::move(camera)),
     _camera(*_cameraPtr)
 {
 
 }
 
-CameraComponent::CameraComponent(SceneObject& sceneObject, Camera& camera) :
-    Component(sceneObject),
+CameraComponent::CameraComponent(Camera& camera) :
     _cameraPtr(nullptr),
     _camera(camera)
 {
@@ -55,11 +53,6 @@ glm::mat4 CameraComponent::getViewProjectionMatrix() const
 {
     _camera.setParentWorldTransform(_sceneObject.worldTransform());
     return _camera.getViewProjectionMatrix();
-}
-
-CameraComponent* CameraComponent::clone(SceneObject& newParent) const
-{
-    return new CameraComponent(newParent, std::make_unique<Camera>(_camera));
 }
 
 } // namespace renderboi

@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <initializer_list>
 #include <iterator>
 #include <map>
 #include <memory>
@@ -47,6 +48,9 @@ public:
     /// @param maxControlsPerAction Maximum number of controls bound to a
     /// single action in the ControlScheme.
     ControlScheme(const unsigned int maxControlsPerAction = DefaultMaxControlsPerAction);
+
+    /// @param bindings List of bindings to add to the control scheme.
+    ControlScheme(std::initializer_list<std::pair<Control, T>> bindings);
 
     /// @brief Bind a control to an action. A control cannot be bound to
     /// several actions, and a binding of the provided control to another
@@ -141,6 +145,18 @@ ControlScheme<T>::ControlScheme(unsigned int maxControlsPerAction) :
     _actionBoundToControl()
 {
     
+}
+
+template<typename T>
+ControlScheme<T>::ControlScheme(std::initializer_list<std::pair<Control, T>> bindings) :
+    _MaxControlsPerAction(DefaultMaxControlsPerAction),
+    _controlsBoundToAction(),
+    _actionBoundToControl()
+{
+    for (const auto& b : bindings)
+    {
+        bindControl(b.first, b.second);
+    }
 }
 
 template<typename T>

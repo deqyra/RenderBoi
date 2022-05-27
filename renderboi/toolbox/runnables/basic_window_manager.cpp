@@ -58,21 +58,15 @@ void BasicWindowManager::processFramebufferResize(
 
 const ControlScheme<BasicWindowManagerAction>& BasicWindowManager::getDefaultControlScheme() const
 {
-    static ControlScheme<BasicWindowManagerAction> scheme;
-    static bool runOnce = false;
-
-    if (!runOnce)
-    {
-        using Window::Input::Key;
-        scheme.bindControl(Control(Key::Escape), BasicWindowManagerAction::Terminate);
-        scheme.bindControl(Control(Key::Space), BasicWindowManagerAction::Terminate);
-        scheme.bindControl(Control(Key::F1), BasicWindowManagerAction::PolygonFill);
-        scheme.bindControl(Control(Key::F2), BasicWindowManagerAction::PolygonLine);
-        scheme.bindControl(Control(Key::F3), BasicWindowManagerAction::PolygonPoint);
-        scheme.bindControl(Control(Key::F11), BasicWindowManagerAction::ToggleFullscreen);
-
-        runOnce = true;
-    }
+    using Window::Input::Key;
+    static ControlScheme<BasicWindowManagerAction> scheme = {
+        { Control(Key::Escape), BasicWindowManagerAction::Terminate },
+        { Control(Key::Space),  BasicWindowManagerAction::Terminate },
+        { Control(Key::F1),     BasicWindowManagerAction::PolygonFill },
+        { Control(Key::F2),     BasicWindowManagerAction::PolygonLine },
+        { Control(Key::F3),     BasicWindowManagerAction::PolygonPoint },
+        { Control(Key::F11),    BasicWindowManagerAction::ToggleFullscreen }
+    };
 
     return scheme;
 }

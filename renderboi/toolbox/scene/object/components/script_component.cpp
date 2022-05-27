@@ -6,8 +6,7 @@
 namespace renderboi
 {
 
-ScriptComponent::ScriptComponent(SceneObject& sceneObject, Script& script) :
-    Component(sceneObject),
+ScriptComponent::ScriptComponent(Script& script) :
     _scriptPtr(nullptr),
     _script(script)
 {
@@ -15,25 +14,16 @@ ScriptComponent::ScriptComponent(SceneObject& sceneObject, Script& script) :
     _registerScript();
 }
 
-ScriptComponent::ScriptComponent(SceneObject& sceneObject, ScriptPtr&& script) :
-    Component(sceneObject),
+ScriptComponent::ScriptComponent(ScriptPtr&& script) :
     _scriptPtr(std::move(script)),
     _script(*_scriptPtr)
 {
 
 }
 
-Script& ScriptComponent::script() const
+Script& ScriptComponent::script()
 {
     return _script;
-}
-
-ScriptComponent* ScriptComponent::clone(SceneObject& newParent) const
-{
-    ScriptPtr clonedScript = ScriptPtr(_script.clone());
-    ScriptComponent* clonedComponent = new ScriptComponent(newParent, std::move(clonedScript));
-    // The parent scene object needs to be registered in the component, which is to be done by the caller
-    return clonedComponent;
 }
 
 void ScriptComponent::_registerScript()

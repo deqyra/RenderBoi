@@ -25,7 +25,8 @@ Scene::Scene() :
     _outdatedTransformNodes(0),
     _objectMetadata(),
     _scripts(),
-    _lastTime(std::chrono::system_clock::now())
+    _lastTime(std::chrono::system_clock::now()),
+    _registry()
 {
     const ObjectTree::NodePtr objectRootNode = _objects.getRoot();
     const TransformTree::NodePtr transformRootNode = _transforms.getRoot();
@@ -41,6 +42,7 @@ Scene::Scene() :
         .updateNodeId           = updateRootNode->id,
         .transformSubscriberId  = _MaxUInt
     };
+    
 }
 
 Scene::~Scene()
@@ -434,7 +436,7 @@ void Scene::_worldTransformCascadeUpdate(const unsigned int id) const
     // Retrieve node metadata
     const SceneObjectMetadata& meta = it->second;
 
-    // Get object node pointer
+    // Get object node, update object
     const ObjectTree::NodePtr objectNode = _objects[meta.objectNodeId];
     _worldTransformUpdateNoCascade(id);
     
@@ -451,16 +453,18 @@ void Scene::_worldTransformUpdateNoCascade(const unsigned int id) const
     auto it = _objectMetadata.find(id);
     const SceneObjectMetadata& meta = it->second;
 
-    // Get object node pointer as well as the parent transform node pointer
+    // Get object node and parent transform node
     const ObjectTree::NodePtr objectNode = _objects[meta.objectNodeId];
     const TransformTree::NodePtr transformNode = _transforms[meta.transformNodeId];
     const TransformTree::NodePtr parentTransformNode = transformNode->getParent();
 
     if (parentTransformNode != nullptr)
     {
-        // Apply the parent world transform to the object transform, and save it to the object world transform node
+        // Apply parent world transform to object transform
         const Transform objectTransform = (Transform)(objectNode->value->transform());
         const Transform newTransform = objectTransform.applyOver(parentTransformNode->value);
+        
+        // Save result to object world transform node
         transformNode->value = newTransform;
     }
     else

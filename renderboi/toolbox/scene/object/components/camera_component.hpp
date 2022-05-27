@@ -5,14 +5,11 @@
 
 #include <renderboi/core/camera.hpp>
 
-#include "../component.hpp"
-#include "../component_type.hpp"
-
 namespace renderboi
 {
 
 /// @brief Component allowing to attach a camera to a scene object.
-class CameraComponent : public Component
+class CameraComponent
 {
 private:
     CameraComponent(CameraComponent& other) = delete;
@@ -26,18 +23,14 @@ private:
     Camera& _camera;
 
 public:
-    /// @param sceneObject Reference to the scene object which will be parent
-    /// to this component.
     /// @param camera Reference to the camera for the component to use.
     ///
     /// @exception If the provided camera pointer is null, the 
     /// constructor will throw a std::runtime_error.
-    CameraComponent(SceneObject& sceneObject, CameraPtr&& camera);
+    CameraComponent(CameraPtr&& camera);
 
-    /// @param sceneObject Reference to the scene object which will be parent
-    /// to this component.
     /// @param camera Reference to the camera for the component to use.
-    CameraComponent(SceneObject& sceneObject, Camera& camera);
+    CameraComponent(Camera& camera);
 
     ~CameraComponent();
 
@@ -69,48 +62,6 @@ public:
     ///
     /// @return The view-projection matrix provided by the camera.
     glm::mat4 getViewProjectionMatrix() const;
-
-    /////////////////////////////////////////
-    ///                                   ///
-    /// Methods overridden from Component ///
-    ///                                   ///
-    /////////////////////////////////////////
-
-    /// @brief Get a raw pointer to a new component instance cloned 
-    /// from this one. Ownership and responsibility for the allocated 
-    /// resources are fully transferred to the caller.
-    ///
-    /// @param newParent Pointer the scene object which will be parent to
-    /// the cloned component instance.
-    ///
-    /// @return A raw pointer to the component instance cloned from this 
-    /// one.
-    CameraComponent* clone(SceneObject& newParent) const override;
-};
-
-template<>
-struct ComponentMeta<ComponentType::Camera>
-{
-    struct MultipleInstancesAllowed
-    {
-        static constexpr bool value = false;
-    };
-
-    struct ConcreteType
-    {
-        using type = CameraComponent;
-    };
-
-    struct Name
-    {
-        static constexpr const char* value = "CameraComponent";
-    };
-};
-
-template<>
-struct ComponentTypeToEnum<CameraComponent>
-{
-    static constexpr ComponentType value = ComponentType::Camera;
 };
 
 } // namespace renderboi
