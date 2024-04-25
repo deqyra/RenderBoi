@@ -5,7 +5,7 @@
 #include <string>
 
 #include "input_processor.hpp"
-#include "renderboi/window/event/gl_context_event_manager.hpp"
+#include "event/gl_context_event_manager.hpp"
 
 namespace renderboi::Window
 {

@@ -1,14 +1,4 @@
-# Generate script file to copy headers
-file(WRITE ${CMAKE_BINARY_DIR}/cp_${RB_TOOLBOX_LIB_NAME}_headers.cmake
-    "file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}\"
-        DESTINATION \"${EXPORT_LOCATION}/include/renderboi\"
-        FILES_MATCHING
-        PATTERN \"*.hpp\"
-    )\n"
-)
-
-# Build toolbox lib
-add_library(${RB_TOOLBOX_LIB_NAME} ${STATIC_OR_SHARED}
+add_library( renderboi_toolbox
     common.hpp
     factory.hpp
     input_splitter.cpp
@@ -65,19 +55,10 @@ add_library(${RB_TOOLBOX_LIB_NAME} ${STATIC_OR_SHARED}
     runnables/mouse_camera_manager.hpp 
     scene/scene.cpp
     scene/scene.hpp 
-    scene/object/component.cpp
-    scene/object/component.hpp 
-    scene/object/component_map.cpp
-    scene/object/component_map.hpp 
-    scene/object/component_type.cpp 
-    scene/object/component_type.hpp 
     scene/object/object_transform.cpp
     scene/object/object_transform.hpp
     scene/object/scene_object_metadata.hpp 
-    scene/object/scene_object.cpp
     scene/object/scene_object.hpp 
-    scene/object/components/all_components.cpp 
-    scene/object/components/all_components.hpp 
     scene/object/components/camera_component.cpp
     scene/object/components/camera_component.hpp 
     scene/object/components/light_component.cpp
@@ -87,36 +68,12 @@ add_library(${RB_TOOLBOX_LIB_NAME} ${STATIC_OR_SHARED}
     scene/object/components/script_component.cpp
     scene/object/components/script_component.hpp 
 )
-add_dependencies(${RB_TOOLBOX_LIB_NAME}
-    "export_${CPPTOOLS_LIB_NAME}_headers"
-    "export_${CPPTOOLS_LIB_NAME}_lib"
-    "export_${RB_CORE_LIB_NAME}_lib"
-    "export_${RB_CORE_LIB_NAME}_headers"
-    "export_${RB_WINDOW_LIB_NAME}_lib"
-    "export_${RB_WINDOW_LIB_NAME}_headers"
-    "export_${GLM_LIB_NAME}_headers"
-)
-target_include_directories(${RB_TOOLBOX_LIB_NAME} PUBLIC ${EXPORT_LOCATION}/include)
-target_link_directories(${RB_TOOLBOX_LIB_NAME} PUBLIC ${EXPORT_LOCATION}/lib)
-target_link_libraries(${RB_TOOLBOX_LIB_NAME} PUBLIC ${CMAKE_DL_LIBS}
-    ${GLAD_LIB_NAME}
-    ${RB_CORE_LIB_NAME}
-    ${RB_WINDOW_LIB_NAME}
-    ${CPPTOOLS_LIB_NAME}
-)
-add_compile_definitions(GLAD_GLAPI_EXPORT)
 
-# Custom target to export toolbox lib
-add_custom_target("export_${RB_TOOLBOX_LIB_NAME}_lib")
-add_dependencies("export_${RB_TOOLBOX_LIB_NAME}_lib" ${RB_TOOLBOX_LIB_NAME})
-add_custom_command(
-    TARGET "export_${RB_TOOLBOX_LIB_NAME}_lib"
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${RB_TOOLBOX_LIB_NAME}> ${EXPORT_LOCATION}/lib
-)
-
-# Custom target to export toolbox headers
-add_custom_target("export_${RB_TOOLBOX_LIB_NAME}_headers")
-add_custom_command(
-    TARGET "export_${RB_TOOLBOX_LIB_NAME}_headers"
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/cp_${RB_TOOLBOX_LIB_NAME}_headers.cmake
+target_include_directories( renderboi_toolbox PUBLIC ${RENDERBOI_MAIN_INCLUDE_PATH} )
+target_link_libraries( renderboi_toolbox PUBLIC
+    ${CMAKE_DL_LIBS}
+    glad
+    renderboi_core
+    renderboi_window
+    cpptools::cpptools
 )

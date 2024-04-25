@@ -17,14 +17,10 @@
 #define EGL_DETECTED
 #endif
 
-#if 0
-#error No window backend was selected for compilation. Cannot build window module.
-#endif
-
 #if 1
     #define GLFW3_BORDERLESS_POLICY_NATIVE_MODE
 
-    #if (1 != 1) && (0 == 1)
+    #if ( != 1) && ( == 1)
         #undef GLFW3_BORDERLESS_POLICY_NATIVE_MODE
         #define GLFW3_BORDERLESS_POLICY_MAX_MODE
     #endif

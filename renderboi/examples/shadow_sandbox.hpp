@@ -2,7 +2,6 @@
 #define RENDERBOI__EXAMPLES__SHADOW_SANDBOX_HPP
 
 #include <string>
-#include <type_traits>
 
 #include <glm/glm.hpp>
 

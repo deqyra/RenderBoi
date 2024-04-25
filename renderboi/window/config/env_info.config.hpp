@@ -17,10 +17,6 @@
 #define EGL_DETECTED
 #endif
 
-#if @NO_WINDOW_BACKEND@
-#error No window backend was selected for compilation. Cannot build window module.
-#endif
-
 #if @USE_GLFW3@
     #define GLFW3_BORDERLESS_POLICY_NATIVE_MODE
 
@@ -40,6 +36,6 @@
 namespace rb = renderboi;
 namespace rbw = rb::Window;
 
-static constexpr rbw::WindowBackend AppBackend = rbw::WindowBackend::@WINDOW_BACKEND_NAME@;
+static constexpr rbw::WindowBackend AppBackend = rbw::WindowBackend::@WINDOW_BACKEND_ENUM@;
 
 #endif//RENDERBOI__WINDOW__ENV_INFO_HPP

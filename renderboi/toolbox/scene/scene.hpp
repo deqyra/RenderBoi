@@ -30,13 +30,9 @@ namespace renderboi
 class Scene
 {
 public:
-<<<<<<< Updated upstream
-    using ObjectTree = cpptools::Tree<SceneObject>;
-=======
     using ObjectTree = cpptools::tree<SceneObjectPtr>;
     using TransformTree = cpptools::tree<Transform>;
     using BoolTree = cpptools::tree<bool>;
->>>>>>> Stashed changes
 
 private:
     entt::registry _registry;

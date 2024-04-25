@@ -3,8 +3,6 @@
 
 #include <string>
 
-#include <glad/gl.h>
-
 #include "gl_window.hpp"
 #include "monitor.hpp"
 #include "window_backend.hpp"
