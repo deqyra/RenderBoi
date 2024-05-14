@@ -1,12 +1,9 @@
-#ifndef RENDERBOI__EXAMPLES__GL_SANDBOX_RUNNER_HPP
-#define RENDERBOI__EXAMPLES__GL_SANDBOX_RUNNER_HPP
+#ifndef RENDERBOI_EXAMPLES_GL_SANDBOX_RUNNER_HPP
+#define RENDERBOI_EXAMPLES_GL_SANDBOX_RUNNER_HPP
 
+#include <concepts>
 #include <memory>
 #include <thread>
-#include <type_traits>
-
-#include <cpptools/thread/worker.hpp>
-#include <cpptools/thread/interfaces/interruptible.hpp>
 
 #include <renderboi/window/gl_window.hpp>
 #include <renderboi/window/gamepad/gamepad_manager.hpp>
@@ -14,32 +11,27 @@
 #include "gl_sandbox.hpp"
 #include "gl_sandbox_parameters.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
 /// @brief Encapsulates the instantiation, set-up, execution and tear-down of a 
-/// GLSandbox.
+/// GLSandbox
 ///
-/// @tparam T Type of the GLSandbox to instantiate.
-template<
-    typename T,
-    typename = typename std::enable_if_t<std::is_base_of_v<GLSandbox, T>, GLSandbox>
->
-class GLSandboxRunner
-{
+/// @tparam T Type of the GLSandbox to instantiate
+template<std::derived_from<GLSandbox> T>
+class GLSandboxRunner {
 public:
     using SandboxType = T;
     using SandboxPtr = std::unique_ptr<T>;
 
 private:
-    /// @brief Pointer to the hosted sandbox.
+    /// @brief Pointer to the hosted sandbox
     SandboxPtr _sandbox;
 
-    /// @brief Reference to the window to run the sandbox on.
+    /// @brief Reference to the window to run the sandbox on
     GLWindow& _window;
 
 public:
-    /// @param window Reference to the window to run the sandbox on.
+    /// @param window Reference to the window to run the sandbox on
     /// @param params Parameters to run the sandbox with
     GLSandboxRunner(GLWindow& window, const GLSandboxParameters& params) :
         _window(window),
@@ -48,24 +40,21 @@ public:
 
     }
 
-    ~GLSandboxRunner()
-    {
+    ~GLSandboxRunner() {
         _sandbox->tearDown();
     }
 
-    /// @brief Get a pointer to the sandbox being ran.
+    /// @brief Get a pointer to the sandbox being ran
     ///
-    /// @return A pointer to the sandbox being ran.
-    SandboxType& getSandbox()
-    {
+    /// @return A pointer to the sandbox being ran
+    SandboxType& getSandbox() {
         return *_sandbox;
     }
 
     /// @brief Poll the input of the window repeatedly, until the window's exit
-    /// signal is raised by another thread. Then, the worker is requested to
-    /// finalize, and the function returns when it is.
-    void run()
-    {
+    /// signal is raised by another thread Then, the worker is requested to
+    /// finalize, and the function returns when it is
+    void run() {
         _sandbox->setUp();
 
 		std::thread th(&GLSandbox::run, _sandbox.get());
@@ -78,4 +67,4 @@ public:
 
 }
 
-#endif//RENDERBOI__EXAMPLES__GL_SANDBOX_RUNNER_HPP
+#endif//RENDERBOI_EXAMPLES_GL_SANDBOX_RUNNER_HPP

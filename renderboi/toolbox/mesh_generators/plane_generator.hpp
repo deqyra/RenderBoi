@@ -1,102 +1,61 @@
-#ifndef RENDERBOI__TOOLBOX__MESH_GENERATORS__PLANE_GENERATOR_HPP
-#define RENDERBOI__TOOLBOX__MESH_GENERATORS__PLANE_GENERATOR_HPP
+#ifndef RENDERBOI_TOOLBOX_MESH_GENERATORS_PLANE_GENERATOR_HPP
+#define RENDERBOI_TOOLBOX_MESH_GENERATORS_PLANE_GENERATOR_HPP
 
-#include <glm/glm.hpp>
-
-#include <renderboi/core/mesh.hpp>
+#include <renderboi/core/numeric.hpp>
+#include <renderboi/core/3d/mesh.hpp>
+#include <renderboi/core/color.hpp>
 
 #include "mesh_generator.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
-/// @brief Generates vertices for a tiled plane.
-class PlaneGenerator : public MeshGenerator
-{
+/// @brief Generates vertices for a tiled plane
+class PlaneGenerator {
 public:
     /// @brief Struct packing together the parameters of the vertex
-    /// generation.
-    struct Parameters
-    {
-        /// @brief Size the tiles of the plane will have along the X 
-        /// direction.
-        float tileSizeX;
+    /// generation
+    struct Parameters {
+        /// @brief Size the tiles of the plane will have along the X and Y directions
+        num::Vec2 tileSize = { 1.f, 1.f };
 
-        /// @brief Size the tiles of the plane will have along the Y 
-        /// direction.
-        float tileSizeY;
+        /// @brief Amount of tiles in the plane along the X and Y directions
+        num::Vec2ui tileAmount = { 1, 1 };
 
-        /// @brief Amount of tiles in the plane along the X direction.
-        unsigned int tileAmountX;
-
-        /// @brief Amount of tiles in the plane along the Y direction.
-        unsigned int tileAmountY;
-
-        /// @brief Size of the texture along the X direction. Affects the
-        /// generated texture coordinates. The bigger the provided texture
-        /// size, the smaller the texture coordinates will be. Specifying 0 
+        /// @brief Size of the texture along the X direction Affects the
+        /// generated texture coordinates The bigger the provided texture
+        /// size, the smaller the texture coordinates will be Specifying 0 
         /// or a negative value will cause the texture coordinates to be 
-        /// spread evenly from 0 to 1 on the plane.
-        float xTexSize;
+        /// spread evenly from 0 to 1 on the plane
+        num::Vec2 texSize = { 0.f, 0.f };
 
-        /// @brief Size of the texture along the Y direction. Affects the
-        /// generated texture coordinates. The bigger the provided texture
-        /// size, the smaller the texture coordinates will be. Specifying 0 
-        /// or a negative value will cause the texture coordinates to be 
-        /// spread evenly from 0 to 1 on the plane.
-        float yTexSize;
+        /// @brief Offset by which to shift texture coordinates
+        num::Vec2 texOffset = { 0.f, 0.f };
 
-        /// @brief Offset by which to shift X texture coordinates.
-        float xTexCoordOffset;
-
-        /// @brief Offset by which to shift Y texture coordinates.
-        float yTexCoordOffset;
-
-        /// @brief Whether or not to invert the tex coords along the X axis.
-        bool invertXTexCoords;
-
-        /// @brief Whether or not to invert the tex coords along the Y axis.
-        bool invertYTexCoords;
+        /// @brief Whether or not to invert the tex coords along the X and Y axes
+        num::Vec2b invertTexCoords = { false, false };
         
-        /// @brief Angle (in radians) by which to rotate the texture 
-        /// coordinates in the trigonometric direction. The rotation occurs
-        /// after the reversal of coordinates if specified.
-        float texRotation;
+        /// @brief Angle (in radians) by which to rotate the texture after the
+        /// reversal of coordinates if specified
+        float texRotation = 0.f;
 
-        /// @brief RGB color of the generated vertices.
-        glm::vec3 color;
+        /// @brief RGB color of the generated vertices
+        num::Vec3 color = color::White;
     };
 
-    PlaneGenerator();
-
-    /// @param parameters Parameters of the vertex generation.
-    PlaneGenerator(const Parameters parameters);
+    PlaneGenerator() = default;
+    PlaneGenerator(const Parameters& parameters);
     
-    /// @brief Parameters of the vertex generation.
+    /// @brief Parameters of the vertex generation
     Parameters parameters;
 
-    /////////////////////////////////////////////
-    ///                                       ///
-    /// Methods overridden from MeshGenerator ///
-    ///                                       ///
-    /////////////////////////////////////////////
-
     /// @brief Generate the vertex data, put it in a new mesh object and 
-    /// return it.
-    ///
-    /// @return A pointer to the mesh containing the generated vertices.
-    MeshPtr generateMesh() const override;
+    /// return it
+    /// @return A pointer to the mesh containing the generated vertices
+    std::unique_ptr<Mesh> generate() const;
 };
 
-template<>
-struct MeshTypeMeta<MeshType::Plane>
-{
-    struct Generator
-    {
-        using type = PlaneGenerator;
-    };
-};
+static_assert(MeshGenerator<PlaneGenerator>);
 
-} // namespace renderboi
+} // namespace rb
 
-#endif//RENDERBOI__TOOLBOX__MESH_GENERATORS__PLANE_GENERATOR_HPP
+#endif//RENDERBOI_TOOLBOX_MESH_GENERATORS_PLANE_GENERATOR_HPP

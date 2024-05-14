@@ -1,23 +1,23 @@
-#ifndef UNIFORM_BLOCKS__MATERIAL
-#define UNIFORM_BLOCKS__MATERIAL
+#ifndef UNIFORM_BLOCKS_MATERIAL
+#define UNIFORM_BLOCKS_MATERIAL
 
 #define DIFFUSE_MAP_MAX_COUNT   8
 #define SPECULAR_MAP_MAX_COUNT  8
 
-struct Material
-{
+// THIS STRUCT (including the macros above) MUST BE KEPT IN SYNC WITH renderboi/core/material.hpp
+
+struct Material {
     vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
     float shininess;
+    vec3 diffuse;
+	uint diffuseMapCount;
+    vec3 specular;
+	uint specularMapCount;
 
 	sampler2D diffuseMaps[DIFFUSE_MAP_MAX_COUNT];
 	sampler2D specularMaps[SPECULAR_MAP_MAX_COUNT];
-
-	uint diffuseMapCount;
-	uint specularMapCount;
 };
 
 uniform Material material;
 
-#endif//UNIFORM_BLOCKS__MATERIAL
+#endif//UNIFORM_BLOCKS_MATERIAL

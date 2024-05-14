@@ -1,5 +1,5 @@
-#ifndef RENDERBOI__TOOLBOX__SCENE__RENDER__COMPOSITE_RENDERER_HPP
-#define RENDERBOI__TOOLBOX__SCENE__RENDER__COMPOSITE_RENDERER_HPP
+#ifndef RENDERBOI_TOOLBOX_SCENE_RENDER_COMPOSITE_RENDERER_HPP
+#define RENDERBOI_TOOLBOX_SCENE_RENDER_COMPOSITE_RENDERER_HPP
 
 #include <array>
 #include <type_traits>
@@ -9,10 +9,9 @@
 #include "traits/render_trait.hpp"
 #include "traits/trait_renderer.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
-/// @brief Component in charge of rendering all aspects of an object.
+/// @brief Component in charge of rendering all aspects of an object
 class CompositeRenderer
 {
 private:
@@ -22,9 +21,9 @@ public:
     CompositeRenderer();
 
     /// @brief Render something?
-    void render(const SceneObject& object) const;
+    void render(const Object& object) const;
 };
 
-} // namespace renderboi
+} // namespace rb
 
-#endif//RENDERBOI__TOOLBOX__SCENE__RENDER__COMPOSITE_RENDERER_HPP
+#endif//RENDERBOI_TOOLBOX_SCENE_RENDER_COMPOSITE_RENDERER_HPP

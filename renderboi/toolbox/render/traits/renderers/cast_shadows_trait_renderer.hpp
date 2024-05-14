@@ -1,15 +1,13 @@
-#ifndef RENDERBOI__TOOLBOX__RENDER__TRAITS__RENDERERS__CAST_SHADOWS_TRAIT_RENDERER_HPP
-#define RENDERBOI__TOOLBOX__RENDER__TRAITS__RENDERERS__CAST_SHADOWS_TRAIT_RENDERER_HPP
+#ifndef RENDERBOI_TOOLBOX_RENDER_TRAITS_RENDERERS_CAST_SHADOWS_TRAIT_RENDERER_HPP
+#define RENDERBOI_TOOLBOX_RENDER_TRAITS_RENDERERS_CAST_SHADOWS_TRAIT_RENDERER_HPP
 
 #include "../trait_renderer.hpp"
 #include "../config/cast_shadows_render_trait_config.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
-/// @brief Concrete trait renderer for meshes.
-class CastShadowsTraitRenderer : public TraitRenderer
-{
+/// @brief Concrete trait renderer for meshes
+class CastShadowsTraitRenderer : public TraitRenderer {
 public:
     /////////////////////////////////////////////
     ///                                       ///
@@ -21,13 +19,12 @@ public:
     virtual void render(const RenderTraitConfig& config) const override;
 };
 
-struct RenderTraitMeta<RenderTrait::CastShadows>::Renderer
-{
+struct RenderTraitMeta<RenderTrait::CastShadows>::Renderer {
     using type = CastShadowsTraitRenderer;
 };
 
 using CastShadowsTraitRendererPtr = std::unique_ptr<CastShadowsTraitRenderer>;
 
-} // namespace renderboi
+} // namespace rb
 
-#endif//RENDERBOI__TOOLBOX__RENDER__TRAITS__RENDERERS__CAST_SHADOWS_TRAIT_RENDERER_HPP
+#endif//RENDERBOI_TOOLBOX_RENDER_TRAITS_RENDERERS_CAST_SHADOWS_TRAIT_RENDERER_HPP

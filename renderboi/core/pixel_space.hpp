@@ -1,16 +1,14 @@
-#ifndef RENDERBOI__CORE__PIXEL_SPACE_HPP
-#define RENDERBOI__CORE__PIXEL_SPACE_HPP
+#ifndef RENDERBOI_CORE_PIXEL_SPACE_HPP
+#define RENDERBOI_CORE_PIXEL_SPACE_HPP
 
-namespace renderboi
-{
+namespace rb {
 
-/// @brief Collection of litterals describing the pixel space of an image.
-enum class PixelSpace
-{
+/// @brief Collection of litterals describing the pixel space of an image
+enum class PixelSpace {
     RGB,
     sRGB
 };
 
-} // namespace renderboi
+} // namespace rb
 
-#endif//RENDERBOI__CORE__PIXEL_SPACE_HPP
+#endif//RENDERBOI_CORE_PIXEL_SPACE_HPP

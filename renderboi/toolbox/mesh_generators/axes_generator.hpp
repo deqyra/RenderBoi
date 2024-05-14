@@ -1,64 +1,35 @@
-#ifndef RENDERBOI__TOOLBOX__MESH_GENERATORS__AXES_GENERATOR_HPP
-#define RENDERBOI__TOOLBOX__MESH_GENERATORS__AXES_GENERATOR_HPP
+#ifndef RENDERBOI_TOOLBOX_MESH_GENERATORS_AXES_GENERATOR_HPP
+#define RENDERBOI_TOOLBOX_MESH_GENERATORS_AXES_GENERATOR_HPP
 
-#include <renderboi/core/mesh.hpp>
-
-#include <renderboi/core/mesh.hpp>
+#include <renderboi/core/3d/mesh.hpp>
 
 #include "mesh_generator.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
-/// @brief Generates vertices for the three regular X, Y and Z axes,
-/// respectively colored red, green and blue.
-class AxesGenerator : public MeshGenerator
-{
+/// @brief Generates vertices for three X, Y and Z axes, colored red, green and blue
+class AxesGenerator {
 public:
-    /// @brief Default length the axes will have.
-    static constexpr float DefaultAxisLength = 1.f;
-
-    /// @brief Struct packing together the parameters of the vertex
-    /// generation.
-    struct Parameters
-    {
-        /// @brief Length the axes will have.
-        float axisLength;
+    /// @brief Struct packing together the parameters of the vertex generation
+    struct Parameters {
+        /// @brief Length the axes will have
+        float axisLength = 1.f;
     };
 
-    AxesGenerator();
-
-    /// @param length Length the axes will have.
-    AxesGenerator(const float length);
-
-    /// @param parameters Parameters of the vertex generation.
-    AxesGenerator(const Parameters parameters);
+    AxesGenerator() = default;
+    AxesGenerator(const Parameters& parameters);
     
-    /// @brief Parameters of the vertex generation.
+    /// @brief Parameters of the vertex generation
     Parameters parameters;
 
-    /////////////////////////////////////////////
-    ///                                       ///
-    /// Methods overridden from MeshGenerator ///
-    ///                                       ///
-    /////////////////////////////////////////////
-
     /// @brief Generate the vertex data, put it in a new mesh object and 
-    /// return it.
-    ///
-    /// @return A pointer to the mesh containing the generated vertices.
-    MeshPtr generateMesh() const override;
+    /// return it
+    /// @return A pointer to the mesh containing the generated vertices
+    std::unique_ptr<Mesh> generate() const;
 };
 
-template<>
-struct MeshTypeMeta<MeshType::Axes>
-{
-    struct Generator
-    {
-        using type = AxesGenerator;
-    };
-};
+static_assert(MeshGenerator<AxesGenerator>);
 
-} // namespace renderboi
+} // namespace rb
 
-#endif//RENDERBOI__TOOLBOX__MESH_GENERATORS__AXES_GENERATOR_HPP
+#endif//RENDERBOI_TOOLBOX_MESH_GENERATORS_AXES_GENERATOR_HPP

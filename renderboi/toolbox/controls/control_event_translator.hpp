@@ -1,18 +1,9 @@
-#ifndef RENDERBOI__TOOLBOX__CONTROLS__CONTROL_EVENT_TRANSLATOR_HPP
-#define RENDERBOI__TOOLBOX__CONTROLS__CONTROL_EVENT_TRANSLATOR_HPP
+#ifndef RENDERBOI_TOOLBOX_CONTROLS_CONTROL_EVENT_TRANSLATOR_HPP
+#define RENDERBOI_TOOLBOX_CONTROLS_CONTROL_EVENT_TRANSLATOR_HPP
 
-#include <algorithm>
-#include <functional>
-#include <iterator>
-#include <map>
 #include <memory>
-#include <tuple>
-#include <type_traits>
-#include <utility>
-#include <vector>
 
-#include <cpptools/oo/interfaces/action_event_receiver.hpp>
-#include <cpptools/utility/type_utils.hpp>
+#include <renderboi/toolbox/interfaces/action_event_receiver.hpp>
 
 #include <renderboi/window/gl_window.hpp>
 #include <renderboi/window/input_processor.hpp>
@@ -20,32 +11,31 @@
 #include "control.hpp"
 #include "control_scheme.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
-/// @brief Class to be plugged in directly into the window. Will receive and
+/// @brief Class to be plugged in directly into the window Will receive and
 /// filter control events, translate them into actions if appropriate, and
-/// forward those to their listener.
+/// forward those to their listener
 ///
-/// @tparam T Required. Type of the action to translate controls to.
+/// @tparam T Required. Type of the action to translate controls to
 template<typename T>
 class ControlEventTranslator : public InputProcessor
 {
 private:
-    using ActionEventReceiverType = cpptools::ActionEventReceiver<T>;
+    using ActionEventReceiverType = ActionEventReceiver<T>;
 
-    /// @brief Structure mapping actions to the control they are bound to.
+    /// @brief Structure mapping actions to the control they are bound to
     std::unordered_map<Control, T, ControlHash> _controlBindings;
 
     /// @brief Object which will be notified of which actions were triggered
-    /// by their bound controls.
+    /// by their bound controls
     ActionEventReceiverType& _listener;
 
 public:
     /// @param controlScheme Object which can tell which controls are 
-    /// mapped to which actions.
+    /// mapped to which actions
     /// @param listener Object which will be notified of which actions 
-    /// were triggered by their bound controls.
+    /// were triggered by their bound controls
     ControlEventTranslator(
         const ControlScheme<T>& controlScheme,
         ActionEventReceiverType& listener
@@ -57,17 +47,17 @@ public:
     ///                                        ///
     //////////////////////////////////////////////
 
-    /// @brief Callback for a keyboard event.
+    /// @brief Callback for a keyboard event
     ///
     /// @param window Reference to the GLWindow in which the event was
-    /// triggered.
-    /// @param key Literal describing which key triggered the event.
-    /// @param scancode Scancode of the key which triggered the event. 
-    /// Platform-dependent, but consistent over time.
+    /// triggered
+    /// @param key Literal describing which key triggered the event
+    /// @param scancode Scancode of the key which triggered the event 
+    /// Platform-dependent, but consistent over time
     /// @param action Literal describing what action was performed on
-    /// the key which triggered the event.
+    /// the key which triggered the event
     /// @param mods Bit field describing which modifiers were enabled 
-    /// during the key event (Ctrl, Shift, etc).
+    /// during the key event (Ctrl, Shift, etc)
     void processKeyboard(
         GLWindow& window, 
         const Window::Input::Key key, 
@@ -76,16 +66,16 @@ public:
         const int mods
     ) override;
 
-    /// @brief Callback for a mouse button event.
+    /// @brief Callback for a mouse button event
     ///
     /// @param window Reference to the GLWindow in which the event was
-    /// triggered.
+    /// triggered
     /// @param button Literal describing which button triggered the
-    /// event.
+    /// event
     /// @param action Literal describing what action was performed on
-    /// the button which triggered the event.
+    /// the button which triggered the event
     /// @param mods Bit field describing which modifiers were enabled 
-    /// during the button event (Ctrl, Shift, etc).
+    /// during the button event (Ctrl, Shift, etc)
     void processMouseButton(
         GLWindow& window, 
         const Window::Input::MouseButton button, 
@@ -95,12 +85,12 @@ public:
 
 private:
     /// @brief Translate a given control into an action and forward it to the
-    /// listener.
+    /// listener
     ///
     /// @param control Structure of litterals describing the control which was
-    /// just processed.
+    /// just processed
     /// @param action Object describing the action that was performed on the
-    /// control.
+    /// control
     void _translateAndNotify(const Control& control, Window::Input::Action action) const;
 };
 
@@ -109,9 +99,8 @@ ControlEventTranslator<T>::ControlEventTranslator(
     const ControlScheme<T>& controlScheme,
     ActionEventReceiverType& listener
 ) :
-    _controlBindings(controlScheme.getAllBoundActions()),
-    _listener(listener)
-{
+    _controlBindings(controlScheme.actions()),
+    _listener(listener) {
 
 }
 
@@ -161,6 +150,6 @@ void ControlEventTranslator<T>::_translateAndNotify(
 template<typename T>
 using ControlEventTranslatorPtr = std::unique_ptr<ControlEventTranslator<T>>;
 
-} // namespace renderboi
+} // namespace rb
 
-#endif//RENDERBOI__TOOLBOX__CONTROLS__CONTROL_EVENT_TRANSLATOR_HPP
+#endif//RENDERBOI_TOOLBOX_CONTROLS_CONTROL_EVENT_TRANSLATOR_HPP

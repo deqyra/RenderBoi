@@ -8,7 +8,6 @@ uniform sampler2D texData1;
 uniform sampler2D texData2;
 uniform float textureMix;
 
-void main()
-{
+void main() {
 	fragColor = mix(texture(texData1, vertOut.texCoord), texture(texData2, vertOut.texCoord), textureMix) * vec4(vertOut.color, 1.0f); 
 }

@@ -1,10 +1,9 @@
-#ifndef RENDERBOI__TOOLBOX__SCENE__RENDERER__RENDER_TRAIT_HPP
-#define RENDERBOI__TOOLBOX__SCENE__RENDERER__RENDER_TRAIT_HPP
+#ifndef RENDERBOI_TOOLBOX_SCENE_RENDERER_RENDER_TRAIT_HPP
+#define RENDERBOI_TOOLBOX_SCENE_RENDERER_RENDER_TRAIT_HPP
 
 #include <array>
 
-namespace renderboi
-{
+namespace rb {
 
 /*           ╔════════════╗
  *           ║   README   ║
@@ -41,10 +40,9 @@ namespace renderboi
  *
  */
 
-/// @brief Collection of literals describing different aspects of an object to
-/// be rendered.
-enum class RenderTrait
-{
+/// @brief Literals describing different aspects of an object to
+/// be rendered
+enum class RenderTrait {
     /// @brief Literal representing a mesh as the trait to be rendered
     Mesh,
     /// @brief Literal telling that an outline must be drawn
@@ -54,15 +52,14 @@ enum class RenderTrait
 };
 
 /// @brief Compile-time metadata about render traits and their associated render
-/// classes and configurations.
+/// classes and configurations
 template<RenderTrait T>
-struct RenderTraitMeta
-{
-    /// @brief Use ::type to get the concrete type of the trait renderer for T.
+struct RenderTraitMeta {
+    /// @brief Use ::type to get the concrete type of the trait renderer for T
     struct Renderer {};
 
     /// @brief Use ::type to get the type of config expected by the concrete 
-    /// trait renderer for T.
+    /// trait renderer for T
     struct Config {};
 };
 
@@ -72,6 +69,6 @@ static inline constexpr std::array<RenderTrait, 3> OrderedRenderTraits = {
     RenderTrait::CastShadows
 };
 
-} // namespace renderboi
+} // namespace rb
 
-#endif//RENDERBOI__TOOLBOX__SCENE__RENDERER__RENDER_TRAIT_HPP
+#endif//RENDERBOI_TOOLBOX_SCENE_RENDERER_RENDER_TRAIT_HPP

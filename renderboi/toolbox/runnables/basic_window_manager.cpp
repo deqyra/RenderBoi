@@ -1,15 +1,11 @@
 #include "basic_window_manager.hpp"
 
-#include <iostream>
-#include <string>
-
 #include <glad/gl.h>
 
 #include <renderboi/window/gl_window.hpp>
 #include <renderboi/window/enums.hpp>
 
-namespace renderboi
-{
+namespace rb {
 
 BasicWindowManager::BasicWindowManager(GLWindow& window) :
     _window(window)
@@ -17,33 +13,18 @@ BasicWindowManager::BasicWindowManager(GLWindow& window) :
     
 }
 
-void BasicWindowManager::triggerAction(const BasicWindowManagerAction& action)
-{
-    switch (action)
-    {
-    case BasicWindowManagerAction::Terminate:
-        _window.signalExit();
-        break;
-
-    case BasicWindowManagerAction::PolygonFill:
-        _setPolygonMode(PolygonMode::Fill);
-        break;
-
-    case BasicWindowManagerAction::PolygonLine:
-        _setPolygonMode(PolygonMode::Line);
-        break;
-
-    case BasicWindowManagerAction::PolygonPoint:
-        _setPolygonMode(PolygonMode::Point);
-        break;
-        
-    case BasicWindowManagerAction::ToggleFullscreen:
-        _toggleFullscreen();
+void BasicWindowManager::triggerAction(const BasicWindowManagerAction& action) {
+    using enum BasicWindowManagerAction;
+    switch (action) {
+    case Terminate:        _window.signalExit();                break;
+    case PolygonFill:      _setPolygonMode(PolygonMode::Fill);  break;
+    case PolygonLine:      _setPolygonMode(PolygonMode::Line);  break;
+    case PolygonPoint:     _setPolygonMode(PolygonMode::Point); break;
+    case ToggleFullscreen: _toggleFullscreen();
     }
 }
 
-void BasicWindowManager::stopAction(const BasicWindowManagerAction& action)
-{
+void BasicWindowManager::stopAction(const BasicWindowManagerAction& action) {
 
 }
 
@@ -56,8 +37,7 @@ void BasicWindowManager::processFramebufferResize(
     _window.forwardContextEvent(Window::GLContextEvent::FitFramebufferToWindow);
 }
 
-const ControlScheme<BasicWindowManagerAction>& BasicWindowManager::getDefaultControlScheme() const
-{
+const ControlScheme<BasicWindowManagerAction>& BasicWindowManager::defaultControlScheme() const {
     using Window::Input::Key;
     static ControlScheme<BasicWindowManagerAction> scheme = {
         { Control(Key::Escape), BasicWindowManagerAction::Terminate },
@@ -71,8 +51,7 @@ const ControlScheme<BasicWindowManagerAction>& BasicWindowManager::getDefaultCon
     return scheme;
 }
 
-void BasicWindowManager::_toggleFullscreen() const
-{
+void BasicWindowManager::_toggleFullscreen() const {
     if (_window.isFullscreen())
     {
         _window.exitFullscreen();
@@ -83,41 +62,15 @@ void BasicWindowManager::_toggleFullscreen() const
     }
 }
 
-void BasicWindowManager::_setPolygonMode(const PolygonMode mode) const
-{
-    using Window::GLContextEvent;
+void BasicWindowManager::_setPolygonMode(const PolygonMode mode) const {
+    using enum Window::GLContextEvent;
+    using enum PolygonMode;
 
-    switch (mode)
-    {
-    case PolygonMode::Fill:
-        _window.forwardContextEvent(GLContextEvent::PolygonModeFill);
-        break;
-
-    case PolygonMode::Line:
-        _window.forwardContextEvent(GLContextEvent::PolygonModeLine);
-        break;
-
-    case PolygonMode::Point:
-        _window.forwardContextEvent(GLContextEvent::PolygonModePoint);
-        break;
+    switch (mode) {
+    case Fill:  _window.forwardContextEvent(PolygonModeFill);  break;
+    case Line:  _window.forwardContextEvent(PolygonModeLine);  break;
+    case Point: _window.forwardContextEvent(PolygonModePoint); break;
     }
 }
 
-std::string to_string(const BasicWindowManagerAction action)
-{
-    static std::unordered_map<BasicWindowManagerAction, std::string> enumNames =
-    {
-        {BasicWindowManagerAction::Terminate,          "Terminate"},
-        {BasicWindowManagerAction::PolygonFill,        "PolygonFill"},
-        {BasicWindowManagerAction::PolygonLine,        "PolygonLine"},
-        {BasicWindowManagerAction::PolygonPoint,       "PolygonPoint"},
-        {BasicWindowManagerAction::ToggleFullscreen,   "ToggleFullscreen"},
-    };
-
-    auto it = enumNames.find(action);
-    return (it != enumNames.end())
-        ? it->second
-        : "Unknown";
-}
-
-} // namespace renderboi
+} // namespace rb

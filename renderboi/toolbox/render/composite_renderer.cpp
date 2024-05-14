@@ -4,8 +4,7 @@
 #include "renderboi/toolbox/scene/object/component_map.hpp"
 #include "traits/all_trait_renderers.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
 CompositeRenderer::CompositeRenderer() :
     _renderers(
@@ -16,11 +15,10 @@ CompositeRenderer::CompositeRenderer() :
                 std::make_unique<typename RenderTraitMeta<OrderedRenderTraits[I]>::Renderer::type>()
             }...};
         }(std::make_index_sequence<OrderedRenderTraits.size()>{})
-    )
-{
+    ) {
 }
 
-void CompositeRenderer::render(const SceneObject& object) const
+void CompositeRenderer::render(const Object& object) const
 {
     const RenderTraitConfigMap& map = object.renderTraitConfigMap();
 

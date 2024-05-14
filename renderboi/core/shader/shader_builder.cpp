@@ -1,12 +1,12 @@
 #include "shader_builder.hpp"
 
 #include <algorithm>
-#include <cstdarg>
 #include <ctime>
 #include <filesystem>
 #include <fstream>
 #include <functional>
 #include <iomanip>
+#include <iostream>
 #include <iterator>
 #include <numeric>
 #include <sstream>
@@ -15,29 +15,26 @@
 
 #include <renderboi/utilities/resource_locator.hpp>
 
-#include <cpptools/utility/string_tools.hpp>
+#include <cpptools/utility/string.hpp>
 
 #include "shader_feature.hpp"
 #include "shader_stage.hpp"
 
 #define INFO_BUFFER_SIZE 2048
 
-namespace renderboi
-{
+namespace rb {
 
 using ReLoc = ResourceLocator;
 using ReType = ResourceType;
 
 std::unordered_map<std::string, std::string> ShaderBuilder::_includeStrings = std::unordered_map<std::string, std::string>();
 
-ShaderProgram ShaderBuilder::MinimalShaderProgram()
-{
+ShaderProgram ShaderBuilder::MinimalShaderProgram() {
     static ShaderProgram Minimal = BuildShaderProgramFromConfig(ShaderConfig::MinimalConfig());
     return Minimal;
 }
 
-ShaderProgram ShaderBuilder::BuildShaderProgramFromConfig(const ShaderConfig& config, const bool dumpSource)
-{
+ShaderProgram ShaderBuilder::BuildShaderProgramFromConfig(const ShaderConfig& config, const bool dumpSource) {
     const std::vector<ShaderFeature>& Features = config.getRequestedFeatures();
     std::unordered_set<ShaderStage> requestedStages;
 
@@ -70,8 +67,7 @@ ShaderProgram ShaderBuilder::BuildShaderProgramFromConfig(const ShaderConfig& co
     return LinkShaders(shaders);
 }
 
-ShaderProgram ShaderBuilder::LinkShaders(const std::vector<Shader>& shaders)
-{
+ShaderProgram ShaderBuilder::LinkShaders(const std::vector<Shader>& shaders) {
     std::unordered_set<ShaderStage> presentStages;
     std::vector<unsigned int> locations;
 
@@ -118,8 +114,7 @@ ShaderProgram ShaderBuilder::LinkShaders(const std::vector<Shader>& shaders)
     return ShaderProgram(programLocation, supportedFeatures);
 }
 
-Shader ShaderBuilder::BuildShaderStageFromConfig(const ShaderStage stage, const ShaderConfig& config, const bool dumpSource)
-{
+Shader ShaderBuilder::BuildShaderStageFromConfig(const ShaderStage stage, const ShaderConfig& config, const bool dumpSource) {
     const std::vector<ShaderFeature> requestedFeatures = _FilterFeaturesByStage(config.getRequestedFeatures(), stage);
 
     auto it = _StageTemplatePaths().find(stage);
@@ -156,8 +151,7 @@ Shader ShaderBuilder::BuildShaderStageFromFile(
     const ShaderStage stage,
     const std::string& filename,
     const std::vector<ShaderFeature>& supportedFeatures
-)
-{
+) {
 	// Open input file 
 	std::ifstream file(filename);
 
@@ -188,8 +182,7 @@ Shader ShaderBuilder::BuildShaderStageFromText(
     const ShaderStage stage,
     std::string text,
     const std::vector<ShaderFeature>& supportedFeatures,
-    const bool dumpSource)
-{
+    const bool dumpSource) {
     // In case the shader makes use of #include directives, process them
     _ProcessIncludeDirectives(text);
 
@@ -239,8 +232,7 @@ Shader ShaderBuilder::BuildShaderStageFromText(
 }
 
 unsigned int
-ShaderBuilder::_MakeShaderProgram(const std::vector<unsigned int>& locations)
-{
+ShaderBuilder::_MakeShaderProgram(const std::vector<unsigned int>& locations) {
 	const unsigned int program = glCreateProgram();
 
 	for (const auto& loc : locations)
@@ -267,8 +259,7 @@ ShaderBuilder::_MakeShaderProgram(const std::vector<unsigned int>& locations)
 	return program;
 }
 
-void ShaderBuilder::_ProcessIncludeDirectives(std::string& text)
-{
+void ShaderBuilder::_ProcessIncludeDirectives(std::string& text) {
     std::vector<std::pair<std::string, std::pair<size_t, size_t>>>
     includeArguments = _LocateIncludeDirectivesInSource(text);
     
@@ -285,8 +276,7 @@ void ShaderBuilder::_ProcessIncludeDirectives(std::string& text)
     }
 }
 
-std::string ShaderBuilder::_GetIncludeString(const std::string& arg)
-{
+std::string ShaderBuilder::_GetIncludeString(const std::string& arg) {
     // Find the string 
     auto it = _includeStrings.find(arg);
 
@@ -303,19 +293,18 @@ std::string ShaderBuilder::_GetIncludeString(const std::string& arg)
         }
 
         // Read file contents and cache it
-        _includeStrings[arg] = cpptools::String::readFileIntoString(jt->second);
+        _includeStrings[arg] = tools::from_file(jt->second);
     }
 
     return _includeStrings[arg];
 }
 
 std::vector<std::pair<std::string, std::pair<size_t, size_t>>>
-ShaderBuilder::_LocateIncludeDirectivesInSource(std::string& text)
-{
+ShaderBuilder::_LocateIncludeDirectivesInSource(std::string& text) {
     static const std::string IncludeStringStart = "#include";
     std::vector<std::pair<std::string, std::pair<size_t, size_t>>> includeArguments;
 
-    cpptools::String::stripComments(text);
+    tools::strip_c_comments(text);
 
     size_t offset = text.find(IncludeStringStart, 0);
     while (offset != std::string::npos)
@@ -325,7 +314,7 @@ ShaderBuilder::_LocateIncludeDirectivesInSource(std::string& text)
         if (lastEol == std::string::npos) lastEol = 0;
 
         const std::string before = text.substr(lastEol, offset - lastEol);
-        if (!cpptools::String::stringIsWhitespace(before))
+        if (!tools::is_whitespace(before))
         {
             std::cout << "ShaderBuilder: ignored include directive as non "
                          "whitespace characters are present on the same line "
@@ -345,7 +334,7 @@ ShaderBuilder::_LocateIncludeDirectivesInSource(std::string& text)
             text.size() - offset;
 
         std::string includeArgument = text.substr(offset, argLength);
-        cpptools::String::trim(includeArgument);
+        tools::trim(includeArgument);
 
         const char firstDelimiter = includeArgument[0];
         char secondDelimiter = 0;
@@ -381,10 +370,9 @@ ShaderBuilder::_LocateIncludeDirectivesInSource(std::string& text)
     return includeArguments;
 }
 
-std::vector<ShaderFeature> ShaderBuilder::_AggregateShaderFeatures(const std::vector<Shader>& shaders)
-{
+std::vector<ShaderFeature> ShaderBuilder::_AggregateShaderFeatures(const std::vector<Shader>& shaders) {
     std::vector<ShaderFeature> supportedFeatures;
-    for (const auto shader : shaders)
+    for (const auto& shader : shaders)
     {
         const std::vector<ShaderFeature>& features = shader.getSupportedFeatures();
         std::copy(features.begin(), features.end(), std::back_inserter(supportedFeatures));
@@ -396,8 +384,7 @@ std::vector<ShaderFeature> ShaderBuilder::_AggregateShaderFeatures(const std::ve
 std::vector<ShaderFeature> ShaderBuilder::_FilterFeaturesByStage(
     const std::vector<ShaderFeature>& features,
     const ShaderStage stage
-)
-{
+) {
     std::vector<ShaderFeature> result;
 
     std::function<bool(ShaderFeature)> filter = [stage](ShaderFeature v) -> bool
@@ -411,8 +398,7 @@ std::vector<ShaderFeature> ShaderBuilder::_FilterFeaturesByStage(
     return result;
 }
 
-std::string ShaderBuilder::_DumpShaderSource(ShaderStage stage, const std::string& text)
-{
+std::string ShaderBuilder::_DumpShaderSource(ShaderStage stage, const std::string& text) {
     static const std::string DumpFolder = "output/";
     std::filesystem::create_directories(DumpFolder);
 
@@ -438,14 +424,12 @@ std::string ShaderBuilder::_DumpShaderSource(ShaderStage stage, const std::strin
     return std::filesystem::absolute(filename).string();
 }
 
-const std::string& ShaderBuilder::_GenerateVersionDirective()
-{
+const std::string& ShaderBuilder::_GenerateVersionDirective() {
     static const std::string s = "#version " + std::to_string(ShadingLanguageVersion) + " " + ShadingLanguageProfile + "\n";
     return s;
 }
 
-const std::string& ShaderBuilder::_GenerateExtensionDirectives()
-{
+const std::string& ShaderBuilder::_GenerateExtensionDirectives() {
     static auto addDirective = [](std::string aggregate, std::pair<std::string, std::string> tuple) -> std::string
     {
         return aggregate + "#extension " + tuple.first + " : " + tuple.second + '\n';
@@ -461,16 +445,14 @@ const std::string& ShaderBuilder::_GenerateExtensionDirectives()
 }
 
 const std::unordered_map<std::string, std::string>&
-ShaderBuilder::_ShadingLanguageExtensions()
-{
+ShaderBuilder::_ShadingLanguageExtensions() {
     static std::unordered_map<std::string, std::string> map = {};
 
     return map;
 }
 
 const std::unordered_map<ShaderStage, std::string>&
-ShaderBuilder::_StageTemplatePaths()
-{
+ShaderBuilder::_StageTemplatePaths() {
     static std::unordered_map<ShaderStage, std::string> map = {
         {ShaderStage::Vertex,   ReLoc::locate(ReType::ShaderSource, "templates/vertex_shader.vert")},
         {ShaderStage::Geometry, ReLoc::locate(ReType::ShaderSource, "templates/geometry_shader.geom")},
@@ -481,8 +463,7 @@ ShaderBuilder::_StageTemplatePaths()
 }
 
 const std::unordered_map<ShaderFeature, std::string>&
-ShaderBuilder::_FeatureDefineMacros()
-{
+ShaderBuilder::_FeatureDefineMacros() {
     static std::unordered_map<ShaderFeature, std::string> map = {
         {ShaderFeature::VertexMVP,                      "VERTEX_MVP"},
         // {ShaderFeature::VertexFishEye,                  "VERTEX_FISH_EYE"},        // IMPLEMENT VERT LENS
@@ -506,8 +487,7 @@ ShaderBuilder::_FeatureDefineMacros()
 }
 
 const std::unordered_map<std::string, std::string>&
-ShaderBuilder::_IncludeFilenames()
-{
+ShaderBuilder::_IncludeFilenames() {
     static std::unordered_map<std::string, std::string> map = {
         {"/functional_blocks/gamma_correction",     ReLoc::locate(ReType::ShaderSource, "functional_blocks/gamma_correction.glsl")},
         {"/functional_blocks/light_attenuation",    ReLoc::locate(ReType::ShaderSource, "functional_blocks/light_attenuation.glsl")},
@@ -524,8 +504,7 @@ ShaderBuilder::_IncludeFilenames()
 }
 
 const std::unordered_map<std::string, std::vector<ShaderFeature>>&
-ShaderBuilder::_FeaturesSupportedByFile()
-{
+ShaderBuilder::_FeaturesSupportedByFile() {
     static std::unordered_map<std::string, std::vector<ShaderFeature>> map = {
         {
             ReLoc::locate(ReType::ShaderSource, "static/default.frag"), {
@@ -555,8 +534,7 @@ ShaderBuilder::_FeaturesSupportedByFile()
 }
 
 const std::unordered_map<ShaderStage, unsigned int>&
-ShaderBuilder::_ShaderStageMacros()
-{
+ShaderBuilder::_ShaderStageMacros() {
     static std::unordered_map<ShaderStage, unsigned int> map = {
         {ShaderStage::Vertex,   GL_VERTEX_SHADER},
         {ShaderStage::Geometry, GL_GEOMETRY_SHADER},
@@ -567,8 +545,7 @@ ShaderBuilder::_ShaderStageMacros()
 }
 
 const std::unordered_map<ShaderStage, std::string>&
-ShaderBuilder::_StageFileExtensions()
-{
+ShaderBuilder::_StageFileExtensions() {
     static std::unordered_map<ShaderStage, std::string> map = {
         {ShaderStage::Vertex,   "vert"},
         {ShaderStage::Geometry, "geom"},
@@ -579,8 +556,7 @@ ShaderBuilder::_StageFileExtensions()
 }
 
 std::string
-ShaderBuilder::_GenerateDefineDirectives(const std::vector<ShaderFeature>& features)
-{
+ShaderBuilder::_GenerateDefineDirectives(const std::vector<ShaderFeature>& features) {
     static const std::unordered_map<ShaderFeature, std::string>&
     defineMacros = _FeatureDefineMacros();
 
@@ -607,4 +583,4 @@ ShaderBuilder::_GenerateDefineDirectives(const std::vector<ShaderFeature>& featu
     );
 }
 
-} // namespace renderboi
+} // namespace rb

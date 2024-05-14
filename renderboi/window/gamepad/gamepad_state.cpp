@@ -1,7 +1,6 @@
 #include "gamepad_state.hpp"
 
-namespace renderboi::Window
-{
+namespace rb::Window {
 
 GamepadState::GamepadState() :
     Buttons{
@@ -34,42 +33,35 @@ GamepadState::GamepadState() :
 
 }
 
-GamepadState::GamepadState(const GamepadState& other)
-{
+GamepadState::GamepadState(const GamepadState& other) {
     std::copy(other.Buttons, other.Buttons + 15, Buttons);
     std::copy(other.Axes, other.Axes + 6, Axes);
     DPad = other.DPad;
 }
 
-GamepadState& GamepadState::operator=(GamepadState other)
-{
+GamepadState& GamepadState::operator=(GamepadState other) {
     swap(*this, other);
 
     return *this;
 }
 
-bool& GamepadState::operator[](const Button button)
-{
+bool& GamepadState::operator[](const Button button) {
     return Buttons[(unsigned int)button];
 }
 
-const bool& GamepadState::operator[](const Button button) const
-{
+const bool& GamepadState::operator[](const Button button) const {
     return Buttons[(unsigned int)button];
 }
 
-float& GamepadState::operator[](const Axis axis)
-{
+float& GamepadState::operator[](const Axis axis) {
     return Axes[(unsigned int)axis];
 }
 
-const float& GamepadState::operator[](const Axis axis) const
-{
+const float& GamepadState::operator[](const Axis axis) const {
     return Axes[(unsigned int)axis];
 }
 
-void swap(GamepadState& left, GamepadState& right)
-{
+void swap(GamepadState& left, GamepadState& right) {
     using std::swap;
 
     swap(left.DPad,    right.DPad);
@@ -77,4 +69,4 @@ void swap(GamepadState& left, GamepadState& right)
     swap(left.Axes,    right.Axes);
 }
 
-} // namespace renderboi::Window
+} // namespace rb::Window

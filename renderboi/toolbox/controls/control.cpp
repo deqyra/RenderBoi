@@ -4,65 +4,44 @@
 
 #include <renderboi/window/enums.hpp>
 
-namespace renderboi
-{
+namespace rb {
 
 Control::Control(const Window::Input::Key key) :
-    kind(ControlKind::Key),
-    key(key)
+    key(key),
+    kind(ControlKind::Key)
 {
 
 }
 
 Control::Control(const Window::Input::MouseButton mouseButton) :
-    kind(ControlKind::MouseButton),
-    mouseButton(mouseButton)
+    mouseButton(mouseButton),
+    kind(ControlKind::MouseButton)
 {
 
 }
 
-bool Control::operator==(const Control& other)
-{
-    return renderboi::operator==(*this, other);
+bool operator==(const Control& left, const Control& right) {
+    // Accessing .key regardless of what member actually is active in the union
+    // is okay because all enums in the union are based on the same underlying,
+    // type, which makes them layout-compatible enum types, which makes all a 
+    // unique common initial sequence that the union can be safely accessed through
+    return left.kind == right.kind && left.key == right.key;
 }
 
-bool Control::operator<(const Control& other)
-{
-    return renderboi::operator<(*this, other);
+bool operator<(const Control& left, const Control& right) {
+    return (left.kind < right.kind) || ((left.kind == right.kind) && (left.key < right.key));
 }
 
-bool operator==(const Control& left, const Control& right)
-{
-    // Safe only because the Control struct is made up of enums which are all 
-    // based on the unsigned int data types
-    const unsigned int* dataLeft = reinterpret_cast<const unsigned int*>(&left);
-    const unsigned int* dataRight = reinterpret_cast<const unsigned int*>(&right);
-
-    return (dataLeft[0] == dataRight[0]) && (dataLeft[1] == dataRight[1]);
-}
-
-bool operator<(const Control& left, const Control& right)
-{
-    const unsigned int* dataLeft = reinterpret_cast<const unsigned int*>(&left);
-    const unsigned int* dataRight = reinterpret_cast<const unsigned int*>(&right);
-
-    return   (dataLeft[0] <  dataRight[0]) || 
-            ((dataLeft[0] == dataRight[0]) && (dataLeft[1] < dataRight[1]));
-}
-
-std::size_t ControlHash::operator()(Control const& c) const
-{
+std::size_t ControlHash::operator()(Control const& c) const {
     std::size_t res = 0;
 
-    const unsigned int* data = reinterpret_cast<const unsigned int*>(&c);
-    cpptools::hash_combine(res, data[0]);
-    cpptools::hash_combine(res, data[1]);
+    tools::hash_combine(res, c.kind);
+    tools::hash_combine(res, c.key);
 
     return res;
 }
 
-std::string to_string(const Control& control)
-{
+std::string to_string(const Control& control) {
     switch(control.kind)
     {
         case ControlKind::Key:
@@ -79,14 +58,4 @@ std::string to_string(const Control& control)
     return "Unknown control";
 }
 
-} // namespace renderboi
-
-namespace std
-{
-
-bool less<renderboi::Control>::operator()(const renderboi::Control& left, const renderboi::Control& right) const
-{
-    return left < right;
-}
-
-}
+} // namespace rb

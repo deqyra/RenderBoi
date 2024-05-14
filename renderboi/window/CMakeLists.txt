@@ -12,6 +12,15 @@ set( WINDOW_BACKEND "" )
 set( WINDOW_BACKEND_ENUM "Unknown" )
 set( USE_GLFW3 0 )
 
+# The specific backends rely on the windowing utilities which themselves have dependencies
+# Those dependencies need to be carried along when building the specific backends
+# Questionable but working so far
+
+set( THREADING_LIB "" )
+if( UNIX )
+    set( THREADING_LIB pthread )
+endif( )
+
 # Window backend selection
 if( WINDOW_BACKEND_GLFW3 )
     set( WINDOW_BACKEND_ENUM "GLFW3" )
@@ -22,8 +31,14 @@ else( )
     message(FATAL_ERROR "No window backend was selected!")
 endif( )
 
+set( RENDERBOI_WINDOW_EXTRA_DEPS
+    cpptools::cpptools_static
+    ${THREADING_LIB}
+    renderboi_utilities
+)
+
 # Setup flags accordingly
-configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/config/env_info.config.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/env_info.hpp" )
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/config/env_info.config.hpp ${CMAKE_CURRENT_SOURCE_DIR}/env_info.hpp )
 
 # Build window lib
 add_library( renderboi_window
@@ -53,16 +68,9 @@ add_library( renderboi_window
     gamepad/gamepad.hpp
 )
 
-
-set( THREADING_LIB "" )
-if( UNIX )
-    set( THREADING_LIB pthread )
-endif( )
-
 target_include_directories( renderboi_window PUBLIC ${RENDERBOI_MAIN_INCLUDE_PATH} )
 target_link_libraries( renderboi_window PUBLIC
     ${CMAKE_DL_LIBS}
+    ${RENDERBOI_WINDOW_EXTRA_DEPS}
     ${WINDOW_BACKEND}
-    ${THREADING_LIB}
-    renderboi_utilities
 )

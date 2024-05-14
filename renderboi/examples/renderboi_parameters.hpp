@@ -1,11 +1,10 @@
-#ifndef RENDERBOI__RENDERBOI_PARAMETERS_HPP
-#define RENDERBOI__RENDERBOI_PARAMETERS_HPP
+#ifndef RENDERBOI_RENDERBOI_PARAMETERS_HPP
+#define RENDERBOI_RENDERBOI_PARAMETERS_HPP
 
 #include <filesystem>
 
-struct RenderboiParameters
-{
+struct RenderboiParameters {
     std::filesystem::path assetsPath;
 };
 
-#endif//RENDERBOI__RENDERBOI_PARAMETERS_HPP
+#endif//RENDERBOI_RENDERBOI_PARAMETERS_HPP

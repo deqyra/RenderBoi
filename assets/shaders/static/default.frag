@@ -5,7 +5,6 @@ in VertexOut vertOut;
 
 out vec4 fragColor;
 
-void main()
-{
+void main() {
 	fragColor = vec4(vertOut.color, 1.0f); 
 }

@@ -1,8 +1,7 @@
-#ifndef TEMPLATES__PHONG
-#define TEMPLATES__PHONG
+#ifndef TEMPLATES_PHONG
+#define TEMPLATES_PHONG
 
-vec3 phong(vec3 lightDirection, vec3 ambientLight, vec3 diffuseLight, vec3 specularLight)
-{
+vec3 phong(vec3 lightDirection, vec3 ambientLight, vec3 diffuseLight, vec3 specularLight) {
 	vec3 viewDirection = normalize(vertOut.fragPos);
 
 	// Ambient lighting
@@ -48,4 +47,4 @@ vec3 phong(vec3 lightDirection, vec3 ambientLight, vec3 diffuseLight, vec3 specu
 	return total;
 }
 
-#endif//TEMPLATES__PHONG
+#endif//TEMPLATES_PHONG

@@ -1,23 +1,18 @@
-#ifndef RENDERBOI__TOOLBOX__INTERFACES__DEFAULT_CONTROL_SCHEME_PROVIDER_HPP
-#define RENDERBOI__TOOLBOX__INTERFACES__DEFAULT_CONTROL_SCHEME_PROVIDER_HPP
+#ifndef RENDERBOI_TOOLBOX_INTERFACES_DEFAULT_CONTROL_SCHEME_PROVIDER_HPP
+#define RENDERBOI_TOOLBOX_INTERFACES_DEFAULT_CONTROL_SCHEME_PROVIDER_HPP
 
-#include <memory>
+#include <renderboi/toolbox/controls/control_scheme.hpp>
 
-#include "../controls/control_scheme.hpp"
-
-namespace renderboi
-{
+namespace rb {
 
 template<typename T>
-class DefaultControlSchemeProvider
-{
+class DefaultControlSchemeProvider {
 public:
-    /// @brief Get the default control scheme for the implementing entity.
-    ///
-    /// @return The default control scheme for the implementing entity.
-    virtual const ControlScheme<T>& getDefaultControlScheme() const = 0;
+    /// @brief Get the default control scheme for the implementing entity
+    /// @return The default control scheme for the implementing entity
+    virtual const ControlScheme<T>& defaultControlScheme() const = 0;
 };
 
-} // namespace renderboi
+} // namespace rb
 
-#endif//RENDERBOI__TOOLBOX__INTERFACES__DEFAULT_CONTROL_SCHEME_PROVIDER_HPP
+#endif//RENDERBOI_TOOLBOX_INTERFACES_DEFAULT_CONTROL_SCHEME_PROVIDER_HPP

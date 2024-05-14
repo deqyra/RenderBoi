@@ -1,23 +1,15 @@
 #include "render_trait_config.hpp"
-#include "renderboi/toolbox/scene/object/object_transform.hpp"
+#include "renderboi/toolbox/scene/object/object_world_transform.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
-RenderTraitConfig::RenderTraitConfig(SceneObject& sceneObject) :
-    _sceneObject(sceneObject)
-{
+RenderTraitConfig::RenderTraitConfig(Object& Object)
+    : _Object(Object) {}
 
+RenderTraitConfig::~RenderTraitConfig() {}
+
+Object& RenderTraitConfig::Object() {
+    return _Object;
 }
 
-RenderTraitConfig::~RenderTraitConfig()
-{
-    
-}
-
-SceneObject& RenderTraitConfig::sceneObject()
-{
-    return _sceneObject;
-}
-
-} // namespace renderboi
+} // namespace rb

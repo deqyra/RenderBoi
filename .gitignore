@@ -2,11 +2,6 @@
 .clangd
 .vs
 .vscode
-bin
-build
+build*
 compile_commands.json
-include/glm/out/*
-obj
-output
-external/lib
-external/include
+CMakeSettings.json

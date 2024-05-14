@@ -5,16 +5,14 @@
 
 #include <glad/gl.h>
 
-namespace renderboi
-{
+namespace rb {
 
 std::unordered_map<unsigned int, unsigned int> Shader::_locationRefCounts = std::unordered_map<unsigned int, unsigned int>();
 
 Shader::Shader(unsigned int location, ShaderStage stage, const std::vector<ShaderFeature> supportedFeatures) :
     _location(location),
     _stage(stage),
-    _supportedFeatures(supportedFeatures)
-{
+    _supportedFeatures(supportedFeatures) {
     if (!location)
     {
         throw std::runtime_error("Shader: cannot create object wrapping no resource on the GPU (location == 0).");
@@ -29,13 +27,11 @@ Shader::Shader(unsigned int location, ShaderStage stage, const std::vector<Shade
 Shader::Shader(const Shader& other) :
     _location(other._location),
     _stage(other._stage),
-    _supportedFeatures(other._supportedFeatures)
-{
+    _supportedFeatures(other._supportedFeatures) {
     _locationRefCounts[_location]++;
 }
 
-Shader& Shader::operator=(const Shader& other)
-{
+Shader& Shader::operator=(const Shader& other) {
     // Let go of content currently in place
     _cleanup();
 
@@ -47,14 +43,12 @@ Shader& Shader::operator=(const Shader& other)
     return *this;
 }
 
-Shader::~Shader()
-{
+Shader::~Shader() {
     // Let go of content currently in place
     _cleanup();
 }
 
-void Shader::_cleanup()
-{
+void Shader::_cleanup() {
     // Decrease the ref count
     unsigned int count = --_locationRefCounts[_location];
     // If refcount is zero, destroy resource on the GPU
@@ -90,4 +84,4 @@ bool Shader::supports(const ShaderFeature feature) const
     return it != _supportedFeatures.end();
 }
 
-} // namespace renderboi
+} // namespace rb

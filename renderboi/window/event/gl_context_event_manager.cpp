@@ -4,11 +4,9 @@
 
 #include "../gl_window.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
-namespace Window
-{
+namespace Window {
 
 GLContextEventManager::GLContextEventManager(GLWindow& window) :
     _window(window),
@@ -18,8 +16,7 @@ GLContextEventManager::GLContextEventManager(GLWindow& window) :
 
 }
 
-void GLContextEventManager::processPendingEvents()
-{
+void GLContextEventManager::processPendingEvents() {
     // Process all awaiting events
     _eventMutex.lock();
     while (!_eventQueue.empty())
@@ -35,15 +32,13 @@ void GLContextEventManager::processPendingEvents()
     _eventMutex.unlock();
 }
 
-void GLContextEventManager::queueEvent(const GLContextEvent event)
-{
+void GLContextEventManager::queueEvent(const GLContextEvent& event) {
     _eventMutex.lock();
     _eventQueue.push(event);
     _eventMutex.unlock();
 }
 
-void GLContextEventManager::_processEvent(const GLContextEvent event)
-{
+void GLContextEventManager::_processEvent(const GLContextEvent event) {
     switch (event)
     {
     case GLContextEvent::FitFramebufferToWindow:
@@ -73,4 +68,4 @@ void GLContextEventManager::_processEvent(const GLContextEvent event)
 
 }// namespace Window
 
-}// namespace renderboi
+}// namespace rb

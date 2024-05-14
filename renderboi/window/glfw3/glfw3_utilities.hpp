@@ -1,7 +1,5 @@
-#ifndef RENDERBOI__WINDOW__GLFW3__GLFW3_UTILITIES_HPP
-#define RENDERBOI__WINDOW__GLFW3__GLFW3_UTILITIES_HPP
-
-#include <memory>
+#ifndef RENDERBOI_WINDOW_GLFW3_GLFW3_UTILITIES_HPP
+#define RENDERBOI_WINDOW_GLFW3_GLFW3_UTILITIES_HPP
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -9,103 +7,102 @@
 
 #include "../gl_window.hpp"
 
-/// @brief Collection of free functions that are useful when working with GLFW3.
-namespace renderboi::Window::GLFW3Utilities
-{
+/// @brief Collection of free functions that are useful when working with GLFW3
+namespace rb::Window::GLFW3Utilities {
 
-/// @brief Callback for a framebuffer resize event. Will get the GLWindow instance
+/// @brief Callback for a framebuffer resize event Will get the GLWindow instance
 /// corresponding to the window which received the event, from its user pointer,
-/// and will forward the event to it.
+/// and will forward the event to it
 ///
 /// @param window Pointer to the GLFWwindow struct on which the event took
-/// place.
-/// @param width New width (in pixels) of the framebuffer.
-/// @param height New height (in pixels) of the framebuffer.
+/// place
+/// @param width New width (in pixels) of the framebuffer
+/// @param height New height (in pixels) of the framebuffer
 void globalGlfwFramebufferResizeCallback(GLFWwindow* const window, const int width, const int height);
 
-/// @brief Callback for a keyboard event. Will get the GLWindow instance
+/// @brief Callback for a keyboard event Will get the GLWindow instance
 /// corresponding to the window which received the event, from its user pointer,
-/// and will forward the event to it.
+/// and will forward the event to it
 ///
 /// @param window Pointer to the GLFWwindow struct on which the event took
-/// place.
-/// @param key Literal describing which key triggered the event.
-/// @param scancode Scancode of the key which triggered the event. 
-/// Platform-dependent, but consistent over time.
+/// place
+/// @param key Literal describing which key triggered the event
+/// @param scancode Scancode of the key which triggered the event 
+/// Platform-dependent, but consistent over time
 /// @param action Literal describing what action was performed on
-/// the key which triggered the event.
+/// the key which triggered the event
 /// @param mods Bit field describing which modifiers were enabled 
-/// during the key event (Ctrl, Shift, etc).
+/// during the key event (Ctrl, Shift, etc)
 void globalGlfwKeyboardCallback(GLFWwindow* const window, const int key, const int scancode, const int action, const int mods);
 
-/// @brief Callback for a mouse button event. Will get the GLWindow instance
+/// @brief Callback for a mouse button event Will get the GLWindow instance
 /// corresponding to the window which received the event, from its user pointer,
-/// and will forward the event to it.
+/// and will forward the event to it
 ///
 /// @param window Pointer to the GLFWwindow struct on which the event took
-/// place.
+/// place
 /// @param button Literal describing which button triggered the
-/// event.
+/// event
 /// @param action Literal describing what action was performed on
-/// the button which triggered the event.
+/// the button which triggered the event
 /// @param mods Bit field describing which modifiers were enabled 
-/// during the button event (Ctrl, Shift, etc).
+/// during the button event (Ctrl, Shift, etc)
 void globalGlfwMouseButtonCallback(GLFWwindow* const window, const int button, const int action, const int mods);
 
-/// @brief Callback for a mouse cursor event. Will get the GLWindow instance
+/// @brief Callback for a mouse cursor event Will get the GLWindow instance
 /// corresponding to the window which received the event, from its user pointer,
-/// and will forward the event to it.
+/// and will forward the event to it
 ///
 /// @param window Pointer to the GLFWwindow struct on which the event took
-/// place.
-/// @param xpos X coordinate of the new position of the mouse.
-/// @param ypos Y coordinate of the new position of the mouse.
+/// place
+/// @param xpos X coordinate of the new position of the mouse
+/// @param ypos Y coordinate of the new position of the mouse
 void globalGlfwMouseCursorCallback(GLFWwindow* const window, const double xpos, const double ypos);
 
-/// @brief Callback for error-reporting by GLFW.
+/// @brief Callback for error-reporting by GLFW
 ///
-/// @param error Code of an error which just occurred.
+/// @param error Code of an error which just occurred
 /// @param description C-string containing a description of the error which just
-/// occurred.
+/// occurred
 void globalGlfwErrorCallback(const int error, const char* description);
 
 /// @brief Subscribe a window to the event callback for when a joystick is 
-/// connected.
+/// connected
 ///
-/// @param window Pointer to the window to subscribe.
+/// @param window Pointer to the window to subscribe
 void subscribeToGlfwJoystickStatus(GLWindow* const window);
 
 /// @brief Unsubscribe a window from the event callback for when a joystick is 
-/// connected.
+/// connected
 ///
-/// @param window Pointer to the window to unsubscribe.
+/// @param window Pointer to the window to unsubscribe
 void unsubscribeFromGlfwJoystickStatus(GLWindow* const window);
 
-/// @brief Callback for a joystick status event. The event will be forwarded to
+/// @brief Callback for a joystick status event The event will be forwarded to
 /// the gamepad managers of all windows which were subscribed through 
-/// subscribeToGlfwJoystickStatus().
-/// CAUTION : this function will be called by GLFW in a separate thread. However,
+/// subscribeToGlfwJoystickStatus()
+/// CAUTION : this function will be called by GLFW in a separate thread However,
 /// in the case of a connection event, actually checking the status of a 
 /// joystick (to know whether it is a gamepad or not) requires to call GLFW 
-/// functions which only work when called from the main thread. Since this is 
+/// functions which only work when called from the main thread Since this is 
 /// not the case here, what this callback actually does is raise a flag to check
-/// upon joystick statuses. The actual processing is then deferred to the main
+/// upon joystick statuses The actual processing is then deferred to the main
 /// thread of the application, which should call 
 /// GLFW3GamepadManager::refreshGamepadStatuses() at some point (typically 
-/// done through calling GLWindow::startEventProcessingLoop()). Only then will 
-/// the connection events be fired to registered gamepad managers.
-/// Gamepad disconnection events are not affected by this.
+/// done through calling GLWindow::startEventProcessingLoop()) Only then will 
+/// the connection events be fired to registered gamepad managers
+/// Gamepad disconnection events are not affected by this
 ///
 /// @param jid ID of the joystick which the connection / disconnection event 
-/// relates to.
+/// relates to
 /// @param event Value describing whether the joystick was connected or 
-/// disconnected. 
+/// disconnected 
 void globalGlfwJoystickCallback(const int jid, const int event);
 
 /// @brief Poll all gamepads and initialize internal structures to keep track of
-/// those.
+/// those
 void initGamepadStatuses();
 
-} // namespace renderboi::Window::GLFW3Utilities
+} // namespace rb::Window::GLFW3Utilities
 
-#endif//RENDERBOI__WINDOW__GLFW3__GLFW3_UTILITIES_HPP
+#endif//RENDERBOI_WINDOW_GLFW3_GLFW3_UTILITIES_HPP

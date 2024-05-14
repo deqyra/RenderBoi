@@ -1,18 +1,16 @@
 add_library( renderboi_toolbox
-    common.hpp
-    factory.hpp
     input_splitter.cpp
     input_splitter.hpp 
-    script.cpp
     script.hpp 
     controls/control.cpp
     controls/control.hpp
     controls/control_event_translator.hpp
     controls/control_scheme.hpp
     controls/controlled_entity_manager.hpp
-    interfaces/control_binding_provider.hpp
+    interfaces/action_event_receiver.hpp
     interfaces/default_control_scheme_provider.hpp
-    mesh_generators/all_mesh_generators.hpp
+    interfaces/event_receiver.hpp
+    interfaces/transform_proxy.hpp
     mesh_generators/axes_generator.cpp
     mesh_generators/axes_generator.hpp
     mesh_generators/cube_generator.cpp
@@ -24,56 +22,39 @@ add_library( renderboi_toolbox
     mesh_generators/tetrahedron_generator.hpp
     mesh_generators/torus_generator.cpp
     mesh_generators/torus_generator.hpp
-    mesh_generators/mesh_type.hpp
-    render/composite_renderer.hpp
     render/scene_renderer.cpp
     render/scene_renderer.hpp 
-    render/traits/all_trait_renderers.hpp
-    render/traits/render_trait.hpp
-    render/traits/render_trait_config.cpp
-    render/traits/render_trait_config.hpp
-    render/traits/render_trait_config_map.cpp
-    render/traits/render_trait_config_map.hpp
-    render/traits/trait_renderer.hpp
-    render/traits/config/mesh_render_trait_config.cpp
-    render/traits/config/mesh_render_trait_config.hpp
-    render/traits/renderers/mesh_trait_renderer.cpp
-    render/traits/renderers/mesh_trait_renderer.hpp
     runnables/basic_window_manager.cpp
     runnables/basic_window_manager.hpp 
     runnables/camera_aspect_ratio_manager.cpp
     runnables/camera_aspect_ratio_manager.hpp 
-    runnables/gamepad_movement_script.cpp
     runnables/gamepad_movement_script.hpp 
     runnables/gamepad_camera_manager.cpp
     runnables/gamepad_camera_manager.hpp 
     runnables/input_logger.cpp
     runnables/input_logger.hpp
-    runnables/keyboard_movement_script.cpp
     runnables/keyboard_movement_script.hpp 
     runnables/mouse_camera_manager.cpp
     runnables/mouse_camera_manager.hpp 
     scene/scene.cpp
     scene/scene.hpp 
-    scene/object/object_transform.cpp
-    scene/object/object_transform.hpp
-    scene/object/scene_object_metadata.hpp 
-    scene/object/scene_object.hpp 
-    scene/object/components/camera_component.cpp
-    scene/object/components/camera_component.hpp 
-    scene/object/components/light_component.cpp
-    scene/object/components/light_component.hpp 
-    scene/object/components/mesh_component.cpp
-    scene/object/components/mesh_component.hpp 
-    scene/object/components/script_component.cpp
-    scene/object/components/script_component.hpp 
+    scene/object.hpp 
+    scene/components/basic_component.hpp
+    scene/components/camera_component.hpp 
+    scene/components/directional_light_component.hpp 
+    scene/components/local_transform.hpp 
+    scene/components/point_light_component.hpp 
+    scene/components/rendered_mesh_component.hpp 
+    scene/components/spot_light_component.hpp 
+    scene/components/world_transform.hpp 
 )
 
 target_include_directories( renderboi_toolbox PUBLIC ${RENDERBOI_MAIN_INCLUDE_PATH} )
 target_link_libraries( renderboi_toolbox PUBLIC
     ${CMAKE_DL_LIBS}
     glad
+    EnTT::EnTT
     renderboi_core
     renderboi_window
-    cpptools::cpptools
+    cpptools::cpptools_static
 )

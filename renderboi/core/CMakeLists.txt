@@ -1,32 +1,43 @@
 add_library( renderboi_core
-    camera.cpp
-    camera.hpp
+    color.hpp
     material.cpp
     material.hpp
     materials.hpp
-    mesh.cpp
-    mesh.hpp
     pixel_space.hpp
-    transform.cpp
-    transform.hpp
     texture_2d.cpp
     texture_2d.hpp
-    vertex.hpp
-    common/parent_dependent_vp_matrix_provider.hpp
-    common/parent_dependent_vp_matrix_provider.cpp
-    interfaces/basis_provider.hpp
-    interfaces/vp_matrix_provider.hpp
-    lights/directional_light.cpp
+    3d/affine.hpp
+    3d/basis_provider.hpp
+    3d/basis.cpp
+    3d/basis.hpp
+    3d/camera.cpp
+    3d/camera.hpp
+    3d/mesh.cpp
+    3d/mesh.hpp
+    3d/transform.cpp
+    3d/transform.hpp
+    3d/vertex.hpp
+    3d/affine/affine_operation.hpp
+    3d/affine/orbit.cpp
+    3d/affine/orbit.hpp
+    3d/affine/rotation.cpp
+    3d/affine/rotation.hpp
+    3d/affine/scaling.cpp
+    3d/affine/scaling.hpp
+    3d/affine/set_orientation.cpp
+    3d/affine/set_orientation.hpp
+    3d/affine/set_position.cpp
+    3d/affine/set_position.hpp
+    3d/affine/transformation.cpp
+    3d/affine/transformation.hpp
+    3d/affine/translation.cpp
+    3d/affine/translation.hpp
+    3d/affine/turn.cpp
+    3d/affine/turn.hpp
     lights/directional_light.hpp
-    lights/light.cpp
-    lights/light.hpp
-    lights/light_type.hpp
-    lights/point_light.cpp
+    lights/light_common.hpp
     lights/point_light.hpp
-    lights/spot_light.cpp
-    lights/spot_light.hpp 
-    lights/tools.cpp
-    lights/tools.hpp 
+    lights/spot_light.hpp
     shader/shader.cpp
     shader/shader.hpp
     shader/shader_builder.cpp
@@ -39,10 +50,18 @@ add_library( renderboi_core
     shader/shader_program.hpp
     shader/shader_stage.cpp
     shader/shader_stage.hpp
+    ubo/common.hpp
     ubo/light_ubo.cpp
     ubo/light_ubo.hpp 
     ubo/matrix_ubo.cpp
     ubo/matrix_ubo.hpp 
+    ubo/ubo_layout.hpp 
+    ubo/layout/directional_light.cpp
+    ubo/layout/directional_light.hpp
+    ubo/layout/point_light.cpp
+    ubo/layout/point_light.hpp
+    ubo/layout/spot_light.cpp
+    ubo/layout/spot_light.hpp
 )
 
 target_include_directories( renderboi_core PUBLIC ${RENDERBOI_MAIN_INCLUDE_PATH} )
@@ -50,6 +69,7 @@ target_link_libraries( renderboi_core PUBLIC
     ${CMAKE_DL_LIBS}
     stb_image
     glad
-    cpptools::cpptools
+    glm
+    cpptools::cpptools_static
     renderboi_utilities
 )

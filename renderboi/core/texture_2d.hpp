@@ -1,59 +1,40 @@
-#ifndef RENDERBOI__CORE__TEXTURE_2D_HPP
-#define RENDERBOI__CORE__TEXTURE_2D_HPP
+#ifndef RENDERBOI_CORE_TEXTURE_2D_HPP
+#define RENDERBOI_CORE_TEXTURE_2D_HPP
 
 #include <string>
 #include <unordered_map>
 
-#include <glad/gl.h>
-
 #include "pixel_space.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
-/// @brief Handler for a 2D texture resource on the GPU.
+/// @brief A 2D texture resource on the GPU
 class Texture2D
 {
 private:
-    /// @brief Structure mapping GPU texture locations against the path of 
-    /// the image they were constructed from.
-    static std::unordered_map<std::string , unsigned int> _pathsToIds;
+    /// @brief GPU texture locations mapped to the path of the image they were constructed from
+    static std::unordered_map<std::string , unsigned int> _objectLocations;
 
-    /// @brief Structure mapping how many Texture2D instances are handling 
-    /// a texture resource on the GPU.
-    static std::unordered_map<unsigned int, unsigned int> _LocationRefCounts;
+    /// @brief Reference count mapped to a texture object location on the GPU
+    static std::unordered_map<unsigned int, unsigned int> _locationRefCounts;
 
-    /// @brief The location of the texture resource on the GPU.
-    unsigned int _location;
+    /// @brief The location of the texture resource on the GPU
+    unsigned int _tex;
     
-    /// @brief The path of the image from which the texture was generated.
-    std::string _path;
+    /// @brief Given an image file, make a texture out of its contents and send
+    /// it to the GPU, or return the existing texture location for that image
+    /// @param path Path to the image file
+    /// @return The texture object location on the GPU
+    static unsigned int _getOrCreateTextureLocation(const std::string& filename, const PixelSpace space);
 
-    /// @brief Process an image file and make a texture out of its content
-    /// on the GPU.
-    ///
-    /// @param path Local path to the image file.
-    ///
-    /// @return The GPU location of the generated texture.
-    ///
-    /// @exception If the image could not be read, the function throws an
-    /// std::runtime_error.
-    static unsigned int _LoadTextureFromFile(const std::string& filename, const PixelSpace space);
-
-    /// @brief Free resources upon instance destruction.
+    /// @brief Free resources upon instance destruction
     void _cleanup();
 
 public:
-    /// @brief GPU location of the last texture unit available.
-    static constexpr unsigned int MaxTextureUnit = GL_TEXTURE31;
-    
-    /// @brief Amount of texture units that can be handled by the GPU.
-    static constexpr unsigned int MaxTextureUnitIndex = MaxTextureUnit - GL_TEXTURE0;
-
     /// @param filename Local path to an image file out of which the texture
-    /// should be generated.
+    /// should be generated
     /// @param pixelSpace Literal describing which space the texture pixels
-    /// are in.
+    /// are in
     Texture2D(const std::string& filename, const PixelSpace space);
 
     Texture2D(const Texture2D& other);
@@ -62,25 +43,20 @@ public:
 
     Texture2D& operator=(const Texture2D& other);
     
-    /// @brief Get the location of the texture on the GPU.
+    /// @brief Get the location of the texture on the GPU
     ///
-    /// @return The location of the texture on the GPU.
+    /// @return The location of the texture on the GPU
     unsigned int location() const;
 
-    /// @brief Bind the texture to the current texture unit on the GPU.
+    /// @brief Bind the texture to the current texture unit on the GPU
     void bind() const;
 
-    /// @brief Bind the texture to a particular texture unit on the GPU.
-    ///
+    /// @brief Bind the texture to a particular texture unit on the GPU
     /// @param unit 0-based index of the unit to which the texture should
-    /// be bound.
-    ///
-    /// @exception If [unit] is bigger than MaxTextureUnitIndex and thus ends up
-    /// targeting a unit past Texture2D::MaxTextureUnit, the function will throw 
-    /// an IndexOutOfBoundsError.
+    /// be bound
     void bind(unsigned int unit) const;
 };
 
-} // namespace renderboi
+} // namespace rb
 
-#endif//RENDERBOI__CORE__TEXTURE_2D_HPP
+#endif//RENDERBOI_CORE_TEXTURE_2D_HPP

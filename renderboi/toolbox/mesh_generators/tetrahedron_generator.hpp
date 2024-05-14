@@ -1,77 +1,41 @@
-#ifndef RENDERBOI__TOOLBOX__MESH_GENERATORS__TETRAHEDRON_GENERATOR_HPP
-#define RENDERBOI__TOOLBOX__MESH_GENERATORS__TETRAHEDRON_GENERATOR_HPP
+#ifndef RENDERBOI_TOOLBOX_MESH_GENERATORS_TETRAHEDRON_GENERATOR_HPP
+#define RENDERBOI_TOOLBOX_MESH_GENERATORS_TETRAHEDRON_GENERATOR_HPP
 
-#include <glm/glm.hpp>
+#include <optional>
 
-#include <renderboi/core/mesh.hpp>
+#include <renderboi/core/numeric.hpp>
+#include <renderboi/core/3d/mesh.hpp>
+#include <renderboi/core/color.hpp>
 
 #include "mesh_generator.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
-/// @brief Generates vertices for a multi- or single-colored tetrahedron.
-class TetrahedronGenerator : public MeshGenerator
-{
+/// @brief Generates vertices for a multi- or single-colored tetrahedron
+class TetrahedronGenerator {
 public:
-    /// @brief Default size the tetrahedron will have (radius of 
-    /// encompassing sphere).
-    static constexpr float DefaultSize = 1.f;
+    /// @brief Struct packing together the parameters of the vertex generation
+    struct Parameters {
+        /// @brief Size the cube will have (radius of encompassing sphere)
+        float size = 1.f;
 
-    /// @brief Struct packing together the parameters of the vertex
-    /// generation.
-    struct Parameters
-    {
-        /// @brief Size the cube will have (radius of encompassing sphere).
-        float size;
-
-        /// @brief RGB color of the generated vertices.
-        glm::vec3 color;
-        
-        /// @brief Whether or not to use the provided color parameter. If 
-        /// false, the tetrahedron will be multicolored.
-        bool useColor;
+        /// @brief RGB color of the generated vertices
+        std::optional<num::Vec3> color = std::nullopt;
     };
 
-    TetrahedronGenerator();
-
-    /// @param size Size the tetrahedron will have (radius of encompassing 
-    /// sphere).
-    TetrahedronGenerator(const float size);
-
-    /// @param size Size the tetrahedron will have (radius of encompassing 
-    /// sphere).
-    /// @param color RGB color of the generated vertices.
-    TetrahedronGenerator(const float size, const glm::vec3 color);
-
-    /// @param parameters Parameters of the vertex generation.
-    TetrahedronGenerator(const Parameters parameters);
+    TetrahedronGenerator() = default;
+    TetrahedronGenerator(const Parameters& parameters);
     
-    /// @brief Parameters of the vertex generation.
+    /// @brief Parameters of the vertex generation
     Parameters parameters;
 
-    /////////////////////////////////////////////
-    ///                                       ///
-    /// Methods overridden from MeshGenerator ///
-    ///                                       ///
-    /////////////////////////////////////////////
-
-    /// @brief Generate the vertex data, put it in a new mesh object and 
-    /// return it.
-    ///
-    /// @return A pointer to the mesh containing the generated vertices.
-    MeshPtr generateMesh() const override;
+    /// @brief Generate the vertex data, put it in a new mesh object and return it
+    /// @return A pointer to the mesh containing the generated vertices
+    std::unique_ptr<Mesh> generate() const;
 };
 
-template<>
-struct MeshTypeMeta<MeshType::Tetrahedron>
-{
-    struct Generator
-    {
-        using type = TetrahedronGenerator;
-    };
-};
+static_assert(MeshGenerator<TetrahedronGenerator>);
 
-} // namespace renderboi
+} // namespace rb
 
-#endif//RENDERBOI__TOOLBOX__MESH_GENERATORS__TETRAHEDRON_GENERATOR_HPP
+#endif//RENDERBOI_TOOLBOX_MESH_GENERATORS_TETRAHEDRON_GENERATOR_HPP

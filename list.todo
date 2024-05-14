@@ -1,6 +1,6 @@
 RenderBoi:
     Project:
-        ✔ Port to VSCode @done(20-04-17 03:59)
+        ✔ Port to CMake @done(20-04-17 03:59)
         ☐ Write test suite
         ☐ Better exceptions
         ✔ Use ADL to find proper to_string instead of polluting std @done(21-01-04 23:29)
@@ -9,19 +9,22 @@ RenderBoi:
         ✔ Start static member names with caps @done(20-12-28 04:52)
         ✔ Add const qualifiers everywhere and constexpr qualifiers where possible @done(20-12-28 04:52)
         ☐ Investigate CRTP to eliminate vtables in large inheritance trees
-        ☐ Investigate CRTP to make clone methods "self-implement"
+        ✘ Investigate CRTP to make clone methods "self-implement" @cancelled(24-07-05 01:51)
         ✔ Remove virtual keywords where unnecessary @done(20-12-26 15:02)
         ✔ Move tools to external repo and update CMake to use it @done(20-12-17 14:20)
         ☐ Set up continuous integration
         ✔ Better documentation @done(20-10-19 19:22)
         ✘ In all accessor functions using local-statically generated data: provide a refresh argument @cancelled(22-05-18 13:11)
         ✔ In all functions using the `bool runOnce` trick to generate local static data once: use initialiser syntax instead @done(22-05-18 13:10)
-        ☐ ADL behaves badly on to_string methods (these REALLY need to be fixed they're a mess rn)
-        ☐ Investigate move semantics usage
+        ✔ ADL behaves badly on to_string methods (these REALLY need to be fixed they're a mess rn) @done(24-05-19 22:27)
+        ✔ Investigate move semantics usage @done(24-07-03 00:00)
         ✔ Change shared_ptr to unique_ptr where ownership is due and to naked pointer where it's just being used @done(22-05-08 20:29)
-        ☐ Destructors with an empty body should just be defaulted
+        ✔ Destructors with an empty body should just be defaulted @done(24-07-03 00:00)
         ✘ Put #pragma region directives in files @cancelled(22-02-02 13:42)
         ☐ Remove friends or if not possible restrict to certain methods
+        ☐ Too many unordered maps, some of those should just be vectors or even arrays or flat maps
+    Performance:
+        ☐ Find every usage of a vector and figure out sweet spots for upfront space reservation
     Core:
         Camera:
             ✔ Use a parent transform instead of a simple up vector @done(20-10-14 12:27)
@@ -33,7 +36,7 @@ RenderBoi:
             ☐ Handle several types of draw methods per single mesh
             ✔ Use glMultiDrawElements, adapt mesh generators @done(20-11-05 08:59)
             ☐ Star mesh generator (branch count, inset, hollow)
-            ☐ Meshed curve generator, using cpptools::Curve
+            ☐ Meshed curve generator, using tools::Curve
             ☐ Use `glVertexAttribFormat` to describe vertex layout in memory (instead of `glVertexAttribPointer`)
             See https://stackoverflow.com/questions/37972229/glvertexattribpointer-and-glvertexattribformat-whats-the-difference
             ✔ Rename the template meta classes they ugly AF @done(22-02-02 00:14)
@@ -49,16 +52,31 @@ RenderBoi:
             ✔ Fix Blinn-Phong @done(20-11-05 07:27)
             ✔ Fix gamma correction @done(20-11-05 07:27)
             ☐ Lighting artifacts on weird angles on surfaces and through them
+            ☐ Integrate glslang
+            ☐ Compile shaders to SPIR-V
+            ☐ Figure out proper layout for all stuff to be sent to GPU memory
+        UBOs:
+            ☐ Lights: figure out a strategy to do minimal flushes to the GPU (in particular when a single light is removed)
         Texture:
             ☐ Check texture generation success and display error info
             ☐ Handle texture wrapping and filtering options
-        Transform:
-            ✔ Change SceneObject inheritance from PositionedObject into a compoud Transform object @done(20-07-02 17:00)
+        WorldTransform:
+            ✔ Change Object inheritance from PositionedObject into a compoud WorldTransform object @done(20-07-02 17:00)
             ✔ Viable alternative to the ugly `transformModified` flag fix (observer pattern) @done(20-09-02 15:12)
             ✔ Implement transformations relative to different frames of reference @done(20-10-10 12:50)
-            ✔ Implement `Transform::compoundFrom(const Transform& other)` @done(20-10-13 13:49)
-            ☐ Fix all scaling issues in `ObjectTransform`
-            ☐ Add frames of reference for everything that doesn't have it
+            ✔ Implement `WorldTransform::compoundFrom(const WorldTransform& other)` @done(20-10-13 13:49)
+            ✘ Fix all scaling issues in `LocalTransform` @cancelled(24-05-19 22:27)
+            ✔ Add frames of reference for everything that doesn't have it @done(24-05-19 22:28)
+        Affine operations:
+            ☐ Fix scaling in weird frames of reference
+            ☐ Implement shear
+            ☐ Transform stack?
+            ☐ Make AffineOperation variants that take in and keep references to their parameters, so that the transform can vary from the outside?
+        Better frame of reference handling:
+            ☐ Make all transformations happen in world coordinates (that's what's mostly happening right now)
+            ☐ Have a `template<FrameOfReference> struct ParameterProxy` kind of thing which wraps Vec3s and Quats
+            ☐ It has a `.get()` member function that returns the wrapped thing in world coordinates
+            ☐ No need for `translate<Ref::World>(t, whatever)` or `Translation(thing).apply<Ref::Self>(t)` anymore, it's now `translate(t, as<Ref::World>(stuff))` or something
         VertexDataManager:
             ☐ A VertexDataManager holds actual vertex data and takes care of memory management
             ☐ Meshes now only keep handles to vertex content held in a VertexDataManager
@@ -76,12 +94,12 @@ RenderBoi:
     Toolbox:
         Components:
             ✔ In MeshComponent, make the mesh pointer private, add getter and setter to it @done(20-10-21 16:35)
-            ✔ Keep a shared pointer to the SceneObject @done(20-10-21 13:02)
+            ✔ Keep a shared pointer to the Object @done(20-10-21 13:02)
             ✔ Provide info as to whether a certain component type is allowed more than once per object @done(20-10-20 16:02)
             ✘ Add InputProcessorComponent @cancelled(20-12-31 14:44)
             ✘ Rethink InputProcessingScriptComponent @cancelled(20-12-31 14:20)
             ☐ Serialisation
-            ☐ Make a concept out of components, simplify template usage in SceneObject
+            ☐ Make a concept out of components, simplify template usage in Object
             ✔ Implement template meta to have componentMap.addComponent<Camera> instead of componentMap.addComponent<CameraComponent> @done(22-01-29 18:13)
             ☐ Is MeshRenderTags necessary?
             ☐ Remove MeshComponent::_meshPtr somehow
@@ -101,41 +119,45 @@ RenderBoi:
             ✘ Keep a shared pointer to the scene object @cancelled(22-02-02 00:16)
         Render traits:
             ✔ The copy constructor of the RenderTraitConfigMap is WRONG - it should clone configs @done(22-02-08 21:35)
-            ✔ When cloned as part of SceneObject cloning, the MeshRenderTraitConfig needs to reference its new parent SceneObject @done(22-02-08 21:36)
+            ✔ When cloned as part of Object cloning, the MeshRenderTraitConfig needs to reference its new parent Object @done(22-02-08 21:36)
         Scene:
             ✔ In `moveObject`, add possibility to keep world position of moved object @done(20-10-13 14:49)
             ☐ Add something like `registerObjectTree(ScenePtr)` to import complex objects into a scene
             ✔ In `getWorldTransform`, the `_transformsUpToDate` test is useless in most cases: FIXED @done(20-10-13 15:33)
-            ✔ Clean up the bullshit with `Scene::init` and `SceneObject::setScene` and whatnot, implement a clean factory instead @done(20-10-12 10:22)
+            ✔ Clean up the bullshit with `Scene::init` and `Object::setScene` and whatnot, implement a clean factory instead @done(20-10-12 10:22)
             ✔ Refactor methods taking in pointers to taking in IDs where applicable @done(20-10-21 16:47)
             ✔ Return shared pointers instead of weak pointers where possible @done(20-10-20 16:19)
             ✔ Refactor getComponent & co to fit new several-per-type components @done(20-10-20 16:14)
             ✔ Refactor methods (e.g. object creation and registration) to skip sanity checks where unnecessary @done(20-10-21 18:02)
             ✔ Make init() and terminate() private with Factory as a friend @done(20-10-21 19:59)
             ☐ triggerUpdate() should not update scripts attached to disabled scene objects (or which have a disabled parent)
-            ☐ remove() recursively calls itself instead of a more efficient, check-free private routine
+            ✔ remove() recursively calls itself instead of a more efficient, check-free private routine @done(24-05-19 22:30)
             ☐ Implement transform optimisations using object tags
             ☐ Serialisation
-            ☐ Get rid of _findObjectMetaOrThrow code duplication for const variant
+            ✔ Get rid of _findObjectMetaOrThrow code duplication for const variant @done(24-05-19 22:30)
             ☐ Use the C++23 "deducing this" paper to fix const variant of methods
-            ☐ Transform notification subscription is terribly inefficient
-            ☐ Integrate EnTT
-        SceneObject:
+            ☐ Somehow allow WorldTransform and LocalTransform to be queried like any other component
+            ☐ Allow exclusion component types in `view` and `group`
+            ✔ WorldTransform notification subscription is terribly inefficient @done(24-05-19 22:30)
+            ✔ Integrate EnTT @done(24-05-19 22:30)
+        Object:
             ✔ Add name for debugging purposes @done(20-10-19 12:04)
             ✔ Return shared pointers instead of weak pointers where possible @done(20-10-20 16:17)
             ✔ Keep a shared pointer to the scene @done(20-10-21 19:59)
-            ☐ Remove component
+            ✔ Remove component @done(24-05-19 22:30)
             ☐ Add object tags (bitfield enum)
             ☐ Move Shader and Material from MeshComponent to MeshRenderTraitConfig?
-            ☐ Make `enabled` notify scene on change
-            ☐ Make component collection public, notify scene as needed
+            ✔ Make `enabled` notify scene on change @done(24-05-19 22:31)
+            ✔ Make component collection public, notify scene as needed @done(24-05-19 22:31)
             ☐ Serialisation
             ✔ `_setScene` might not be useful anymore @done(22-01-31 00:54)
         SceneRenderer:
             ✔ Implement a framerate limiter @done(20-10-19 21:49)
+            ☐ Fix the framerate limiter
+            ☐ Better way to handle lights
             ☐ Mesh rendering order based on distance to camera
             ☐ Eliminate buffer swaps between objects sharing the same vertex data
-            ☐ Transform direction of lights according to the world transform of their object
+            ☐ WorldTransform direction of lights according to the world transform of their object
             ✔ Skip the normal restoration where applicable @done(20-10-24 17:47)
             ✔ Render meshes using a transform, not a matrix @done(20-10-24 17:47)
             ☐ Occlude objects not in camera FOV
@@ -155,7 +177,7 @@ RenderBoi:
         ✘ Update concrete window instantiation mechanisms? @cancelled(21-01-31 17:12)
         ✔ Move rendering away in another thread, keep event polling in the main thread @done(21-01-31 17:46)
         ✔ Handle fullscreen toggling @done(21-07-14 16:07)
-        ☐ Fully integrate GLFW in windowing system
+        ✔ Fully integrate GLFW in windowing system @done(24-05-19 22:31)
         ☐ Make it possible to queue GLContextEvents alonside with parameters for them
         ✘ Make GLContextClient not dependent on one single GLWindow @cancelled(22-02-04 03:32)
         ✘ Have window be able to forward events to several GLContextEventManagers @cancelled(22-02-06 15:22)
@@ -181,8 +203,8 @@ RenderBoi:
         Ideas:
             ☐ Times table arranged in a circle (https://www.youtube.com/watch?v=qhbuKbxJsk8)
             ☐ Spyrograph thing (https://www.youtube.com/watch?v=7Fn-26Jmi5E)
-    FIXME:
-        ✔ Transform::lookAt @done(20-10-13 17:04)
+    Fixes:
+        ✔ WorldTransform::lookAt @done(20-10-13 17:04)
         ✔ Light attenuation @done(20-04-20 06:55)
     Crossplatform-ability:
         ✔ Provide OpenGL core context hint for GLFW except when EGL is used (i.e. on Wayland systems) @done(20-07-02 14:19)

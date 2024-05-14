@@ -1,91 +1,59 @@
-#ifndef RENDERBOI__TOOLBOX__SCENE__SCENE_RENDERER_HPP
-#define RENDERBOI__TOOLBOX__SCENE__SCENE_RENDERER_HPP
+#ifndef RENDERBOI_TOOLBOX_SCENE_SCENE_RENDERER_HPP
+#define RENDERBOI_TOOLBOX_SCENE_SCENE_RENDERER_HPP
 
-#include <cstdint>
 #include <chrono>
+#include <cstdint>
 #include <memory>
-#include <type_traits>
-#include <vector>
 
-#include <renderboi/core/lights/light.hpp>
-#include <renderboi/core/material.hpp>
-#include <renderboi/core/mesh.hpp>
-#include <renderboi/core/transform.hpp>
-#include <renderboi/core/ubo/matrix_ubo.hpp>
+#include <renderboi/core/3d/transform.hpp>
 #include <renderboi/core/ubo/light_ubo.hpp>
+#include <renderboi/core/ubo/matrix_ubo.hpp>
 
-#include "../scene/scene.hpp"
-#include "../scene/object/scene_object.hpp"
-#include "../scene/object/component.hpp"
+#include <renderboi/toolbox/scene/scene.hpp>
+#include <renderboi/toolbox/scene/components/rendered_mesh_component.hpp>
 
-namespace renderboi
-{
+namespace rb {
 
-/// @brief Manages the render process of a scene.
-class SceneRenderer
-{
+/// @brief Manages the render process of a scene
+class SceneRenderer {
 private:
-    using ObjectVector = std::vector<std::reference_wrapper<SceneObject>>;
-    using LightVector = std::vector<std::reference_wrapper<Light>>;
+    using Timestamp = std::chrono::time_point<std::chrono::steady_clock>;
 
-    /// @brief Handle to a UBO for matrices on the GPU.
+    /// @brief Handle to a UBO for matrices on the GPU
     mutable MatrixUBO _matrixUbo;
 
-    /// @brief Handle to a UBO for lights on the GPU.
+    /// @brief Handle to a UBO for lights on the GPU
     mutable LightUBO _lightUbo;
 
-    /// @brief Last recorded render timestamp. Used to limit the framerate.
-    mutable std::chrono::time_point<std::chrono::system_clock> _lastTimestamp;
+    /// @brief Last recorded render timestamp. Used to limit the framerate
+    mutable Timestamp _lastTimestamp;
 
-    /// @brief Minimum time interval to keep between rendered frames.
+    /// @brief Minimum time interval to keep between rendered frames
     int64_t _frameIntervalUs;
-    
-    /// @brief Send the scene lights to the GPU.
-    ///
-    /// @param lights An array filled with pointer to the lights in the 
-    /// scene.
-    /// @param worldTransforms An array filled with the world transforms of
-    /// the lights to send.
-    /// @param view The view matrix, provided by the scene camera.
-    ///
-    /// @exception If there are too many lights of any type and they end up
-    /// exceeding the per-type limit defined by the light UBO, the function
-    /// will throw a std::runtime_error.
-    void _sendLightData(
-        const LightVector& lights,
-        const std::vector<Transform>& worldTransforms,
-        const glm::mat4& view
-    ) const;
 
-    /// @brief Issue draw commands for a single mesh.
-    /// 
-    /// @param meshComponent A pointer to the object whose mesh is to render.
-    /// @param viewMatrix The view matrix, provided by the scene camera.
-    void drawMesh(SceneObject& meshComponent, const glm::mat4& viewMatrix) const;
+    /// @brief Issue draw commands for a single mesh
+    ///
+    /// @param meshInfo The mesh to draw, along with its material and the shader to draw it with
+    /// @param transform The transform of the mesh
+    /// @param viewMatrix The view matrix, provided by the scene camera
+    void drawMesh(const RenderedMeshComponent& renderedMesh, const RawTransform& transform, const num::Mat4& viewMatrix) const;
 
 public:
     /// @param framerateLimit How many frames per second the SceneRenderer
-    /// should seek to render.
+    /// should seek to render
     SceneRenderer(const unsigned int framerateLimit = 60);
 
-    /// @brief Render the provided scene.
+    /// @brief Render the provided scene
     ///
-    /// @param scene A pointer to the scene which should be rendered.
+    /// @param scene A pointer to the scene which should be rendered
     ///
-    /// @exception If the scene has too many lights of any type for the 
-    /// light UBO to handle, the function will throw a std::runtime_error.
-    void renderScene(Scene& scene) const;
-
-    /// @brief Set the framerate limit (in frames per second) of the 
-    /// renderer.
-    ///
-    /// @param framerateLimit How many frames per second the SceneRenderer
-    /// should seek to render.
-    void setFramerateLimit(const unsigned int framerateLimit);
+    /// @exception If the scene has too many lights of any type for the
+    /// light UBO to handle, the function will throw a std::runtime_error
+    void render(Scene& scene) const;
 };
 
 using SceneRendererPtr = std::unique_ptr<SceneRenderer>;
 
-} // namespace renderboi
+} // namespace rb
 
-#endif//RENDERBOI__TOOLBOX__SCENE__SCENE_RENDERER_HPP
+#endif // RENDERBOI_TOOLBOX_SCENE_SCENE_RENDERER_HPP

@@ -5,17 +5,14 @@
 
 #include <glad/gl.h>
 
-namespace renderboi
-{
+namespace rb {
 static std::unordered_set<int> ignoredMessageTypes;
 
-void glIgnoreDebugMessagesOfType(const int type)
-{
+void glIgnoreDebugMessagesOfType(const int type) {
     ignoredMessageTypes.insert(type);
 }
 
-void glStopIgnoringDebugMessages()
-{
+void glStopIgnoringDebugMessages() {
     ignoredMessageTypes.clear();
 }
 
@@ -26,8 +23,7 @@ void APIENTRY glDebugCallback(
     const unsigned int severity,
     const int length,
     const char* message,
-    const void* userParam)
-{
+    const void* userParam) {
     // Ignore non-significant error/warning codes
     if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
 
@@ -71,8 +67,7 @@ void APIENTRY glDebugCallback(
     std::cout << std::endl;
 }
 
-float glGetAspectRatio()
-{
+float glGetAspectRatio() {
     int dims[4] = { 0 };
     glGetIntegerv(GL_VIEWPORT, dims);
     // dims[0] = viewport position X
@@ -82,4 +77,4 @@ float glGetAspectRatio()
 
     return (float)(dims[2]) / (float)(dims[3]);
 }
-} // namespace renderboi
+} // namespace rb

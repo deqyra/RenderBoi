@@ -757,7 +757,7 @@
 											"top": 359,
 											"width": 474.35400390625,
 											"height": 13,
-											"text": "Transform"
+											"text": "WorldTransform"
 										},
 										{
 											"_type": "LabelView",
@@ -1169,7 +1169,7 @@
 											"top": 675,
 											"width": 474.35400390625,
 											"height": 13,
-											"text": "+applyOver(other: Transform): Transform",
+											"text": "+applyOver(other: WorldTransform): WorldTransform",
 											"horizontalAlignment": 0
 										},
 										{
@@ -1186,7 +1186,7 @@
 											"top": 690,
 											"width": 474.35400390625,
 											"height": 13,
-											"text": "+compoundFrom(other: Transform): Transform",
+											"text": "+compoundFrom(other: WorldTransform): WorldTransform",
 											"horizontalAlignment": 0
 										},
 										{
@@ -2657,7 +2657,7 @@
 											"top": 443,
 											"width": 335.39111328125,
 											"height": 13,
-											"text": "-_parentTransform: Transform",
+											"text": "-_parentTransform: WorldTransform",
 											"horizontalAlignment": 0
 										}
 									],
@@ -2776,7 +2776,7 @@
 											"top": 541,
 											"width": 335.39111328125,
 											"height": 13,
-											"text": "+getParentTransform(): Transform",
+											"text": "+getParentTransform(): WorldTransform",
 											"horizontalAlignment": 0
 										},
 										{
@@ -2793,7 +2793,7 @@
 											"top": 556,
 											"width": 335.39111328125,
 											"height": 13,
-											"text": "+setParentTransform(transform: Transform): void",
+											"text": "+setParentTransform(transform: WorldTransform): void",
 											"horizontalAlignment": 0
 										},
 										{
@@ -13653,7 +13653,7 @@
 									"_parent": {
 										"$ref": "AAAAAAF2qZtxv1v7S5M="
 									},
-									"name": "Transform",
+									"name": "WorldTransform",
 									"ownedElements": [
 										{
 											"_type": "UMLInterfaceRealization",
@@ -22425,7 +22425,7 @@
 											"_parent": {
 												"$ref": "AAAAAAF2rHdztUR9Tis="
 											},
-											"name": "MakeSceneObject",
+											"name": "MakeObject",
 											"parameters": [
 												{
 													"_type": "UMLParameter",
@@ -22455,7 +22455,7 @@
 											"_parent": {
 												"$ref": "AAAAAAF2rHdztUR9Tis="
 											},
-											"name": "MakeSceneObjectWithMesh",
+											"name": "MakeObjectWithMesh",
 											"parameters": [
 												{
 													"_type": "UMLParameter",
@@ -22496,7 +22496,7 @@
 											"_parent": {
 												"$ref": "AAAAAAF2rHdztUR9Tis="
 											},
-											"name": "MakeSceneObjectWithMesh",
+											"name": "MakeObjectWithMesh",
 											"parameters": [
 												{
 													"_type": "UMLParameter",
@@ -22586,7 +22586,7 @@
 											"_parent": {
 												"$ref": "AAAAAAF2rEMRy0J9eN4="
 											},
-											"name": "_sceneObject",
+											"name": "_Object",
 											"visibility": "protected",
 											"type": {
 												"$ref": "AAAAAAFxYCGYftwJefo="
@@ -22610,7 +22610,7 @@
 											"_parent": {
 												"$ref": "AAAAAAF2rEMRy0J9eN4="
 											},
-											"name": "getSceneObject",
+											"name": "getObject",
 											"parameters": [
 												{
 													"_type": "UMLParameter",
@@ -22631,7 +22631,7 @@
 											"_parent": {
 												"$ref": "AAAAAAF2rEMRy0J9eN4="
 											},
-											"name": "setSceneObject",
+											"name": "setObject",
 											"parameters": [
 												{
 													"_type": "UMLParameter",
@@ -22639,7 +22639,7 @@
 													"_parent": {
 														"$ref": "AAAAAAF2rEQSFULEZ3E="
 													},
-													"name": "sceneObject",
+													"name": "Object",
 													"type": {
 														"$ref": "AAAAAAFxYCGYftwJefo="
 													}
@@ -23225,7 +23225,7 @@
 													"_parent": {
 														"$ref": "AAAAAAF2rQmBen9vMhU="
 													},
-													"name": "setSceneObject",
+													"name": "setObject",
 													"parameters": [
 														{
 															"_type": "UMLParameter",
@@ -23233,7 +23233,7 @@
 															"_parent": {
 																"$ref": "AAAAAAF2tDvCsk5JqNk="
 															},
-															"name": "sceneObject",
+															"name": "Object",
 															"type": {
 																"$ref": "AAAAAAFxYCGYftwJefo="
 															}
@@ -24738,7 +24738,7 @@
 											"_parent": {
 												"$ref": "AAAAAAF2qetzr7bPTDY="
 											},
-											"name": "ObjectTransform",
+											"name": "LocalTransform",
 											"ownedElements": [
 												{
 													"_type": "UMLGeneralization",
@@ -24761,7 +24761,7 @@
 													"_parent": {
 														"$ref": "AAAAAAF1ZcVnQ9QzGSU="
 													},
-													"name": "_sceneObject",
+													"name": "_Object",
 													"visibility": "private",
 													"type": {
 														"$ref": "AAAAAAFxYCGYftwJefo="
@@ -24805,7 +24805,7 @@
 													"_parent": {
 														"$ref": "AAAAAAF1ZcVnQ9QzGSU="
 													},
-													"name": "getSceneObject",
+													"name": "getObject",
 													"parameters": [
 														{
 															"_type": "UMLParameter",
@@ -24826,7 +24826,7 @@
 													"_parent": {
 														"$ref": "AAAAAAF1ZcVnQ9QzGSU="
 													},
-													"name": "setSceneObject",
+													"name": "setObject",
 													"parameters": [
 														{
 															"_type": "UMLParameter",
@@ -24866,7 +24866,7 @@
 											"_parent": {
 												"$ref": "AAAAAAF2qetzr7bPTDY="
 											},
-											"name": "SceneObject",
+											"name": "Object",
 											"ownedElements": [
 												{
 													"_type": "UMLGeneralization",
@@ -24906,7 +24906,7 @@
 														"_parent": {
 															"$ref": "AAAAAAF1ZccOn+JveYc="
 														},
-														"name": "_sceneObject",
+														"name": "_Object",
 														"reference": {
 															"$ref": "AAAAAAF1ZcVnQ9QzGSU="
 														},
@@ -25226,7 +25226,7 @@
 													},
 													"name": "_objects",
 													"visibility": "private",
-													"type": "Tree<SceneObject>"
+													"type": "Tree<Object>"
 												},
 												{
 													"_type": "UMLAttribute",
@@ -25236,7 +25236,7 @@
 													},
 													"name": "_worldTransforms",
 													"visibility": "private",
-													"type": "Tree<Transform>"
+													"type": "Tree<WorldTransform>"
 												},
 												{
 													"_type": "UMLAttribute",
@@ -25256,7 +25256,7 @@
 													},
 													"name": "_objectMetadate",
 													"visibility": "private",
-													"type": "unsigned int→SceneObjectMetadata"
+													"type": "unsigned int→ObjectMetadata"
 												},
 												{
 													"_type": "UMLAttribute",
@@ -25403,7 +25403,7 @@
 													"_parent": {
 														"$ref": "AAAAAAFxYCF4fdvfOcc="
 													},
-													"name": "_worldTransformCascadeUpdate",
+													"name": "_updateObjectWorldTransformRecursive",
 													"visibility": "private",
 													"parameters": [
 														{
@@ -25432,7 +25432,7 @@
 													"_parent": {
 														"$ref": "AAAAAAFxYCF4fdvfOcc="
 													},
-													"name": "_worldTransformUpdateNoCascade",
+													"name": "_updateObjectWorldTransform",
 													"visibility": "private",
 													"parameters": [
 														{
@@ -25528,7 +25528,7 @@
 															"_parent": {
 																"$ref": "AAAAAAF2uRk+YMvtcp0="
 															},
-															"name": "sceneObject",
+															"name": "Object",
 															"type": {
 																"$ref": "AAAAAAFxYCGYftwJefo="
 															}
@@ -26055,7 +26055,7 @@
 											"_parent": {
 												"$ref": "AAAAAAF2qetzr7bPTDY="
 											},
-											"name": "SceneObjectMetadata",
+											"name": "ObjectMetadata",
 											"attributes": [
 												{
 													"_type": "UMLAttribute",
@@ -35225,7 +35225,7 @@
 											"top": 142,
 											"width": 759,
 											"height": 13,
-											"text": "+MakeSceneObject(name: string): SceneObject",
+											"text": "+MakeObject(name: string): Object",
 											"horizontalAlignment": 0
 										},
 										{
@@ -35242,7 +35242,7 @@
 											"top": 157,
 											"width": 759,
 											"height": 13,
-											"text": "+MakeSceneObjectWithMesh(parameters: MeshGenerator.Parameters, material: Material, shader: ShaderProgram)",
+											"text": "+MakeObjectWithMesh(parameters: MeshGenerator.Parameters, material: Material, shader: ShaderProgram)",
 											"horizontalAlignment": 0
 										},
 										{
@@ -35259,7 +35259,7 @@
 											"top": 172,
 											"width": 759,
 											"height": 13,
-											"text": "+MakeSceneObjectWithMesh(name: string, parameters: MeshGenerator.Parameters, material: Material, shader: ShaderProgram)",
+											"text": "+MakeObjectWithMesh(name: string, parameters: MeshGenerator.Parameters, material: Material, shader: ShaderProgram)",
 											"horizontalAlignment": 0
 										},
 										{
@@ -35276,7 +35276,7 @@
 											"top": 187,
 											"width": 759,
 											"height": 13,
-											"text": "+CreateScriptAndAttachToObject(object: SceneObject, args: ArgTypes)",
+											"text": "+CreateScriptAndAttachToObject(object: Object, args: ArgTypes)",
 											"horizontalAlignment": 0
 										}
 									],
@@ -37748,7 +37748,7 @@
 											"top": 1198,
 											"width": 383,
 											"height": 13,
-											"text": "#_sceneObject: SceneObject",
+											"text": "#_Object: Object",
 											"horizontalAlignment": 0
 										},
 										{
@@ -37799,7 +37799,7 @@
 											"top": 1236,
 											"width": 383,
 											"height": 13,
-											"text": "+getSceneObject(): SceneObject",
+											"text": "+getObject(): Object",
 											"horizontalAlignment": 0
 										},
 										{
@@ -37816,7 +37816,7 @@
 											"top": 1251,
 											"width": 383,
 											"height": 13,
-											"text": "+setSceneObject(sceneObject: SceneObject): void",
+											"text": "+setObject(Object: Object): void",
 											"horizontalAlignment": 0
 										},
 										{
@@ -42269,7 +42269,7 @@
 											"top": 1246,
 											"width": 551,
 											"height": 13,
-											"text": "+setSceneObject(sceneObject: SceneObject): void",
+											"text": "+setObject(Object: Object): void",
 											"horizontalAlignment": 0
 										},
 										{
@@ -44637,7 +44637,7 @@
 											"top": 2450,
 											"width": 335.39111328125,
 											"height": 13,
-											"text": "-_parentTransform: Transform",
+											"text": "-_parentTransform: WorldTransform",
 											"horizontalAlignment": 0
 										}
 									],
@@ -44757,7 +44757,7 @@
 											"top": 2360,
 											"width": 335.39111328125,
 											"height": 13,
-											"text": "+getParentTransform(): Transform",
+											"text": "+getParentTransform(): WorldTransform",
 											"horizontalAlignment": 0
 										},
 										{
@@ -44774,7 +44774,7 @@
 											"top": 2375,
 											"width": 335.39111328125,
 											"height": 13,
-											"text": "+setParentTransform(transform: Transform): void",
+											"text": "+setParentTransform(transform: WorldTransform): void",
 											"horizontalAlignment": 0
 										},
 										{
@@ -47840,7 +47840,7 @@
 											"top": 655,
 											"width": 479,
 											"height": 13,
-											"text": "ObjectTransform"
+											"text": "LocalTransform"
 										},
 										{
 											"_type": "LabelView",
@@ -47912,7 +47912,7 @@
 											"top": 678,
 											"width": 479,
 											"height": 13,
-											"text": "-_sceneObject: SceneObject",
+											"text": "-_Object: Object",
 											"horizontalAlignment": 0
 										},
 										{
@@ -47980,7 +47980,7 @@
 											"top": 731,
 											"width": 479,
 											"height": 13,
-											"text": "+getSceneObject(): SceneObject",
+											"text": "+getObject(): Object",
 											"horizontalAlignment": 0
 										},
 										{
@@ -47997,7 +47997,7 @@
 											"top": 746,
 											"width": 479,
 											"height": 13,
-											"text": "+setSceneObject(): void",
+											"text": "+setObject(): void",
 											"horizontalAlignment": 0
 										},
 										{
@@ -48516,7 +48516,7 @@
 									"hostEdge": {
 										"$ref": "AAAAAAF2uPDxvwhCtDg="
 									},
-									"text": "-_sceneObject"
+									"text": "-_Object"
 								},
 								{
 									"_type": "EdgeLabelView",
@@ -48679,7 +48679,7 @@
 											"top": 335,
 											"width": 223,
 											"height": 13,
-											"text": "SceneObject"
+											"text": "Object"
 										},
 										{
 											"_type": "LabelView",
@@ -48785,7 +48785,7 @@
 											"top": 388,
 											"width": 223,
 											"height": 13,
-											"text": "+transform: ObjectTransform",
+											"text": "+transform: LocalTransform",
 											"horizontalAlignment": 0
 										},
 										{
@@ -48887,7 +48887,7 @@
 											"top": 471,
 											"width": 223,
 											"height": 13,
-											"text": "+getWorldTransform(): Transform",
+											"text": "+getWorldTransform(): WorldTransform",
 											"horizontalAlignment": 0
 										},
 										{
@@ -49006,7 +49006,7 @@
 											"top": 576,
 											"width": 223,
 											"height": 13,
-											"text": "+clone(): SceneObject",
+											"text": "+clone(): Object",
 											"horizontalAlignment": 0
 										}
 									],
@@ -49651,7 +49651,7 @@
 											"top": 504,
 											"width": 335.39111328125,
 											"height": 13,
-											"text": "-_parentTransform: Transform",
+											"text": "-_parentTransform: WorldTransform",
 											"horizontalAlignment": 0
 										}
 									],
@@ -49771,7 +49771,7 @@
 											"top": 414,
 											"width": 335.39111328125,
 											"height": 13,
-											"text": "+getParentTransform(): Transform",
+											"text": "+getParentTransform(): WorldTransform",
 											"horizontalAlignment": 0
 										},
 										{
@@ -49788,7 +49788,7 @@
 											"top": 429,
 											"width": 335.39111328125,
 											"height": 13,
-											"text": "+setParentTransform(transform: Transform): void",
+											"text": "+setParentTransform(transform: WorldTransform): void",
 											"horizontalAlignment": 0
 										},
 										{
@@ -53075,7 +53075,7 @@
 											"top": 894,
 											"width": 508.3583984375,
 											"height": 13,
-											"text": "-_objects: Tree<SceneObject>",
+											"text": "-_objects: Tree<Object>",
 											"horizontalAlignment": 0
 										},
 										{
@@ -53092,7 +53092,7 @@
 											"top": 909,
 											"width": 508.3583984375,
 											"height": 13,
-											"text": "-_worldTransforms: Tree<Transform>",
+											"text": "-_worldTransforms: Tree<WorldTransform>",
 											"horizontalAlignment": 0
 										},
 										{
@@ -53126,7 +53126,7 @@
 											"top": 939,
 											"width": 508.3583984375,
 											"height": 13,
-											"text": "-_objectMetadate: unsigned int→SceneObjectMetadata",
+											"text": "-_objectMetadate: unsigned int→ObjectMetadata",
 											"horizontalAlignment": 0
 										},
 										{
@@ -53262,7 +53262,7 @@
 											"top": 1052,
 											"width": 508.3583984375,
 											"height": 13,
-											"text": "-_worldTransformCascadeUpdate(id: unsigned int): void",
+											"text": "-_updateObjectWorldTransformRecursive(id: unsigned int): void",
 											"horizontalAlignment": 0
 										},
 										{
@@ -53279,7 +53279,7 @@
 											"top": 1067,
 											"width": 508.3583984375,
 											"height": 13,
-											"text": "-_worldTransformUpdateNoCascade(id: unsigned int): void",
+											"text": "-_updateObjectWorldTransform(id: unsigned int): void",
 											"horizontalAlignment": 0
 										},
 										{
@@ -53313,7 +53313,7 @@
 											"top": 1097,
 											"width": 508.3583984375,
 											"height": 13,
-											"text": "+newObject(name: string, parentId: unsigned int): SceneObject",
+											"text": "+newObject(name: string, parentId: unsigned int): Object",
 											"horizontalAlignment": 0
 										},
 										{
@@ -53330,7 +53330,7 @@
 											"top": 1112,
 											"width": 508.3583984375,
 											"height": 13,
-											"text": "+registerObject(sceneObject: SceneObject, parentId: unsigned int): void",
+											"text": "+registerObject(Object: Object, parentId: unsigned int): void",
 											"horizontalAlignment": 0
 										},
 										{
@@ -53398,7 +53398,7 @@
 											"top": 1172,
 											"width": 508.3583984375,
 											"height": 13,
-											"text": "+getParent(id: unsigned int): SceneObject",
+											"text": "+getParent(id: unsigned int): Object",
 											"horizontalAlignment": 0
 										},
 										{
@@ -53432,7 +53432,7 @@
 											"top": 1202,
 											"width": 508.3583984375,
 											"height": 13,
-											"text": "+getAllObjects(mustBeEnabled: bool): SceneObject[*]",
+											"text": "+getAllObjects(mustBeEnabled: bool): Object[*]",
 											"horizontalAlignment": 0
 										},
 										{
@@ -53449,7 +53449,7 @@
 											"top": 1217,
 											"width": 508.3583984375,
 											"height": 13,
-											"text": "+getWorldTransform(id: unsigned int): Transform",
+											"text": "+getWorldTransform(id: unsigned int): WorldTransform",
 											"horizontalAlignment": 0
 										},
 										{
@@ -53517,7 +53517,7 @@
 											"top": 1277,
 											"width": 508.3583984375,
 											"height": 13,
-											"text": "+getObjectsWithComponent(mustBeEnabled: bool): SceneObject[*]",
+											"text": "+getObjectsWithComponent(mustBeEnabled: bool): Object[*]",
 											"horizontalAlignment": 0
 										}
 									],
@@ -53884,7 +53884,7 @@
 											"top": 1115,
 											"width": 495,
 											"height": 13,
-											"text": "-_sendLightData(lights: Light[*], worldTransforms: Transform[*], view: glm.mat4): void",
+											"text": "-_sendLightData(lights: Light[*], worldTransforms: WorldTransform[*], view: glm.mat4): void",
 											"horizontalAlignment": 0
 										},
 										{
@@ -53901,7 +53901,7 @@
 											"top": 1130,
 											"width": 495,
 											"height": 13,
-											"text": "-_drawMesh(meshComponent: SceneObject, viewMatrix: glm.mat4): void",
+											"text": "-_drawMesh(meshComponent: Object, viewMatrix: glm.mat4): void",
 											"horizontalAlignment": 0
 										},
 										{
@@ -54047,7 +54047,7 @@
 											"top": 476,
 											"width": 231,
 											"height": 13,
-											"text": "SceneObjectMetadata"
+											"text": "ObjectMetadata"
 										},
 										{
 											"_type": "LabelView",
@@ -55239,7 +55239,7 @@
 							"top": 792,
 							"width": 241,
 							"height": 51,
-							"text": "All methods from Transform which modify it are overridden to emit a notification when called."
+							"text": "All methods from WorldTransform which modify it are overridden to emit a notification when called."
 						},
 						{
 							"_type": "UMLNoteView",
@@ -55253,7 +55253,7 @@
 							"top": 864,
 							"width": 241,
 							"height": 129,
-							"text": "Since the Parent frame of reference has a different meaning in an ObjectTransform, the Parent specialization of methods from Transform are overridden too. Frame of reference Self also becomes less straight-forward as the world transform of the object is needed, so those are overridden too."
+							"text": "Since the Parent frame of reference has a different meaning in an LocalTransform, the Parent specialization of methods from WorldTransform are overridden too. Frame of reference Self also becomes less straight-forward as the world transform of the object is needed, so those are overridden too."
 						},
 						{
 							"_type": "UMLClassView",

@@ -2,13 +2,11 @@
 
 #include <unordered_map>
 
-namespace renderboi
-{
+namespace rb {
 
 using Window::GLContextEvent;
 
-std::string to_string(const GLContextEvent event)
-{
+std::string to_string(const GLContextEvent event) {
     static std::unordered_map<GLContextEvent, std::string> enumNames = {
         {GLContextEvent::FitFramebufferToWindow,    "FitFramebufferToWindow"},
         {GLContextEvent::PolygonModeFill,           "PolygonModeFill"},
@@ -22,4 +20,4 @@ std::string to_string(const GLContextEvent event)
         : "Unknown";
 }
 
-} // namespace renderboi
+} // namespace rb

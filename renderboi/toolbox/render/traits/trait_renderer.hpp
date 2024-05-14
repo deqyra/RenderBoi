@@ -1,5 +1,5 @@
-#ifndef RENDERBOI__TOOLBOX__RENDER__TRAIT_RENDERER_HPP
-#define RENDERBOI__TOOLBOX__RENDER__TRAIT_RENDERER_HPP
+#ifndef RENDERBOI_TOOLBOX_RENDER_TRAIT_RENDERER_HPP
+#define RENDERBOI_TOOLBOX_RENDER_TRAIT_RENDERER_HPP
 
 #include <memory>
 
@@ -7,13 +7,11 @@
 #include "render_trait.hpp"
 #include "render_trait_config.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
 /// @brief Abstract class for a renderer which focuses on rendering one single
-/// aspect (trait) to be rendered.
-class TraitRenderer
-{
+/// aspect (trait) to be rendered
+class TraitRenderer {
 public:
     /// @brief Render something
     virtual void render(const RenderTraitConfig& config) const = 0;
@@ -21,6 +19,6 @@ public:
 
 using TraitRendererPtr = std::unique_ptr<TraitRenderer>;
 
-} // namespace renderboi
+} // namespace rb
 
-#endif//RENDERBOI__TOOLBOX__RENDER__TRAIT_RENDERER_HPP
+#endif//RENDERBOI_TOOLBOX_RENDER_TRAIT_RENDERER_HPP

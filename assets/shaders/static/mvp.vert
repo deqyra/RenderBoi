@@ -7,8 +7,7 @@ out VertexOut vertOut;
 
 #include </uniform_blocks/matrices>
 
-void main()
-{
+void main() {
     gl_Position = matrices.projection * matrices.view * matrices.model * vec4(inPosition, 1.0f);
 	vertOut.color = inColor;
 	vertOut.normal = normalize(matrices.normal * inNormal);

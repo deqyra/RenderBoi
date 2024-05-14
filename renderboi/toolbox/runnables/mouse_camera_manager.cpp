@@ -1,11 +1,6 @@
 #include "mouse_camera_manager.hpp"
 
-#include <renderboi/core/frame_of_reference.hpp>
-
-namespace renderboi
-{
-
-using Ref = FrameOfReference;
+namespace rb {
 
 MouseCameraManager::MouseCameraManager(Camera& camera, const float sensitivity) :
     _camera(camera),
@@ -17,27 +12,27 @@ MouseCameraManager::MouseCameraManager(Camera& camera, const float sensitivity) 
 
 }
 
-void MouseCameraManager::processMouseCursor(GLWindow& window, const double xpos, const double ypos)
-{
+void MouseCameraManager::processMouseCursor(GLWindow& window, const double xpos, const double ypos) {
     // If the mouse was never updated before, record its position and skip this update
     if (!_mouseWasUpdatedOnce)
     {
-        _lastMouseX = (float)xpos;
-        _lastMouseY = (float)ypos;
+        _lastMouseX = xpos;
+        _lastMouseY = ypos;
         _mouseWasUpdatedOnce = true;
         return;
     }
     // This is to avoid a huge mouse jump upon entering the window with the mouse
 
     // Compute offsets
-    const float yawOffset = (float)(xpos - _lastMouseX) * _lookSensitivity;
+    const float yawOffset = static_cast<float>(xpos - _lastMouseX) * _lookSensitivity;
     // Y offset reversed since y-coordinates range from bottom to top
-    const float pitchOffset = (float)(_lastMouseY - ypos) * _lookSensitivity;
+    const float pitchOffset = static_cast<float>(_lastMouseY - ypos) * _lookSensitivity;
 
-    _camera.processRotation(yawOffset, pitchOffset);
+    _camera.processYawPitch(yawOffset, pitchOffset);
+
     // Record mouse position
     _lastMouseX = (float)xpos;
     _lastMouseY = (float)ypos;
 }
 
-} // namespace renderboi
+} // namespace rb

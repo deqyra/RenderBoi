@@ -19,9 +19,12 @@ set( PROJECT_COPYRIGHT "${DATE_SPAN} © ${PROJECT_MAINTAINER_NAME} <${PROJECT_MA
 
 # File configuration
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/config/project_env.config.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/project_env.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/examples/project_env.config.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/examples/project_env.hpp
 )
+
+# Main include path
+set( RENDERBOI_MAIN_INCLUDE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/.. )
 
 # RenderBoi modules
 add_subdirectory( utilities   ${CMAKE_CURRENT_BINARY_DIR}/renderboi.utilities )
@@ -32,8 +35,6 @@ add_subdirectory( toolbox     ${CMAKE_CURRENT_BINARY_DIR}/renderboi.toolbox )
 if( RENDERBOI_BUILD_EXAMPLES )
     add_subdirectory( examples ${CMAKE_CURRENT_BINARY_DIR}/renderboi.examples )
 endif( )
-
-set( RENDERBOI_MAIN_INCLUDE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/.. )
 
 add_library( renderboi INTERFACE )
 

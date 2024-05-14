@@ -1,328 +1,266 @@
-#ifndef RENDERBOI__TOOLBOX__SCENE__SCENE_HPP
-#define RENDERBOI__TOOLBOX__SCENE__SCENE_HPP
+#ifndef RENDERBOI_TOOLBOX_SCENE_SCENE_HPP
+#define RENDERBOI_TOOLBOX_SCENE_SCENE_HPP
 
-#include <algorithm>
-#include <chrono>
-#include <functional>
-#include <limits>
-#include <memory>
-#include <tuple>
-#include <type_traits>
 #include <unordered_map>
+#include <utility>
 #include <vector>
-
-#include <glm/glm.hpp>
-#include <entt/entt.hpp>
 
 #include <cpptools/container/tree.hpp>
 
-#include "../script.hpp"
-#include "object/scene_object.hpp"
-#include "object/scene_object_metadata.hpp"
+#include <renderboi/core/numeric.hpp>
+#include <renderboi/core/3d/transform.hpp>
+#include <renderboi/core/3d/affine/affine_operation.hpp>
 
-namespace renderboi
-{
+#include <renderboi/toolbox/interfaces/transform_proxy.hpp>
+#include <renderboi/toolbox/scene/components/world_transform.hpp>
+#include <renderboi/toolbox/scene/components/local_transform.hpp>
 
-/// @brief A scene containing 3D objects organised in a tree structure. Handles
-/// self-updating scripts and processes input from the application. Use Factory
-/// to instantiate and terminate.
+#include "object.hpp"
 
-class Scene
-{
-public:
-    using ObjectTree = cpptools::tree<SceneObjectPtr>;
-    using TransformTree = cpptools::tree<Transform>;
-    using BoolTree = cpptools::tree<bool>;
+namespace rb {
 
-private:
-    entt::registry _registry;
-
-    /// @brief Scene graph. Contains all objects in the scene, 
-    /// hierarchically organised in a tree.
-    ObjectTree _objects;
-
-    /// @brief Indicates how many transforms in the scene are out of date.
-    mutable unsigned int _outdatedTransformCount;
-
-    /// @brief Map scene object IDs to object metadata structs.
-    std::unordered_map<unsigned int, SceneObjectMetadata> _objectMetadata;
-
-    /// @brief Map script IDs to script references.
-    std::unordered_map<unsigned int, Script&> _scripts;
-
-    /// @brief Last time a scene update was triggered.
-    std::chrono::time_point<std::chrono::system_clock> _lastTime;
-
-    /// @brief Callback linked to the transform notifier of every object in 
-    /// the scene.
-    ///
-    /// @param id ID of the scene object whose transform emitted the 
-    /// notification.
-    ///
-    /// @exception If the provided ID does not match that of an object 
-    /// present in the scene, the function will throw a std::runtime_error.
-    void _objectTransformModified(const unsigned int id);
-
-    /// @brief Mark the world transform of an object for update in the
-    /// update tree.
-    ///
-    /// @param id ID of the scene object whose world transform needs 
-    /// updating.
-    void _markForUpdate(const unsigned int id);
-
-    /// @brief Get the metadata entry for the object of provided ID, or 
-    /// throw an exception.
-    ///
-    /// @param id ID of the object whose metadata to find.
-    /// @param failureMessage Quick indicating in which context a bad ID was
-    /// provided.
-    ///
-    /// @return The metadata entry of the object of provided ID, if found.
-    ///
-    /// @exception If the provided ID does not match that of an object 
-    /// registered in the scene, the function will throw a 
-    /// std::runtime_error.
-    SceneObjectMetadata& _findObjectMetaOrThrow(const unsigned int id, const std::string& failureMessage);
-
-    /// @brief Get the metadata entry for the object of provided ID, or 
-    /// throw an exception.
-    ///
-    /// @param id ID of the object whose metadata to find.
-    /// @param failureMessage Quick indicating in which context a bad ID was
-    /// provided.
-    ///
-    /// @return The metadata entry of the object of provided ID, if found.
-    ///
-    /// @exception If the provided ID does not match that of an object 
-    /// registered in the scene, the function will throw a 
-    /// std::runtime_error.
-    const SceneObjectMetadata& _findObjectMetaOrThrow(const unsigned int id, const std::string& failureMessage) const;
-
-    /// @brief Perform the actual scene object registration. Call after all
-    /// sanity checks have passed.
-    ///
-    /// @param object Reference to the object to register in the scene.
-    /// @param parentMeta Metadata entry for the scene object which should 
-    /// be parent the newly registered scene object.
-    void _performObjectRegistration(SceneObjectPtr&& object, const SceneObjectMetadata& parentMeta);
-
-    /// @brief Recursively update world transforms in a DFS traversal of the
-    /// transform tree.
-    ///
-    /// @param startingId ID of the object whose transform should be the 
-    /// starting point of the recursive update, going downwards in the tree.
-    void _worldTransformDFSUpdate(const unsigned int startingId) const;
-
-    /// @brief For an object with given ID, find the topmost parent node 
-    /// whose update marker is set, and return the parent ID chain to it.
-    ///
-    /// @param id ID of the object from which to start searching.
-    ///
-    /// @return An array filled with the IDs of the successive parents of 
-    /// the object, up to the topmost one whose world transform was marked
-    /// as outdated.
-    std::vector<unsigned int> _findLongestOutdatedParentIdChain(const unsigned int id) const;
-
-    /// @brief Update the world transform of the scene object with provided 
-    /// ID, as well as the world transforms of all of its children.
-    ///
-    /// @param id ID of the object whose transform should be the starting
-    /// point of the recursive update, goind downwards in the tree.
-    void _worldTransformCascadeUpdate(const unsigned int id) const;
-
-    /// @brief Update the world transform of the scene object with provided
-    /// ID, but do not reverberate the update to the children transforms.
-    ///
-    /// @param id ID of the object whose world transform should be updated.
-    void _worldTransformUpdateNoCascade(const unsigned int id) const;
-
-    /// @brief Whether an object has a disabled parent in the scene graph.
-    ///
-    /// @param id ID of the object from which to start searching.
-    ///
-    /// @return Whether the object with provided ID has a disabled parent.
-    bool _hasDisabledParent(const unsigned int id) const;
-
-    /// @brief Maximum value an unsigned int can hold.
-    static constexpr unsigned int _MaxUInt = std::numeric_limits<unsigned int>::max();
-
+class Scene {
 public:
     Scene();
     ~Scene();
 
-    /// @brief Get a pointer to the object of provided ID.
-    ///
-    /// @param id ID of the object whose pointer to get.
-    ///
-    /// @return A reference to the object of provided ID.
-    ///
-    /// @exception If the provided ID does not match that of an object 
-    /// present in the scene, the function will throw a std::runtime_error.
-    SceneObject& operator[](const unsigned int id);
+    /// @brief Get the root object of the scene
+    /// @return The root object of the scene
+    Object root() const;
 
-    /// @brief Create a new object and attach it to the graph as a root 
-    /// child.
-    ///
-    /// @param name Name to give to the scene object.
-    ///
-    /// @return A reference to the newly created object.
-    SceneObject& newObject(const std::string& name = "");
+    /// @brief Create a new object in the scene
+    /// @param parent Object which should be parent to the newly created object
+    /// @param name Name to give to the scene object
+    /// @return The newly created object
+    Object create(Object parent, std::string name = "");
 
-    /// @brief Create a new object and attach it to the graph as a child of
-    /// the object with provided ID.
-    ///
-    /// @param parentId ID of the object which should be parent to the newly
-    /// created object.
-    ///
-    /// @return A reference to the newly created object.
-    ///
-    /// @exception If the provided ID does not match that of an object 
-    /// present in the scene, the function will throw a std::runtime_error.
-    SceneObject& newObject(const unsigned int parentId);
+    /// @brief Remove an object from the scene, together with its descendants
+    /// and all of their components
+    /// @param id ID of the object to remove from the scene
+    void erase(Object object);
 
-    /// @brief Create a new object and attach it to the graph as a child of
-    /// the object with provided ID.
-    ///
-    /// @param name Name to give to the scene object.
-    /// @param parentId ID of the object which should be parent to the newly
-    /// created object.
-    ///
-    /// @return A reference to the newly created object.
-    ///
-    /// @exception If the provided ID does not match that of an object 
-    /// present in the scene, the function will throw a std::runtime_error.
-    SceneObject& newObject(const std::string& name, const unsigned int parentId);
+    /// @brief Reparent an object in the scene
+    /// @param object Object to reparent
+    /// @param newParent Object which should be the new parent to the moved object
+    /// @param worldTransformStays Whether or not the local transform of the moved
+    /// object should be updated so that its world transform remains the same
+    /// as before being moved
+    void reparent(Object object, Object newParent, bool worldTransformStays = true);
 
-    /// @brief Remove the object with provided ID from the scene, as well as
-    /// all of its children.
-    ///
-    /// @param id ID of the object to remove from the scene.
-    ///
-    /// @exception If the provided ID does not match that of an object 
-    /// present in the scene, the function will throw a std::runtime_error.
-    void removeObject(const unsigned int id);
+    /// @brief Get an object's parent object
+    /// @param object Object whose parent to find
+    /// @return The object's parent
+    Object parentOf(Object object) const;
 
-    /// @brief Move the object with provided ID (as well as all of its 
-    /// children) in the tree so that its new parent is the object of 
-    /// second provided ID.
-    ///
-    /// @param id ID of the object to move in the tree.
-    /// @param newParentId ID of the object which should be the new parent
-    /// to the moved object.
-    /// @param worldPositionStays Whether or not the transform of the moved
-    /// object should be updated so that its world transform remains the 
-    /// as before being moved.
-    ///
-    /// @exception If the provided IDs do not match that of objects present 
-    /// in the scene, the function will throw a std::runtime_error.
-    void moveObject(const unsigned int id, const unsigned int newParentId, const bool worldPositionStays = true);
+    /// @brief Update all world transforms of objects marked for update
+    void update();
 
-    /// @brief Get the ID of the object which is parent to the object with 
-    /// provided ID in the scene.
-    ///
-    /// @param id ID of the object whose parent ID to find.
-    ///
-    /// @return The ID of the object which is parent to the object with 
-    /// provided ID.
-    ///
-    /// @exception If the provided ID does not match that of an object 
-    /// present in the scene, the function will throw a std::runtime_error.
-    unsigned int getParentId(const unsigned int id) const;
-
-    /// @brief Get a pointer to the object which is parent to the object 
-    /// with provided ID in the scene.
-    ///
-    /// @param id ID of the object whose parent to find.
-    ///
-    /// @return A pointer to the object which is parent to the object 
-    /// with provided ID in the scene.
-    ///
-    /// @exception If the provided ID does not match that of an object 
-    /// present in the scene, the function will throw a std::runtime_error.
-    SceneObject& getParent(const unsigned int id) const;
-    
-    /// @brief Update all world transforms of objects marked for update.
-    void updateAllTransforms();
-
-    /// @brief Get the world transform of the object with provided ID.
-    ///
-    /// @param id ID of the object whose world transform to get.
+    /// @brief Get an object's world transform, updating it along the way if needed
+    /// @param object Object whose world transform to get
     /// @param cascadeUpdate In case the world transform of the object needs
     /// to be recalculated, whether or not to reverberate the update to the
-    /// world transforms of the children of that object.
-    ///
-    /// @exception If the provided ID does not match that of an object 
-    /// present in the scene, the function will throw a std::runtime_error.
-    Transform getWorldTransform(const unsigned int id, const bool cascadeUpdate = true) const;
+    /// world transforms of the children of that object
+    const RawTransform& worldTransform(Object object, bool cascadeUpdate = false);
 
-    /// @brief Get references to all scene objects.
-    ///
-    /// @param mustBeEnabled Whether or not to filter the objects depending
-    /// on their enabled state.
-    ///
-    /// @return An array filled with references to all the objects in the 
-    /// scene which meet the criteria.
-    std::vector<std::reference_wrapper<SceneObject>> getAllObjects(const bool mustBeEnabled = true) const;
+    class LocalTransformProxy;
 
-    /// @brief Register a script in the scene. It will then receive update
-    /// signals from the scene.
-    ///
-    /// @param script Reference to the script to register in the scene.
-    ///
-    /// @exception If the provided script pointer is null, the function will
-    /// throw a std::runtime_error.
-    void registerScript(Script& script);
+    /// @brief Get a wrapper around the provided object's local transform
+    /// @param object The object to get a local transform wrapper for
+    /// @note The returned wrapper satisfies the TransformProxy concept
+    /// @return A wrapper around the object's local transform
+    LocalTransformProxy& localTransform(Object object);
 
-    /// @brief Detach a script from the scene so that it no longer receives 
-    /// update signals from it.
-    ///
-    /// @param id ID of the script to detach from the scene.
-    ///
-    /// @return A pointer to the script that was just detached.
-    void detachScript(const unsigned int id);
+    template<typename C, typename... CArgs>
+    C& emplace(Object object, CArgs&&... compArgs) {
+        static_assert(not (std::is_same_v<C, WorldTransform> or std::is_same_v<C, LocalTransform>), "Scene::emplace shall not be used to put a world transform or a local transform on an object, those are automatically managed");
 
-    /// @brief Trigger a scene update, which will send an update signal to 
-    /// all registered scripts.
-    void triggerUpdate();
+        return _registry.emplace<C>(object, std::forward<CArgs>(compArgs)...);
+    }
 
-    /// @brief Get references to all scene objects which have a certain 
-    /// component.
-    ///
-    /// @tparam T Literal describing the type of component to query.
-    ///
-    /// @param mustBeEnabled Whether or not to filter the objects depending
-    /// on their enabled state.
-    ///
-    /// @return An array filled with pointers to all the objects in the 
-    /// scene which meet the criteria.
-    template<ComponentType T>
-    const std::vector<std::reference_wrapper<SceneObject>>& getObjectsWithComponent(const bool mustBeEnabled = true) const;
-};
+    /// @brief Get a reference to an object's component
+    /// @tparam C The type of the component to retrieve
+    /// @param object The object on which the component to be retrieved is attached
+    /// @note WorldTransform and LocalTransform shall not be queried through this function, the worldTransform and localTransform function can respectively be used instead
+    template<typename C>
+    C& get(Object object) {
+        static_assert(not (std::is_same_v<C, WorldTransform> or std::is_same_v<C, LocalTransform>), "Scene::get shall not be used to retrieve world transforms or local transforms, use Scene::worldTransform and Scene::localTransform respectively instead.");
 
-template<ComponentType T>
-const std::vector<std::reference_wrapper<SceneObject>>& Scene::getObjectsWithComponent(const bool mustBeEnabled) const
-{
-    const std::vector<std::reference_wrapper<SceneObject>> all = getAllObjects();
-    std::vector<std::reference_wrapper<SceneObject>> result;
+        return _registry.get<C>(object);
+    }
 
-    // Tells whether an object whose weak pointer is provided should be added to the result vector
-    std::function<bool(const SceneObject&)> componentChecker = [this, mustBeEnabled](const SceneObject& obj) -> bool
-    {
-        // Skip if the object is not enabled or if any of its parents is not enabled
-        if (mustBeEnabled && !obj.enabled) return false;
-        if (mustBeEnabled && _hasDisabledParent(obj.id)) return false;
-        // Return whether the object has the component being asked for
-        return obj.componentMap().hasComponent<T>();
+    /// @copydoc template<typename>Scene::get(Object)
+    template<typename C>
+    const C& get(Object object) const {
+        static_assert(not (std::is_same_v<C, WorldTransform> or std::is_same_v<C, LocalTransform>), "Scene::get shall not be used to retrieve world transforms or local transforms, use Scene::worldTransform and Scene::localTransform respectively instead.");
+
+        return _registry.get<C>(object);
+    }
+
+    template<typename... Cs>
+    using ComponentView = decltype(std::declval<ObjectRegistry>().view<Cs...>());
+
+    /// @brief Get a view on all objects that have a given set of components
+    /// @tparam Cs The types of component to have for an object to be included in the view
+    /// @note WorldTransform and LocalTransform shall not be queried through this function, the worldTransform and localTransform function can respectively be used instead
+    template<typename... Cs>
+    ComponentView<Cs...> view() {
+        static_assert((not (std::is_same_v<Cs, WorldTransform> or std::is_same_v<Cs, LocalTransform>) && ...), "Scene::view shall not be used to retrieve world transforms or local transforms, use Scene::worldTransform and Scene::localTransform respectively instead.");
+
+        return _registry.view<Cs...>();
+    }
+
+    template<typename... Cs>
+    using ComponentGroup = decltype(std::declval<ObjectRegistry>().group<Cs...>());
+
+    /// @brief Get a view on all objects that have a given set of components
+    /// @tparam Cs The types of component to have for an object to be included in the view
+    /// @note WorldTransform and LocalTransform shall not be queried through this function, the worldTransform and localTransform function can respectively be used instead
+    template<typename... Cs>
+    ComponentGroup<Cs...> group() {
+        static_assert((not (std::is_same_v<Cs, WorldTransform> or std::is_same_v<Cs, LocalTransform>) && ...), "Scene::group shall not be used to retrieve world transforms or local transforms, use Scene::worldTransform and Scene::localTransform respectively instead.");
+
+        return _registry.group<Cs...>();
+    }
+    
+private:
+    using ObjectTree = tools::tree<Object>;
+    using ObjectNode = ObjectTree::node_handle_t;
+
+    /// @brief Information about an object within the scene
+    struct ObjectMetadata {
+        /// @brief Handle to the node of the object in the scene graph
+        ObjectNode node;
+
+        /// @brief Name of the object
+        std::string name;
+
+        /// @brief ID of the graph node containing the world transform of the
+        /// object this metadata refers to
+        bool enabled;
+
+        /// @brief ID of the graph node containing the object this metadata
+        /// refers to
+        bool transformOutdated;
     };
 
-    // Copy all object pointers into the result vector using the check function
-    std::copy_if(all.begin(), all.end(), std::back_inserter(result), componentChecker);
+    /// @brief Component store for the objects
+    ObjectRegistry _registry;
 
-    return result;
-}
+    /// @brief Scene graph
+    ObjectTree _objects;
 
-using ScenePtr = std::unique_ptr<Scene>;
+    /// @brief Object at the root of the scene
+    Object _root;
 
-} // namespace renderboi
+    /// @brief Mapping of tree node handles to the objects they contain
+    std::unordered_map<Object, ObjectMetadata> _metadata;
 
-#endif//RENDERBOI__TOOLBOX__SCENE__SCENE_HPP
+    /// @brief How many transforms in the scene are out of date
+    mutable unsigned int _outdatedTransformCount;
+
+    /// @brief Create a new object and attach it to the scene as a child of
+    /// the provided object
+    /// @param parentMeta Metadata entry of the object which should be parent to
+    /// the newly created object
+    /// @param name Name to give to the scene object
+    /// @return The newly created object
+    Object _newObject(const ObjectMetadata& parentMeta, std::string&& name);
+    
+    /// @brief Callback linked to the transform notifier of every object in
+    /// the scene
+    /// @param object Scene object whose transform emitted the notification
+    void _objectTransformModified(Object object);
+
+    /// @brief Mark the world transform of an object for update in the
+    /// update tree
+    /// @param object Scene object whose world transform needs updating
+    void _markForUpdate(Object object);
+
+    /// @brief Recursively update world transforms in a DFS traversal of the
+    /// transform tree
+    /// @param startingId ID of the object whose transform should be the
+    /// starting point of the recursive update, going downwards in the tree
+    void _worldTransformDFSUpdate(Object start);
+
+    /// @brief For an object with given ID, find the topmost parent node
+    /// whose update marker is set, and return the parent ID chain to it
+    /// @param id ID of the object from which to start searching
+    /// @return An array filled with the IDs of the successive parents of
+    /// the object, up to the topmost one whose world transform was marked
+    /// as outdated
+    std::vector<Object> _computeOutdatedParentChain(Object object);
+
+    /// @brief Update the world transform of the provided object, as well as
+    /// that of all of its children
+    /// @param object Object whose world transform should be updated, along with
+    /// that of its children
+    /// @pre The world transform of the provided object's parent is up-to-date
+    void _updateAllWorldTransforms(Object object);
+
+    /// @brief Update the world transform of the provided object only
+    /// @param Object Object whose world transform should be updated
+    /// @pre The world transform of the provided object's parent is up-to-date
+    void _updateThisWorldTransform(Object object);
+
+    /// @brief Whether an object has a disabled parent in the scene graph
+    /// @param id ID of the object from which to start searching
+    /// @return Whether the object with provided ID has a disabled parent
+    bool _hasDisabledParent(Object object) const;
+
+public:
+    /// @brief Wrapper for a scene object's local transform, providing convenient
+    /// operator overloads to apply operations on it.
+    /// @note This wrapper may be copied and moved around, but not assigned to.
+    /// The wrapper is invalidated whenever the object whose transform is being
+    /// wrapped is reparented (its immediate parent changes).
+    class LocalTransformProxy {
+    public:
+        LocalTransformProxy(const LocalTransformProxy& other) = default;
+        LocalTransformProxy(LocalTransformProxy&& other)      = default;
+
+        LocalTransformProxy& operator=(const LocalTransformProxy& other) = default;
+        LocalTransformProxy& operator=(LocalTransformProxy&& other)      = default;
+
+        LocalTransformProxy& operator=(const RawTransform& other);
+        LocalTransformProxy& operator=(RawTransform&& other);
+
+        template<affine::AffineOperation Op>
+        friend LocalTransformProxy& operator<<(LocalTransformProxy& proxy, const Op& op) {
+            op.apply(*(proxy._transform));
+            proxy._markObjectForUpdateInScene();
+
+            return proxy;
+        }
+
+        template<affine::AffineOperation Op>
+        friend LocalTransformProxy&& operator<<(LocalTransformProxy&& proxy, const Op& op) {
+            op.apply(*(proxy._transform));
+            proxy._markObjectForUpdateInScene();
+
+            return proxy;
+        }
+
+        LocalTransformProxy(Scene& scene, Object object, RawTransform& transform);
+
+    private:
+        void _markObjectForUpdateInScene();
+
+        /// @brief The scene which this proxy should report updates to
+        Scene* _scene;
+        
+        /// @brief The wrapped local transform
+        RawTransform* _transform;
+
+        /// @brief The object whose local transform is being wrapped by this proxy
+        Object _object;
+    };
+    static_assert(TransformProxy<LocalTransformProxy>);
+
+    friend class LocalTransformProxy;
+};
+
+using LocalTransformProxy = Scene::LocalTransformProxy;
+
+} // namespace rb
+
+#endif // RENDERBOI_TOOLBOX_SCENE_SCENE_HPP

@@ -1,104 +1,78 @@
-#ifndef RENDERBOI__TOOLBOX__CONTROLS__CONTROLLED_ENTITY_MANAGER_HPP
-#define RENDERBOI__TOOLBOX__CONTROLS__CONTROLLED_ENTITY_MANAGER_HPP
+#ifndef RENDERBOI_TOOLBOX_CONTROLS_CONTROLLED_ENTITY_MANAGER_HPP
+#define RENDERBOI_TOOLBOX_CONTROLS_CONTROLLED_ENTITY_MANAGER_HPP
 
-#include <memory>
+#include <concepts>
 #include <type_traits>
 
-#include <cpptools/utility/type_utils.hpp>
-#include <cpptools/oo/interfaces/action_event_receiver.hpp>
+#include <renderboi/toolbox/interfaces/action_event_receiver.hpp>
+#include <renderboi/toolbox/interfaces/default_control_scheme_provider.hpp>
 
-#include "../interfaces/default_control_scheme_provider.hpp"
 #include "control_scheme.hpp"
 #include "control_event_translator.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
-/// @brief Eases out management of entities which provide a default control 
-/// scheme.
-///
-/// @tparam T Required. Type of the entity to manage. It must have a public 
-/// ActionType typedef, and inherit from DefaultControlSchemeProvider<ActionType>,
-/// as well as from ActionEventReceiver<ActionType, ArgTypes...>. Leave all 
-/// other types for deduction.
+template<typename T>
+concept ControllableEntity = requires {
+    std::is_enum_v<typename T::ActionType>;
+    std::derived_from<T, DefaultControlSchemeProvider<typename T::ActionType>>;
+    std::derived_from<T, ActionEventReceiver<typename T::ActionType>>;
+};
+
+/// @brief Eases out management of entities which provide a default control scheme
 template<
-    class T,
-    typename ActionEventReceiverType = cpptools::ActionEventReceiver<typename T::ActionType>,
-    typename ControlEventTranslatorType = ControlEventTranslator<typename T::ActionType>,
-    typename = std::enable_if_t<
-        std::is_base_of_v<DefaultControlSchemeProvider<typename T::ActionType>, T>, void
-    >,
-    typename = std::enable_if_t<
-        std::is_base_of_v<ActionEventReceiverType, T>, void
-    >
+    ControllableEntity T,
+    typename ActionEventReceiverType    = ActionEventReceiver<typename T::ActionType>,
+    typename ControlEventTranslatorType = ControlEventTranslator<typename T::ActionType>
 >
-class ControlledEntityManager
-{
+class ControlledEntityManager {
 private:
-    /// @brief Managed entity.
+    using Action = typename T::ActionType;
+    using EventReceiver = ActionEventReceiver<Action>;
+
+    /// @brief Managed entity
     T _entity;
 
-    /// @brief Scheme manager provided by the entity.
-    ControlScheme<typename T::ActionType> _controlScheme;
+    /// @brief Scheme manager provided by the entity
+    ControlScheme<Action> _controlScheme;
 
     /// @brief Object to translate events to actions and forward them to the
-    /// managed entity.
+    /// managed entity
     ControlEventTranslatorType _translator;
 
 public:
-    using ActionEventReceiverType = type_utils::apply_types<
-        typename cpptools::ActionEventReceiver,
-        type_utils::type_list<
-            typename T::ActionType,
-            typename T::ArgTypes
-        >
-    >;
-
     /// @tparam ArgTypes Types of the arguments to forward to the 
-    /// constructor of the managed entity.
-    ///
-    /// @note Constructor variant for when the event requires no arguments.
-    ///
-    /// @param args Arguments to forward to the constructor of the managed 
-    /// entity.
+    /// constructor of the managed entity
+    /// @note Constructor variant for when the event requires no arguments
+    /// @param args Arguments to forward to the constructor of the managed entity
     template<typename... ArgTypes>
     ControlledEntityManager(ArgTypes&&... args) :
         _entity(std::forward<ArgTypes>(args)...),
-        _controlScheme(_entity.getDefaultControlScheme()),
-        _translator(_controlScheme, static_cast<ActionEventReceiverType&>(_entity))
+        _controlScheme(_entity.defaultControlScheme()),
+        _translator(_controlScheme, static_cast<EventReceiver&>(_entity))
     {
         
     }
 
-    /// @brief Get a pointer to the managed entity.
-    ///
-    /// @return A pointer to the managed entity.
-    T& entity() const
-    {
+    /// @brief Get a pointer to the managed entity
+    /// @return A pointer to the managed entity
+    T& entity() {
         return _entity;
     }
 
-    /// @brief Get a pointer to the control scheme manager of the managed 
-    /// entity.
-    ///
-    /// @return A pointer to the control scheme manager of the managed 
-    /// entity.
-    const ControlScheme<typename T::ActionType>& controlSchemeManager() const
-    {
+    /// @brief Get a pointer to the control scheme manager of the managed entity
+    /// @return A pointer to the control scheme manager of the managed entity
+    const ControlScheme<Action>& controlSchemeManager() const {
         return _controlScheme;
     }
 
-    /// @brief Get a pointer to the control event translator of the managed
-    /// entity.
-    ///
-    /// @return A pointer to the control event translator of the managed 
-    /// entity.
-    ControlEventTranslator<typename T::ActionType>& eventTranslator() const
-    {
+    /// @brief Get a pointer to the control event translator of the managed entity
+    /// @return A pointer to the control event translator of the managed entity
+    ControlEventTranslator<Action>& eventTranslator() {
         return _translator;
     }
 };
 
-} // namespace renderboi
+} // namespace rb
 
-#endif//RENDERBOI__TOOLBOX__CONTROLS__CONTROLLED_ENTITY_MANAGER_HPP
+#endif//RENDERBOI_TOOLBOX_CONTROLS_CONTROLLED_ENTITY_MANAGER_HPP

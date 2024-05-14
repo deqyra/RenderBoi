@@ -1,36 +1,31 @@
 #include "glfw3_monitor.hpp"
 
-#include "../window_backend.hpp"
 #include "GLFW/glfw3.h"
 
 #include <cstring>
 #include <vector>
 
-namespace renderboi::Window
-{
+namespace rb::Window {
 
 GLFW3Monitor::GLFW3Monitor(GLFWmonitor* monitor) :
     Monitor(glfwGetMonitorName(monitor)),
     _m(monitor),
     _supportedVideoModes(_ListVideoModes(monitor)),
-    _largestVideoMode(_LargestVideoMode(_supportedVideoModes)),
-    _currentVideoMode()
+    _currentVideoMode(),
+    _largestVideoMode(_LargestVideoMode(_supportedVideoModes))
 {
     glfwSetMonitorUserPointer(_m, (void*)this);
 }
 
-GLFW3Monitor::~GLFW3Monitor()
-{
+GLFW3Monitor::~GLFW3Monitor() {
     glfwSetMonitorUserPointer(_m, nullptr);
 }
 
-GLFWmonitor* GLFW3Monitor::getGlfwMonitorPointer() const
-{
+GLFWmonitor* GLFW3Monitor::getGlfwMonitorPointer() const {
     return _m;
 }
 
-const Monitor::VideoMode GLFW3Monitor::getCurrentVideoMode() const
-{
+const Monitor::VideoMode GLFW3Monitor::getCurrentVideoMode() const {
     const GLFWvidmode* mode = glfwGetVideoMode(_m);
 
     return Monitor::VideoMode{
@@ -42,33 +37,27 @@ const Monitor::VideoMode GLFW3Monitor::getCurrentVideoMode() const
         mode->refreshRate
     };}
 
-const std::vector<Monitor::VideoMode>& GLFW3Monitor::getVideoModes() const
-{
+const std::vector<Monitor::VideoMode>& GLFW3Monitor::getVideoModes() const {
     return _supportedVideoModes;
 }
 
-void GLFW3Monitor::getPhysicalSize(int& width_mm, int& height_mm) const
-{
+void GLFW3Monitor::getPhysicalSize(int& width_mm, int& height_mm) const {
     glfwGetMonitorPhysicalSize(_m, &width_mm, &height_mm);
 }
 
-void GLFW3Monitor::getContentScale(float& xscale, float& yscale) const
-{
+void GLFW3Monitor::getContentScale(float& xscale, float& yscale) const {
     glfwGetMonitorContentScale(_m, &xscale, &yscale);
 }
 
-void GLFW3Monitor::getPosition(int& xpos, int& ypos) const
-{
+void GLFW3Monitor::getPosition(int& xpos, int& ypos) const {
     glfwGetMonitorPos(_m, &xpos, &ypos);
 }
 
-void GLFW3Monitor::getWorkArea(int& xpos, int& ypos, int& width, int& height) const
-{
+void GLFW3Monitor::getWorkArea(int& xpos, int& ypos, int& width, int& height) const {
     glfwGetMonitorWorkarea(_m, &xpos, &ypos, &width, &height);
 }
 
-Monitor::GammaRamp GLFW3Monitor::getGammaRamp() const
-{
+Monitor::GammaRamp GLFW3Monitor::getGammaRamp() const {
     const GLFWgammaramp* ramp = glfwGetGammaRamp(_m);
 
     std::vector<unsigned short> red = std::vector<unsigned short>(ramp->size);
@@ -82,8 +71,7 @@ Monitor::GammaRamp GLFW3Monitor::getGammaRamp() const
     return GammaRamp(ramp->size, red, green, blue);
 }
 
-void GLFW3Monitor::setGammaRamp(const GammaRamp& gammaRamp) const
-{
+void GLFW3Monitor::setGammaRamp(const GammaRamp& gammaRamp) const {
     GLFWgammaramp ramp;
     ramp.size = gammaRamp.getSize();
 
@@ -96,8 +84,7 @@ void GLFW3Monitor::setGammaRamp(const GammaRamp& gammaRamp) const
     glfwSetGammaRamp(_m, &ramp);
 }
 
-Monitor::VideoMode GLFW3Monitor::getLargestVideoMode() const
-{
+Monitor::VideoMode GLFW3Monitor::getLargestVideoMode() const {
     return _largestVideoMode;
 }
 
@@ -122,8 +109,7 @@ std::vector<Monitor::VideoMode> GLFW3Monitor::_ListVideoModes(GLFWmonitor* m)
     return videoModes;
 }
 
-GLFW3Monitor::VideoMode GLFW3Monitor::_LargestVideoMode(const std::vector<VideoMode>& modes)
-{
+GLFW3Monitor::VideoMode GLFW3Monitor::_LargestVideoMode(const std::vector<VideoMode>& modes) {
     int maxWidth = 0;
     int maxHeight = 0;
     int maxRefreshRate = 0;
@@ -156,4 +142,4 @@ GLFW3Monitor::VideoMode GLFW3Monitor::_LargestVideoMode(const std::vector<VideoM
     return v;
 }
 
-} // namespace renderboi::Window
+} // namespace rb::Window

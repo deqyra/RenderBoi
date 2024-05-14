@@ -1,64 +1,69 @@
-#include "lighting_sandbox.hpp"
-#include "renderboi/core/shader/shader_program.hpp"
+#include <chrono>
+#include <optional>
 
-#include <iostream>
-#include <memory>
-#include <string>
+#include <renderboi/core/color.hpp>
+#include <renderboi/core/numeric.hpp>
+#include <renderboi/core/material.hpp>
+#include <renderboi/core/materials.hpp>
+#include <renderboi/core/3d/camera.hpp>
+#include <renderboi/core/3d/mesh.hpp>
+#include <renderboi/core/3d/affine/orbit.hpp>
+#include <renderboi/core/3d/affine/rotation.hpp>
+#include <renderboi/core/3d/affine/set_position.hpp>
+#include <renderboi/core/3d/affine/translation.hpp>
+#include <renderboi/core/3d/affine/turn.hpp>
+#include <renderboi/core/lights/light_common.hpp>
+#include <renderboi/core/lights/point_light.hpp>
+#include <renderboi/core/shader/shader.hpp>
+#include <renderboi/core/shader/shader_builder.hpp>
+#include <renderboi/core/shader/shader_program.hpp>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <renderboi/toolbox/controls/control_event_translator.hpp>
+#include <renderboi/toolbox/controls/control_scheme.hpp>
+#include <renderboi/toolbox/controls/controlled_entity_manager.hpp>
+#include <renderboi/toolbox/input_splitter.hpp>
+#include <renderboi/toolbox/mesh_generators/axes_generator.hpp>
+#include <renderboi/toolbox/mesh_generators/cube_generator.hpp>
+#include <renderboi/toolbox/mesh_generators/tetrahedron_generator.hpp>
+#include <renderboi/toolbox/mesh_generators/torus_generator.hpp>
+#include <renderboi/toolbox/render/scene_renderer.hpp>
+#include <renderboi/toolbox/runnables/basic_window_manager.hpp>
+#include <renderboi/toolbox/runnables/camera_aspect_ratio_manager.hpp>
+#include <renderboi/toolbox/runnables/input_logger.hpp>
+#include <renderboi/toolbox/runnables/keyboard_movement_script.hpp>
+#include <renderboi/toolbox/runnables/mouse_camera_manager.hpp>
+#include <renderboi/toolbox/scene/object.hpp>
+#include <renderboi/toolbox/scene/scene.hpp>
+#include <renderboi/toolbox/scene/components/camera_component.hpp>
+#include <renderboi/toolbox/scene/components/point_light_component.hpp>
+#include <renderboi/toolbox/scene/components/rendered_mesh_component.hpp>
 
 #include <renderboi/window/gl_window.hpp>
 #include <renderboi/window/window_factory.hpp>
 
-#include <renderboi/core/mesh.hpp>
-#include <renderboi/core/materials.hpp>
-#include <renderboi/core/lights/point_light.hpp>
-#include <renderboi/core/frame_of_reference.hpp>
-#include <renderboi/core/shader/shader_builder.hpp>
+#include "lighting_sandbox.hpp"
 
-#include <renderboi/toolbox/factory.hpp>
-#include <renderboi/toolbox/input_splitter.hpp>
-#include <renderboi/toolbox/controls/control_scheme.hpp>
-#include <renderboi/toolbox/controls/control_event_translator.hpp>
-#include <renderboi/toolbox/controls/controlled_entity_manager.hpp>
-#include <renderboi/toolbox/mesh_generators/mesh_type.hpp>
-#include <renderboi/toolbox/scene/scene.hpp>
-#include <renderboi/toolbox/scene/object/scene_object.hpp>
-#include <renderboi/toolbox/scene/object/component_type.hpp>
-#include <renderboi/toolbox/scene/object/components/all_components.hpp>
-#include <renderboi/toolbox/render/scene_renderer.hpp>
-#include <renderboi/toolbox/runnables/input_logger.hpp>
-#include <renderboi/toolbox/runnables/mouse_camera_manager.hpp>
-#include <renderboi/toolbox/runnables/keyboard_movement_script.hpp>
-#include <renderboi/toolbox/runnables/basic_window_manager.hpp>
-#include <renderboi/toolbox/runnables/camera_aspect_ratio_manager.hpp>
+namespace rb {
 
-namespace renderboi
-{
-
-using Ref = FrameOfReference;
-
-LightingSandbox::LightingSandbox(GLWindow& window, const GLSandboxParameters& params) :
-    GLSandbox(window, params)
+LightingSandbox::LightingSandbox(GLWindow& window, const GLSandboxParameters& params)
+    : GLSandbox(window, params)
 {
 
 }
 
-void LightingSandbox::setUp()
-{
+void LightingSandbox::setUp() {
     // Update window title
     _title = _window.getTitle();
     _window.setTitle(_title + " - Lighting");
 
     // Remove cursor from window
     namespace InputMode = Window::Input::Mode;
-    _window.setInputMode(InputMode::Target::Cursor, InputMode::Value::DisabledCursor);
+    _window.setInputMode(
+        InputMode::Target::Cursor, InputMode::Value::DisabledCursor
+    );
 }
 
-void LightingSandbox::run()
-{
+void LightingSandbox::run() {
     GLSandbox::_initContext();
 
     ShaderConfig lightConfig;
@@ -66,209 +71,244 @@ void LightingSandbox::run()
     lightConfig.addFeature(ShaderFeature::FragmentMeshMaterial);
     lightConfig.addFeature(ShaderFeature::FragmentBlinnPhong);
     ShaderProgram lightingShader = ShaderBuilder::BuildShaderProgramFromConfig(lightConfig);
+    Material emerald = Materials::Emerald;
+    Material gold    = Materials::Gold;
+    Material def     = Materials::Default;
 
     Scene scene;
 
+    // Input splitter that will broadcast the input received by the window
+    InputSplitter splitter;
+    _window.registerInputProcessor(static_cast<InputProcessor&>(splitter));
+
     // BIG TORUS
-    SceneObject& bigTorusObj = Factory::MakeSceneObjectWithMesh<MeshType::Torus>(
-        scene, "Big torus",
-        {2.f, 0.5f, 72, 48},
-        Materials::Emerald,
-        lightingShader
+    const auto bigTorusObj = scene.create(scene.root(), "Big torus");
+    auto bigTorusMesh = TorusGenerator({ 2.f, 0.5f, 72, 48 }).generate();
+    scene.emplace<RenderedMeshComponent>(
+        bigTorusObj,
+        RenderedMeshComponent{
+            .mesh = bigTorusMesh.get(),
+            .material = &emerald,
+            .shader = &lightingShader
+        }
     );
 
     // SMALL TORUS
-    SceneObject& smallTorusObj = Factory::MakeSceneObjectWithMesh<MeshType::Torus>(
-        scene, "Small torus",
-        {0.75f, 0.25f, 64, 32},
-        Materials::Gold,
-        lightingShader
+    const auto smallTorusObj = scene.create(bigTorusObj, "Small torus");
+    auto smallTorusMesh = TorusGenerator({ 0.75f, 0.25f, 64, 32 }).generate();
+    scene.emplace<RenderedMeshComponent>(
+        bigTorusObj,
+        RenderedMeshComponent{
+            .mesh = smallTorusMesh.get(),
+            .material = &gold,
+            .shader = &lightingShader
+        }
     );
-    
+
     ShaderProgram minimal = ShaderBuilder::MinimalShaderProgram();
 
     // AXES
-    SceneObject& axesObj = Factory::MakeSceneObjectWithMesh<MeshType::Axes>(
-        scene, "Axes",
-        {3.f},
-        Materials::Default,
-        minimal
+    const auto axesObj = scene.create(scene.root(), "Axes");
+    auto axesMesh = AxesGenerator({ 3.f }).generate();
+    scene.emplace<RenderedMeshComponent>(
+        axesObj,
+        RenderedMeshComponent{
+            .mesh = axesMesh.get(),
+            .material = &def,
+            .shader = &minimal
+        }
     );
-    
+
     // CUBE
-    SceneObject& cubeObj = Factory::MakeSceneObjectWithMesh<MeshType::Cube>(
-        scene, "Light cube",
-        (CubeGenerator::Parameters){0.3f, {0.f, 0.f, 0.f}, false},
-        Materials::Default,
-        lightingShader
+    const auto cubeObj = scene.create(scene.root(), "Light cube");
+    auto cubeMesh = CubeGenerator(CubeGenerator::Parameters{ .size = 0.3f, .color = std::nullopt }).generate();
+    scene.emplace<RenderedMeshComponent>(
+        cubeObj,
+        RenderedMeshComponent{
+            .mesh = cubeMesh.get(),
+            .material = &def,
+            .shader = &lightingShader
+        }
     );
-    PointLight light(LightBaseRange);
-    cubeObj.componentMap().addComponent<ComponentType::Light>(light);
+
+    PointLight light{
+        .color = {},
+        .attenuation = attenuationFactors(LightBaseRange)
+    };
+    scene.emplace<PointLightComponent>(
+        cubeObj,
+        PointLightComponent{ &light }
+    );
 
     // TETRAHEDRON
-    SceneObject& tetrahedronObj = Factory::MakeSceneObjectWithMesh<MeshType::Tetrahedron>(
-        scene, "Tetrahedron",
-        {0.5f},
-        Materials::Default,
-        lightingShader
+    const auto tetrahedronObj = scene.create(smallTorusObj, "Tetrahedron");
+    auto tetrahedronMesh = TetrahedronGenerator(TetrahedronGenerator::Parameters{ .size = 0.5f, .color = std::nullopt }).generate();
+    scene.emplace<RenderedMeshComponent>(
+        tetrahedronObj,
+        RenderedMeshComponent{
+            .mesh = tetrahedronMesh.get(),
+            .material = &def,
+            .shader = &lightingShader
+        }
     );
 
     // CAMERA
-    SceneObject& cameraObj = scene.newObject("Camera");
-    Camera camera(CameraParams);
-    cameraObj.componentMap().addComponent<ComponentType::Camera>(camera);
+    const auto cameraObj = scene.create(scene.root(), "Camera");
+    Camera camera = { CameraViewParams, CameraProjParams };
+    scene.emplace<CameraComponent>(
+        cameraObj,
+        CameraComponent{ &camera }
+    );
 
     // Link camera to MouseCameraManager
     MouseCameraManager cameraManager(camera);
+    splitter.registerInputProcessor(static_cast<InputProcessor&>(cameraManager));
 
     // Link camera to CameraAspectRatioManager
     CameraAspectRatioManager cameraAspectRatioManager(camera);
+    splitter.registerInputProcessor(static_cast<InputProcessor&>(cameraAspectRatioManager));
 
     // Attach object movement script to scene
-    LightingSandboxScript rotationScript(cubeObj, bigTorusObj, smallTorusObj, tetrahedronObj, cameraObj, light, LightBaseRange);
-    scene.registerScript(rotationScript);
-    
-    // Add script component to camera: KeyboardMovementScript
-    ControlledEntityManager<KeyboardMovementScript> keyboardScriptManager(static_cast<BasisProvider&>(camera));
-    cameraObj.componentMap().addComponent<ComponentType::Script>(static_cast<Script&>(keyboardScriptManager.entity()));
+    LightingSandboxScript rotationScript(
+        scene.localTransform(cubeObj),
+        scene.localTransform(bigTorusObj),
+        scene.localTransform(smallTorusObj),
+        scene.localTransform(tetrahedronObj),
+        scene.worldTransform(cameraObj),
+        light,
+        LightBaseRange
+    );
+    splitter.registerInputProcessor(static_cast<InputProcessor&>(rotationScript));
+
+    // KeyboardMovementScript
+    auto keyboardScriptManager = ControlledEntityManager<KeyboardMovementScript<LocalTransformProxy>>(
+        scene.localTransform(cameraObj),
+        camera
+    );
+    splitter.registerInputProcessor(static_cast<InputProcessor&>(keyboardScriptManager.eventTranslator()));
 
     // Window script
-    ControlledEntityManager<BasicWindowManager> windowManager(_window);
+    auto windowManager = ControlledEntityManager<BasicWindowManager>(_window);
+    splitter.registerInputProcessor(static_cast<InputProcessor&>(windowManager.entity()));
+    splitter.registerInputProcessor(static_cast<InputProcessor&>(windowManager.eventTranslator()));
 
     // Instantiate an input logger
     InputLogger logger;
-
-    // Register the scene and the control translator to the splitter
-    InputSplitter splitter;
     splitter.registerInputProcessor(static_cast<InputProcessor&>(logger));
-    splitter.registerInputProcessor(static_cast<InputProcessor&>(cameraManager));
-    splitter.registerInputProcessor(static_cast<InputProcessor&>(cameraAspectRatioManager));
-    splitter.registerInputProcessor(static_cast<InputProcessor&>(rotationScript));
-    splitter.registerInputProcessor(static_cast<InputProcessor&>(keyboardScriptManager.eventTranslator()));
-    splitter.registerInputProcessor(static_cast<InputProcessor&>(windowManager.entity()));
-    splitter.registerInputProcessor(static_cast<InputProcessor&>(windowManager.eventTranslator()));
-    
-    // Register the splitter to the window
-    _window.registerInputProcessor(static_cast<InputProcessor&>(splitter));
 
-
-    // Register the splitter to the window
-    _window.registerInputProcessor(static_cast<InputProcessor&>(splitter));
-
-    const glm::vec3 X = Transform::X;
-    const glm::vec3 Y = Transform::Y;
-    const glm::vec3 Z = Transform::Z;
 
     // Move stuff around
-    bigTorusObj.transform().rotateBy<Ref::World>((float)glm::radians(90.f), X);
-    smallTorusObj.transform().rotateBy<Ref::Parent>(glm::radians(90.f), X);
-    smallTorusObj.transform().translateBy<Ref::Parent>(-2.f * X);
-    cubeObj.transform().setPosition<Ref::World>(StartingLightPosition);
-    tetrahedronObj.transform().translateBy<Ref::Parent>(-1.2f * X);
-    tetrahedronObj.transform().rotateBy<Ref::Parent>(glm::radians(90.f), Z);
-    cameraObj.transform().setPosition<Ref::World>(StartingCameraPosition);
-    cameraObj.transform().rotateBy<Ref::Parent>(glm::radians(180.f), Y);
+    using namespace affine;
+    scene.localTransform(bigTorusObj)    << Rotation(num::radians(90.f), num::X);
+    scene.localTransform(smallTorusObj)  << Rotation(num::radians(90.f), num::X) << Translation(-2.f * num::X);
+    scene.localTransform(cubeObj)        << SetPosition(StartingLightPosition);
+    scene.localTransform(tetrahedronObj) << Translation(-1.2f * num::X)          << Rotation(glm::radians(90.f), num::Z);
+    scene.localTransform(cameraObj)      << SetPosition(StartingCameraPosition)  << Rotation(glm::radians(180.f), num::Y);
 
     SceneRenderer sceneRenderer;
 
     glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
     glEnable(GL_DEPTH_TEST);
-    while (!_window.exitSignaled())
-    {
+
+    using Clock = std::chrono::steady_clock;
+    auto lastTimestamp = Clock::now();
+    while (!_window.exitSignaled()) {
         // Process events which require to be processed on the rendering thread
         _window.processPendingContextEvents();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Update and draw scene
-        scene.triggerUpdate();
-        sceneRenderer.renderScene(scene);
+        scene.update();
+        sceneRenderer.render(scene);
         _window.swapBuffers();
+
+        // Update scripts
+        auto now = Clock::now();
+        auto delta = std::chrono::duration_cast<std::chrono::seconds>(now - lastTimestamp).count();
+        lastTimestamp = now;
+
+        keyboardScriptManager.entity().update(delta);
+        rotationScript.update(delta);
     }
 
     GLSandbox::_terminateContext();
 }
 
-void LightingSandbox::tearDown()
-{
+void LightingSandbox::tearDown() {
     // Reset everything back to how it was
     namespace InputMode = Window::Input::Mode;
-    _window.setInputMode(InputMode::Target::Cursor, InputMode::Value::NormalCursor);
+    _window.setInputMode(
+        InputMode::Target::Cursor, InputMode::Value::NormalCursor
+    );
     _window.detachInputProcessor();
     _window.setTitle(_title);
 }
 
 LightingSandboxScript::LightingSandboxScript(
-    SceneObject& cubeObj,
-    SceneObject& bigTorusObj,
-    SceneObject& smallTorusObj,
-    SceneObject& tetrahedronObj,
-    SceneObject& cameraObj,
+    LocalTransformProxy& cube,
+    LocalTransformProxy& bigTorus,
+    LocalTransformProxy& smallTorus,
+    LocalTransformProxy& tetrahedron,
+    const RawTransform& cameraWorldTransform,
     PointLight& light,
-    float baseLightRange
-) :
-    _cubeObj(cubeObj),
-    _bigTorusObj(bigTorusObj),
-    _smallTorusObj(smallTorusObj),
-    _tetrahedronObj(tetrahedronObj),
-    _cameraObj(cameraObj),
-    _light(light),
-    _autoRotate(true),
-    _speedFactor(1.75f),
-    _sine(LightVariationFrequency),
-    _baseRange(baseLightRange)
+    float      baseLightRange
+)
+    : _cube(cube)
+    , _bigTorus(bigTorus)
+    , _smallTorus(smallTorus)
+    , _tetrahedron(tetrahedron)
+    , _cameraWorldTransform(cameraWorldTransform)
+    , _light(light)
+    , _autoRotate(true)
+    , _speedFactor(1.75f)
+    , _sine(LightVariationFrequency)
+    , _baseRange(baseLightRange)
 {
     _sine.start();
 }
 
-void LightingSandboxScript::update(float timeElapsed)
-{
-    _light.setRange(_baseRange + _sine.get() * (LightVariationAmplitude / 2.f));
+void LightingSandboxScript::update(float timeElapsed) {
+    _light.attenuation = attenuationFactors(_baseRange + _sine.value() * (LightVariationAmplitude / 2.f));
 
-    if (_autoRotate)
-    {
+    using namespace affine;
+    if (_autoRotate) {
         // Update object transforms
         float delta = _speedFactor * timeElapsed;
 
-        _cubeObj.transform().orbit<Ref::World>((float)glm::radians(45.f * delta), CubeOrbitAxis, glm::vec3(0.f, 3.f, 0.f), true);
-        _bigTorusObj.transform().rotateBy<Ref::Parent>((float)glm::radians(45.f * delta), BigTorusRotationAxis);
-        _smallTorusObj.transform().orbit<Ref::Parent>((float)glm::radians(45.f * delta), SmallTorusRotationAxis, glm::vec3(0.f, 0.f, 0.f), true);
-        _tetrahedronObj.transform().rotateBy<Ref::Self>((float)glm::radians(45.f * delta), TetrahedronRotationAxis);
-        _tetrahedronObj.transform().orbit<Ref::Parent>((float)glm::radians(45.f * delta), TetrahedronOrbitAxis, glm::vec3(0.f), true);
-    }
-    else
-    {
-        _bigTorusObj.transform().lookAt<Ref::World>(_cameraObj.worldTransform().getPosition(), {0.f, 1.f, 0.f});
+        _bigTorus    << Rotation(num::radians(45.f * delta), BigTorusRotationAxis);
+        _tetrahedron << Rotation(num::radians(45.f * delta), TetrahedronRotationAxis);
+        _cube        <<    Orbit(num::radians(45.f * delta), CubeOrbitAxis,          num::Vec3(0.f, 3.f, 0.f), true);
+        _smallTorus  <<    Orbit(num::radians(45.f * delta), SmallTorusRotationAxis, num::Vec3(0.f, 0.f, 0.f), true);
+        _tetrahedron <<    Orbit(num::radians(45.f * delta), TetrahedronOrbitAxis,   num::Vec3(0.f), true);
+    } else {
+        _bigTorus << Turn(_cameraWorldTransform.position, num::Y);
     }
 }
 
-void LightingSandboxScript::processKeyboard(GLWindow& window, const Window::Input::Key key, const int scancode, const Window::Input::Action action, const int mods)
-{
-    using Key = Window::Input::Key;
+void LightingSandboxScript::processKeyboard(
+    GLWindow&                   window,
+    const Window::Input::Key    key,
+    const int                   scancode,
+    const Window::Input::Action action,
+    const int                   mods
+) {
+    using Key    = Window::Input::Key;
     using Action = Window::Input::Action;
-    using Mod = Window::Input::Modifier;
+    using Mod    = Window::Input::Modifier;
 
-    if (_autoRotate)
-    {
-        if (key == Key::Up && (action == Action::Press) && (mods & Mod::Control) && _speedFactor < 10.f)
-        {
+    if (_autoRotate) {
+        if (key == Key::Up && (action == Action::Press) &&
+            (mods & Mod::Control) && _speedFactor < 10.f) {
             _speedFactor *= 1.1f;
-        }
-        else if (key == Key::Down && (action == Action::Press) && (mods & Mod::Control) && _speedFactor > 0.2f)
-        {
+        } else if (key == Key::Down && (action == Action::Press) && (mods & Mod::Control) && _speedFactor > 0.2f) {
             _speedFactor /= 1.1f;
         }
     }
 
-    if (key == Key::Enter && action == Action::Press)
-    {
+    if (key == Key::Enter && action == Action::Press) {
         _autoRotate = !_autoRotate;
     }
 }
 
-LightingSandboxScript* LightingSandboxScript::clone() const
-{
-    return nullptr;
-}
-
-} // namespace renderboi
+} // namespace rb

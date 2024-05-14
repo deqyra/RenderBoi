@@ -1,14 +1,11 @@
-#ifndef RENDERBOI__CORE__SHADER__SHADER_STAGE_HPP
-#define RENDERBOI__CORE__SHADER__SHADER_STAGE_HPP
+#ifndef RENDERBOI_CORE_SHADER_SHADER_STAGE_HPP
+#define RENDERBOI_CORE_SHADER_SHADER_STAGE_HPP
 
 #include <string>
-#include <unordered_map>
 
-namespace renderboi
-{
+namespace rb {
 
-enum class ShaderStage
-{
+enum class ShaderStage {
     Vertex,
     Geometry,
     Fragment
@@ -16,6 +13,6 @@ enum class ShaderStage
 
 std::string to_string(const ShaderStage v);
 
-} // namespace renderboi
+} // namespace rb
 
-#endif//RENDERBOI__CORE__SHADER__SHADER_STAGE_HPP
+#endif//RENDERBOI_CORE_SHADER_SHADER_STAGE_HPP

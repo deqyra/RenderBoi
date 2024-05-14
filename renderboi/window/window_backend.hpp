@@ -1,16 +1,14 @@
-#ifndef RENDERBOI__WINDOW__WINDOW_BACKEND_HPP
-#define RENDERBOI__WINDOW__WINDOW_BACKEND_HPP
+#ifndef RENDERBOI_WINDOW_WINDOW_BACKEND_HPP
+#define RENDERBOI_WINDOW_WINDOW_BACKEND_HPP
 
-namespace renderboi::Window
-{
+namespace rb::Window {
 
-/// @brief Collection of literals describing the available window backends.
-enum class WindowBackend
-{
+/// @brief Literals describing the available window backends
+enum class WindowBackend {
     Unknown,
     GLFW3
 };
 
-} // namespace renderboi::Window
+} // namespace rb::Window
 
-#endif//RENDERBOI__WINDOW__WINDOW_BACKEND_HPP
+#endif//RENDERBOI_WINDOW_WINDOW_BACKEND_HPP

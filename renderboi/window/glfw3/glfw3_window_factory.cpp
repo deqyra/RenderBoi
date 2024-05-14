@@ -1,11 +1,6 @@
 #include "glfw3_window_factory.hpp"
 
 #include <algorithm>
-#include <cstdlib>
-#include <cstdarg>
-#include <cstring>
-#include <fstream>
-#include <iostream>
 #include <iterator>
 #include <string>
 
@@ -14,25 +9,21 @@
 #include <GLFW/glfw3.h>
 #undef GLFW_INCLUDE_NONE
 
-#include <cpptools/utility/string_tools.hpp>
+#include <cpptools/utility/string.hpp>
 
 #include <renderboi/utilities/gl_utilities.hpp>
 #include <renderboi/utilities/resource_locator.hpp>
 
-#include "../enums.hpp"
-#include "../env_info.hpp"
-#include "../gl_window.hpp"
-#include "../window_backend.hpp"
-#include "../window_factory.hpp"
-#include "../window_creation_parameters.hpp"
+#include <renderboi/window/gl_window.hpp>
+#include <renderboi/window/window_backend.hpp>
+#include <renderboi/window/window_creation_parameters.hpp>
 
-#include "glfw3_adapter.hpp"
-#include "glfw3_monitor.hpp"
-#include "glfw3_window.hpp"
-#include "glfw3_utilities.hpp"
+#include <renderboi/window/glfw3/glfw3_adapter.hpp>
+#include <renderboi/window/glfw3/glfw3_monitor.hpp>
+#include <renderboi/window/glfw3/glfw3_window.hpp>
+#include <renderboi/window/glfw3/glfw3_utilities.hpp>
 
-namespace renderboi::Window
-{
+namespace rb::Window {
 
 using ReLoc = ResourceLocator;
 using ReType = ResourceType;
@@ -45,8 +36,7 @@ WindowFactory<WindowBackend::GLFW3>::_monitors = std::map<unsigned int, GLFW3Mon
 
 GLFWmonitorfun* WindowFactory<WindowBackend::GLFW3>::_monitorCallback = nullptr;
 
-int WindowFactory<WindowBackend::GLFW3>::InitializeBackend()
-{
+int WindowFactory<WindowBackend::GLFW3>::InitializeBackend() {
     int result = glfwInit();
     if (!result) return result;
 
@@ -56,7 +46,7 @@ int WindowFactory<WindowBackend::GLFW3>::InitializeBackend()
     // GAMEPAD RELATED STUFF //
     ///////////////////////////
     std::string gamepadMappingsPath = ReLoc::locate(ReType::Any, "gamecontrollerdb.txt");
-    std::string gamepadMappings = cpptools::String::readFileIntoString(gamepadMappingsPath);
+    std::string gamepadMappings = tools::from_file(gamepadMappingsPath);
     glfwUpdateGamepadMappings(gamepadMappings.c_str());
     glfwSetJoystickCallback(GLFW3Utilities::globalGlfwJoystickCallback);
     GLFW3Utilities::initGamepadStatuses();
@@ -73,28 +63,24 @@ int WindowFactory<WindowBackend::GLFW3>::InitializeBackend()
     return result;
 }
 
-void WindowFactory<WindowBackend::GLFW3>::TerminateBackend()
-{
+void WindowFactory<WindowBackend::GLFW3>::TerminateBackend() {
     _monitors.clear();
     _nativeVideoModes.clear();
     
     glfwTerminate();
 }
 
-void WindowFactory<WindowBackend::GLFW3>::SetErrorCallback(const void* callback)
-{
+void WindowFactory<WindowBackend::GLFW3>::SetErrorCallback(const void* callback) {
     glfwSetErrorCallback(*((ErrorCallbackSignature*)callback));
 }
 
-Monitor& WindowFactory<WindowBackend::GLFW3>::GetPrimaryMonitor()
-{
+Monitor& WindowFactory<WindowBackend::GLFW3>::GetPrimaryMonitor() {
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     GLFW3Monitor& glfw3Monitor = *(GLFW3Monitor*)(glfwGetMonitorUserPointer(monitor));
     return glfw3Monitor;
 }
 
-std::map<unsigned int, Monitor&> WindowFactory<WindowBackend::GLFW3>::GetMonitors()
-{
+std::map<unsigned int, Monitor&> WindowFactory<WindowBackend::GLFW3>::GetMonitors() {
     std::map<unsigned int, Monitor&> monitors;
 
     std::transform(
@@ -110,13 +96,11 @@ std::map<unsigned int, Monitor&> WindowFactory<WindowBackend::GLFW3>::GetMonitor
     return monitors;
 }
 
-void WindowFactory<WindowBackend::GLFW3>::SetMonitorCallback(const void* callback)
-{
+void WindowFactory<WindowBackend::GLFW3>::SetMonitorCallback(const void* callback) {
     _monitorCallback = (MonitorCallbackSignature*) callback;
 }
 
-Monitor::VideoMode WindowFactory<WindowBackend::GLFW3>::GetMonitorNativeVideoMode(const Monitor& monitor)
-{
+Monitor::VideoMode WindowFactory<WindowBackend::GLFW3>::GetMonitorNativeVideoMode(const Monitor& monitor) {
     auto it = _nativeVideoModes.find(monitor.id);
     if (it == _nativeVideoModes.end())
         throw std::runtime_error("WindowFactory<GLFW3>: native video mode could not be retrieved for passed monitor.");
@@ -124,8 +108,7 @@ Monitor::VideoMode WindowFactory<WindowBackend::GLFW3>::GetMonitorNativeVideoMod
     return it->second;
 }
 
-GLWindowPtr WindowFactory<WindowBackend::GLFW3>::MakeWindow(const WindowCreationParameters& params)
-{
+GLWindowPtr WindowFactory<WindowBackend::GLFW3>::MakeWindow(const WindowCreationParameters& params) {
     // Window hints
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,      params.glVersionMajor);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,      params.glVersionMinor);
@@ -220,8 +203,7 @@ GLWindowPtr WindowFactory<WindowBackend::GLFW3>::MakeWindow(const WindowCreation
     return std::move(glWindow);
 }
 
-void WindowFactory<WindowBackend::GLFW3>::DestroyWindow(GLWindowPtr&& window)
-{
+void WindowFactory<WindowBackend::GLFW3>::DestroyWindow(GLWindowPtr&& window) {
     // Any GLWindow pointer passed in is REQUIRED to be a GLFW3Window
     GLFWwindow* glfw3Window = static_cast<GLFW3Window*>(window.get())->_w;
     GLFW3Utilities::unsubscribeFromGlfwJoystickStatus(window.get());
@@ -229,8 +211,7 @@ void WindowFactory<WindowBackend::GLFW3>::DestroyWindow(GLWindowPtr&& window)
     glfwDestroyWindow(glfw3Window);
 }
 
-std::map<unsigned int, GLFW3MonitorPtr> WindowFactory<WindowBackend::GLFW3>::_ListMonitors()
-{
+std::map<unsigned int, GLFW3MonitorPtr> WindowFactory<WindowBackend::GLFW3>::_ListMonitors() {
     int count;
     GLFWmonitor** monitors = glfwGetMonitors(&count);
 
@@ -246,16 +227,14 @@ std::map<unsigned int, GLFW3MonitorPtr> WindowFactory<WindowBackend::GLFW3>::_Li
     return managedMonitors;
 }
 
-void WindowFactory<WindowBackend::GLFW3>::_SaveMonitorVideoModes()
-{
+void WindowFactory<WindowBackend::GLFW3>::_SaveMonitorVideoModes() {
     for (const auto& [id, monitor] : _monitors)
     {
         _nativeVideoModes[id] = monitor->getCurrentVideoMode();
     }
 }
 
-void WindowFactory<WindowBackend::GLFW3>::_GlobalGlfwMonitorCallback(GLFWmonitor* m, int event)
-{
+void WindowFactory<WindowBackend::GLFW3>::_GlobalGlfwMonitorCallback(GLFWmonitor* m, int event) {
     if (_monitorCallback != nullptr)
         (*_monitorCallback)(m, event);
 
@@ -277,4 +256,4 @@ void WindowFactory<WindowBackend::GLFW3>::_GlobalGlfwMonitorCallback(GLFWmonitor
     }
 }
 
-} // namespace renderboi::Window
+} // namespace rb::Window

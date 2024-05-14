@@ -1,5 +1,5 @@
-#ifndef RENDERBOI__TOOLBOX__RENDER__TRAITS__RENDER_TRAIT_CONFIG_MAP_HPP
-#define RENDERBOI__TOOLBOX__RENDER__TRAITS__RENDER_TRAIT_CONFIG_MAP_HPP
+#ifndef RENDERBOI_TOOLBOX_RENDER_TRAITS_RENDER_TRAIT_CONFIG_MAP_HPP
+#define RENDERBOI_TOOLBOX_RENDER_TRAITS_RENDER_TRAIT_CONFIG_MAP_HPP
 
 #include <initializer_list>
 #include <map>
@@ -11,16 +11,10 @@
 #include "render_trait.hpp"
 #include "render_trait_config.hpp"
 
-namespace renderboi
-{
-
-class SceneObject;
-using SceneObjectPtr = std::unique_ptr<SceneObject>;
+namespace rb {
 
 class RenderTraitConfigMap
 {
-friend SceneObject;
-
 private:
     using MapType = std::map<RenderTrait, RenderTraitConfigPtr>;
 
@@ -31,52 +25,52 @@ private:
     /// @brief Disallowed assignment operator
     RenderTraitConfigMap& operator=(const RenderTraitConfigMap& right) = delete;
 
-    /// @brief Actual map to store pointers render trait configs.
+    /// @brief Actual map to store pointers render trait configs
     MapType _map;
 
-    /// @brief Reference to the parent scene object.
-    SceneObject& _sceneObject;
+    /// @brief Reference to the parent scene object
+    Object& _Object;
 
 public:
-    /// @param sceneObject Reference to the scene object parent to this config
-    /// map.
-    RenderTraitConfigMap(SceneObject& sceneObject);
+    /// @param Object Reference to the scene object parent to this config
+    /// map
+    RenderTraitConfigMap(Object& Object);
 
-    /// @param sceneObject Reference to the scene object parent to this config
-    /// map.
+    /// @param Object Reference to the scene object parent to this config
+    /// map
     /// @param other RenderTraitConfigMap instance to copy trait configs from
-    RenderTraitConfigMap(SceneObject& sceneObject, const RenderTraitConfigMap& other);
+    RenderTraitConfigMap(Object& Object, const RenderTraitConfigMap& other);
 
-    /// @brief Get a pointer to the parent scene object of this instance.
+    /// @brief Get a pointer to the parent scene object of this instance
     ///
-    /// @return A pointer to the parent scene object of this instance.
-    SceneObject& sceneObject();
+    /// @return A pointer to the parent scene object of this instance
+    Object& Object();
 
-    /// @brief Get the config pointer for the given config trait.
+    /// @brief Get the config pointer for the given config trait
     ///
-    /// @param trait Render trait to get the config for.
+    /// @param trait Render trait to get the config for
     ///
     /// @return Reference to the config for the given render trait (can be
-    /// nullptr).
+    /// nullptr)
     RenderTraitConfig& getConfigForTrait(const RenderTrait trait) const;
 
     /// @brief Return whether there is a registered config for the given config
-    /// trait.
+    /// trait
     ///
-    /// @param trait Render trait to test the config for.
+    /// @param trait Render trait to test the config for
     ///
-    /// @return Whether there is a registered config for the given config trait.
+    /// @return Whether there is a registered config for the given config trait
     bool hasConfigForTrait(const RenderTrait trait) const;
 
-    /// @brief Add config for a given trait.
+    /// @brief Add config for a given trait
     ///
-    /// @tparam Tr Literal describing which trait to add a config for.
-    /// @tparam T Concrete type of the config trait to instantiate. Leave for
-    /// deduction.
+    /// @tparam Tr Literal describing which trait to add a config for
+    /// @tparam T Concrete type of the config trait to instantiate Leave for
+    /// deduction
     /// @tparam ArgTypes Types of the arguments to pass to the config trait
-    /// constructor. Leave for deduction.
+    /// constructor. Leave for deduction
     ///
-    /// @param args Arguments to pass to the config constructor.
+    /// @param args Arguments to pass to the config constructor
     template<
         RenderTrait Tr,
         typename T = typename RenderTraitMeta<Tr>::Config::type,
@@ -85,15 +79,15 @@ public:
     >
     T& addConfigForTrait(ArgTypes&&... args);
 
-    /// @brief Set the config a given trait.
+    /// @brief Set the config a given trait
     ///
-    /// @tparam Tr Literal describing which trait to add a config for.
-    /// @tparam T Concrete type of the config trait to instantiate. Leave for
-    /// deduction.
+    /// @tparam Tr Literal describing which trait to add a config for
+    /// @tparam T Concrete type of the config trait to instantiate Leave for
+    /// deduction
     /// @tparam ArgTypes Types of the arguments to pass to the config trait
-    /// constructor. Leave for deduction.
+    /// constructor. Leave for deduction
     ///
-    /// @param config Reference to the config to set for the given render trait.
+    /// @param config Reference to the config to set for the given render trait
     template<
         RenderTrait Tr,
         typename T = typename RenderTraitMeta<Tr>::Config::type,
@@ -101,12 +95,12 @@ public:
     >
     T& setConfigForTrait(std::unique_ptr<T>&& config);
 
-    /// @brief Remove the config pointer for the given config trait.
+    /// @brief Remove the config pointer for the given config trait
     ///
-    /// @param trait Render trait whose config is to be cleared.
+    /// @param trait Render trait whose config is to be cleared
     void clearConfigForTrait(const RenderTrait trait);
 
-    /// @brief Clear all config entries from the config map.
+    /// @brief Clear all config entries from the config map
     void clear();
 };
 
@@ -116,8 +110,7 @@ template<
     typename... ArgTypes,
     typename
 >
-T& RenderTraitConfigMap::addConfigForTrait(ArgTypes&&... args)
-{
+T& RenderTraitConfigMap::addConfigForTrait(ArgTypes&&... args) {
     auto it = _map.insert({
         Tr,
         std::make_unique<T>(std::forward(args)...)
@@ -131,8 +124,7 @@ template<
     typename T,
     typename
 >
-T& RenderTraitConfigMap::setConfigForTrait(std::unique_ptr<T>&& config)
-{
+T& RenderTraitConfigMap::setConfigForTrait(std::unique_ptr<T>&& config) {
     if (!config)
     {
         std::string s = "RenderTraitConfigMap: cannot set null config for "
@@ -152,6 +144,6 @@ T& RenderTraitConfigMap::setConfigForTrait(std::unique_ptr<T>&& config)
 
 using RenderTraitConfigMapPtr = std::unique_ptr<RenderTraitConfigMap>;
 
-} // namespace renderboi
+} // namespace rb
 
-#endif//RENDERBOI__TOOLBOX__RENDER__TRAITS__RENDER_TRAIT_CONFIG_MAP_HPP
+#endif//RENDERBOI_TOOLBOX_RENDER_TRAITS_RENDER_TRAIT_CONFIG_MAP_HPP

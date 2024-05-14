@@ -2,66 +2,50 @@
 
 #include <vector>
 #include <memory>
-#include <glm/glm.hpp>
 
-#include <renderboi/core/mesh.hpp>
-#include <renderboi/core/vertex.hpp>
+#include <renderboi/core/numeric.hpp>
+#include <renderboi/core/3d/mesh.hpp>
+#include <renderboi/core/3d/vertex.hpp>
 
-#include "../common.hpp"
+#include <glad/gl.h>
 
-namespace renderboi
-{
+namespace rb {
 
-PlaneGenerator::PlaneGenerator() :
-    parameters{
-        1.f,                // tileSizeX
-        1.f,                // tileSizeY
-        1,                  // tileAmountX
-        1,                  // tileAmountY
-        1.f,                // xTexSize
-        1.f,                // yTexSize
-        0.f,                // xTexCoordOffset
-        0.f,                // yTexCoordOffset
-        false,              // invertXTexCoords
-        false,              // invertYTexCoords
-        0.f,                // texRotation
-        {1.f, 1.f, 1.f}     // color
-    }
-{
-
-}
-
-PlaneGenerator::PlaneGenerator(const Parameters parameters) :
+PlaneGenerator::PlaneGenerator(const Parameters& parameters) :
     parameters(parameters)
 {
-    if (parameters.xTexSize <= 0.f)
-        this->parameters.xTexSize = parameters.tileAmountX * parameters.tileSizeX;
+    if (parameters.texSize.x <= 0.f) {
+        this->parameters.texSize.x = parameters.tileAmount.x * parameters.tileSize.x;
+    }
 
-    if (parameters.yTexSize <= 0.f)
-        this->parameters.yTexSize = parameters.tileAmountY * parameters.tileSizeY;
+    if (parameters.texSize.y <= 0.f) {
+        this->parameters.texSize.y = parameters.tileAmount.y * parameters.tileSize.y;
+    }
 }
 
-MeshPtr PlaneGenerator::generateMesh() const
+std::unique_ptr<Mesh> PlaneGenerator::generate() const
 {
-    const Parameters& p(parameters);
-    const unsigned int nVertices = (p.tileAmountX + 1) * (p.tileAmountY + 1);
+    const Parameters& p = parameters;
+    const unsigned int nVertices = (p.tileAmount.x + 1) * (p.tileAmount.y + 1);
 
     std::vector<Vertex> vertices;
     vertices.reserve(nVertices);
 
-    for (unsigned int j = 0; j < p.tileAmountY + 1; j++)
-    {
-        float yPos = j * p.tileSizeY;
+    for (unsigned int j = 0; j < p.tileAmount.y + 1; ++j) {
+        float yPos = j * p.tileSize.y;
 
-        float baseTexY = yPos / p.yTexSize;
-        if (p.invertYTexCoords) baseTexY = p.yTexSize - baseTexY;
+        float baseTexY = yPos / p.texSize.y;
+        if (p.invertTexCoords.y) {
+            baseTexY = p.texSize.y - baseTexY;
+        }
 
-        for (unsigned int i = 0; i < p.tileAmountX + 1; i++)
-        {
-            float xPos = i * p.tileSizeX;
+        for (unsigned int i = 0; i < p.tileAmount.x + 1; ++i) {
+            float xPos = i * p.tileSize.x;
 
-            float baseTexX = xPos / p.xTexSize;
-            if (p.invertXTexCoords) baseTexX = p.xTexSize - baseTexX;
+            float baseTexX = xPos / p.texSize.x;
+            if (p.invertTexCoords.x) {
+                baseTexX = p.texSize.x - baseTexX;
+            }
 
             // Do a complex rotation to find the rotated texture coordinates.
             // The opposite rotation is actually calculated, because the current 
@@ -70,54 +54,49 @@ MeshPtr PlaneGenerator::generateMesh() const
             // the vertex coordinates.
 
             // Complex coefficients
-            float rotationReal = glm::cos(-p.texRotation);
-            float rotationImag = glm::sin(-p.texRotation);
+            float rotRe = num::cos(-p.texRotation);
+            float rotIm = num::sin(-p.texRotation);
 
             // Actual rotation
-            float rotatedTexX = (baseTexX * rotationReal) - (baseTexY * rotationImag);
-            float rotatedTexY = (baseTexX * rotationImag) + (baseTexY * rotationReal);
+            float rotatedTexX = (baseTexX * rotRe) - (baseTexY * rotIm);
+            float rotatedTexY = (baseTexX * rotIm) + (baseTexY * rotRe);
 
             // Add offset
-            float fullTexX = rotatedTexX - p.xTexCoordOffset;
-            float fullTexY = rotatedTexY - p.yTexCoordOffset;
+            float fullTexX = rotatedTexX - p.texOffset.x;
+            float fullTexY = rotatedTexY - p.texOffset.y;
 
-            // Build vertex
-            Vertex vertex = {
+            vertices.push_back({
                 {xPos, yPos, 0.f},      // Position
                 p.color,                // Color
                 {0.f, 0.f, 1.f},        // Normal
                 {fullTexX, fullTexY}    // Tex coord
-            };
-            vertices.push_back(vertex);
+            });
         } 
     }
 
-    const unsigned int nIndices = ((p.tileAmountX + 1) * (p.tileAmountY) * 2);
+    const unsigned int nIndices = ((p.tileAmount.x + 1) * (p.tileAmount.y) * 2);
 
     std::vector<unsigned int> indices;
     indices.reserve(nIndices);
 
-    unsigned int xVertexAmount = p.tileAmountX + 1;
+    unsigned int xVertexAmount = p.tileAmount.x + 1;
 
-    for (unsigned int j = 0; j < p.tileAmountY; j++)
-    {
-        for (unsigned int i = 0; i < xVertexAmount; i++)
-        {
+    for (unsigned int j = 0; j < p.tileAmount.y; ++j) {
+        for (unsigned int i = 0; i < xVertexAmount; ++i) {
             indices.push_back(i + (xVertexAmount * (j + 1)));
             indices.push_back(i + (xVertexAmount * j));
         }
     }
 
     unsigned int primitiveSize = 2 * xVertexAmount;
-    std::vector<unsigned int> primitiveSizes(p.tileAmountY, primitiveSize);
+    std::vector<unsigned int> primitiveSizes(p.tileAmount.y, primitiveSize);
 
-    std::vector<void*> primitiveOffsets(p.tileAmountY);
-    for (unsigned int j = 0; j < p.tileAmountY; j++)
-    {
-        primitiveOffsets[j] = (void*)(j * primitiveSize * sizeof(int));
+    std::vector<void*> primitiveOffsets(p.tileAmount.y);
+    for (unsigned int j = 0; j < p.tileAmount.y; ++j) {
+        primitiveOffsets[j] = reinterpret_cast<void*>(j * primitiveSize * sizeof(int));
     }
 
     return std::make_unique<Mesh>(GL_TRIANGLE_STRIP, vertices, indices, primitiveSizes, primitiveOffsets);
 }
 
-} // namespace renderboi
+} // namespace rb

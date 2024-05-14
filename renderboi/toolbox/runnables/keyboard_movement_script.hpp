@@ -1,25 +1,31 @@
-#ifndef RENDERBOI__TOOLBOX__RUNNABLES__KEYBOARD_MOVEMENT_SCRIPT_HPP
-#define RENDERBOI__TOOLBOX__RUNNABLES__KEYBOARD_MOVEMENT_SCRIPT_HPP
+#ifndef RENDERBOI_TOOLBOX_RUNNABLES_KEYBOARD_MOVEMENT_SCRIPT_HPP
+#define RENDERBOI_TOOLBOX_RUNNABLES_KEYBOARD_MOVEMENT_SCRIPT_HPP
 
-#include <string>
+#include <array>
+#include <algorithm>
+#include <string_view>
+#include <utility>
 
-#include <cpptools/oo/interfaces/action_event_receiver.hpp>
+#include <cpptools/utility/predicate.hpp>
 
-#include <renderboi/core/interfaces/basis_provider.hpp>
+#include <renderboi/core/numeric.hpp>
+#include <renderboi/core/3d/basis_provider.hpp>
+#include <renderboi/core/3d/affine/translation.hpp>
 
 #include <renderboi/window/gl_window.hpp>
 
-#include "../script.hpp"
-#include "../controls/control_scheme.hpp"
-#include "../interfaces/default_control_scheme_provider.hpp"
+#include <renderboi/toolbox/script.hpp>
+#include <renderboi/toolbox/controls/control_scheme.hpp>
+#include <renderboi/toolbox/interfaces/action_event_receiver.hpp>
+#include <renderboi/toolbox/interfaces/default_control_scheme_provider.hpp>
+#include <renderboi/toolbox/interfaces/transform_proxy.hpp>
+#include <renderboi/toolbox/scene/scene.hpp>
 
-namespace renderboi
-{
+namespace rb {
 
 /// @brief Litterals describing the actions which can be performed by the
-/// KeyboardMovementScript.
-enum class KeyboardMovementAction
-{
+/// KeyboardMovementScript
+enum class KeyboardMovementAction {
     Forward,
     Backward,
     Left,
@@ -27,67 +33,74 @@ enum class KeyboardMovementAction
     Sprint
 };
 
-/// @brief Provides bindings to move an entity using the keyboard.
+/// @brief Provides bindings to move an entity using the keyboard
+/// @tparam Transform_t Type providing access to a transform that will receive the translations
+template<TransformProxy Transform_t>
 class KeyboardMovementScript :
     public Script,
-    public cpptools::ActionEventReceiver<KeyboardMovementAction>,
-    public DefaultControlSchemeProvider<KeyboardMovementAction>
-{
+    public ActionEventReceiver<KeyboardMovementAction>,
+    public DefaultControlSchemeProvider<KeyboardMovementAction> {
 private:
-    /// @brief Index of a bool array which flags a forward keypress.
-    static constexpr unsigned int _IndexForward = 0;
-    
-    /// @brief Index of a bool array which flags a backward keypress.
-    static constexpr unsigned int _IndexBackward = 1;
-    
-    /// @brief Index of a bool array which flags a left keypress.
-    static constexpr unsigned int _IndexLeft = 2;
-    
-    /// @brief Index of a bool array which flags a right keypress.
-    static constexpr unsigned int _IndexRight = 3;
+    struct MovementFlags {
+        bool forward  = false;
+        bool left     = false;
+        bool backward = false;
+        bool right    = false;
+    };
 
-    KeyboardMovementScript(const KeyboardMovementScript& other) = delete;
-    KeyboardMovementScript& operator=(const KeyboardMovementScript& other) = delete;
+    KeyboardMovementScript(const KeyboardMovementScript&) = default;
+    KeyboardMovementScript(KeyboardMovementScript&&) = default;
+
+    KeyboardMovementScript& operator=(const KeyboardMovementScript&) = delete;
+    KeyboardMovementScript& operator=(KeyboardMovementScript&&) = delete;
+
+    /// @brief Transform whose position should be updated 
+    Transform_t& _transform;
 
     /// @brief Reference to the entity which will provide directional vectors,
-    /// used to move in the correct directions.
+    /// used to move in the correct directions
     BasisProvider& _basisProvider;
+    
+    /// @brief Directional movement flags
+    MovementFlags _movementFlags;
 
-    /// @brief Speed of the movement induced by keypresses.
+    /// @brief Speed of the movement induced by keypresses
     float _moveSpeed;
 
-    /// @brief Speed multiplier when sprinting.
+    /// @brief Speed multiplier when sprinting
     float _sprintMultiplier;
-    
-    /// @brief Directional movement flags.
-    bool _movementFlags[4];
 
-    /// @brief Sprint flag.
+    /// @brief Sprint flag
     bool _sprint;
-
-    /// @brief Cancel directional flags when raised in opposite directions.
-    void cancelOppositeDirections();
     
 public:
     using ActionType = KeyboardMovementAction;
 
-    /// @brief The default move speed (movement with WASD keys).
+    /// @brief The default move speed (movement with WASD keys)
     static constexpr float DefaultMoveSpeed = 4.f;
     
-    /// @brief The default sprint multiplier.
+    /// @brief The default sprint multiplier
     static constexpr float DefaultSprintMultiplier = 1.5f;
 
-    /// @param basisProvider Entity which will provide directional vectors.
-    /// @param speed The speed of movement induced by keypresses.
-    /// @param sprintMultiplier The multiplier to be used when sprinting.
-    ///
-    /// @exception If the provided BasisProvider pointer is null, the 
-    /// function will throw a std::runtime_error.
+    /// @param transform A transform proxy through which translations will be applied to the moved entity
+    /// @param basisProvider Entity which will provide directional vectors
+    /// @param speed The speed of movement induced by keypresses
+    /// @param sprintMultiplier The multiplier to be used when sprinting
     KeyboardMovementScript(
+        Transform_t& transform,
         BasisProvider& basisProvider,
         const float speed = DefaultMoveSpeed,
         const float sprintMultiplier = DefaultSprintMultiplier
-    );
+    ) :
+        _transform(transform),
+        _basisProvider(basisProvider),
+        _movementFlags{},
+        _moveSpeed(speed),
+        _sprintMultiplier(sprintMultiplier),
+        _sprint(false)
+    {
+
+    }
 
     //////////////////////////////////////
     ///                                ///
@@ -95,28 +108,27 @@ public:
     ///                                ///
     //////////////////////////////////////
 
-    /// @brief Make the script run and do its things.
-    ///
-    /// @param timeElapsed How much time passed (in seconds) since the last
-    /// update.
-    void update(const float timeElapsed) override;
+    /// @brief Make the script run and do its script things
+    /// @param timeElapsed How much time passed (in seconds) since the last update
+    void update(const float timeElapsed) override {
+        // Compute distance to cover in this frame
+        float velocity = timeElapsed * _moveSpeed;
+        if (_sprint) {
+            velocity *= _sprintMultiplier;
+        }
 
-    /// @brief Set the scene object which the camera script is attached to.
-    /// Will also attempt to retrieve a camera from the scene object.
-    ///
-    /// @param sceneObject Reference to the scene object the script should be
-    /// attached to.
-    ///
-    /// @exception If the provided pointer is null, this function will throw
-    /// a std::runtime_error.
-    void setSceneObject(SceneObject* const sceneObject) override;
+        // Compute velocity across basis vectors
+        float forwardVelocity = velocity * (_movementFlags.forward - _movementFlags.backward);
+        float leftVelocity    = velocity * (_movementFlags.left    - _movementFlags.right);
 
-    /// @brief Get a raw pointer to a new keyboard script instance cloned 
-    /// from this one. Ownership and responsibility for the allocated 
-    /// resources are fully transferred to the caller.
-    ///
-    /// @return A raw pointer to the script instance cloned from this one.
-    KeyboardMovementScript* clone() const override;
+        const auto& basis = _basisProvider.basis();
+        num::Vec3 translation =
+            basis.x * leftVelocity +
+            basis.z * forwardVelocity;
+
+        // Update parent position
+        _transform << affine::Translation(std::move(translation));
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     ///                                                                     ///
@@ -124,15 +136,31 @@ public:
     ///                                                                     ///
     ///////////////////////////////////////////////////////////////////////////
 
-    /// @brief Start the processing for an action.
-    ///
-    /// @param action Object describing the action to start processing.
-    void triggerAction(const KeyboardMovementAction& action) override;
+    /// @brief Start the processing for an action
+    /// @param action Object describing the action to start processing
+    void triggerAction(const KeyboardMovementAction& action) override {
+        using enum KeyboardMovementAction;
+        switch (action) {
+        case Forward:  _movementFlags.forward  = true; break;
+        case Backward: _movementFlags.backward = true; break;
+        case Left:     _movementFlags.left     = true; break;
+        case Right:    _movementFlags.right    = true; break;
+        case Sprint:   _sprint                 = true; break;
+        }
+    }
 
-    /// @brief Stop the processing for an action.
-    ///
-    /// @param action Object describing the action to stop processing.
-    void stopAction(const KeyboardMovementAction& action) override;
+    /// @brief Stop the processing for an action
+    /// @param action Object describing the action to stop processing
+    void stopAction(const KeyboardMovementAction& action) override {
+        using enum KeyboardMovementAction;
+        switch (action) {
+        case Forward:  _movementFlags.forward  = false; break;
+        case Backward: _movementFlags.backward = false; break;
+        case Left:     _movementFlags.left     = false; break;
+        case Right:    _movementFlags.right    = false; break;
+        case Sprint:   _sprint                 = false; break;
+        }
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////
     ///                                                                              ///
@@ -140,15 +168,40 @@ public:
     ///                                                                              ///
     ////////////////////////////////////////////////////////////////////////////////////
 
-    /// @brief Get the default control scheme for the keyboard movement
-    /// script.
-    ///
-    /// @return The default control scheme for the keyboard movement script.
-    const ControlScheme<KeyboardMovementAction>& getDefaultControlScheme() const override;
+    /// @brief Get the default control scheme for the keyboard movement script
+    /// @return The default control scheme for the keyboard movement script
+    const ControlScheme<KeyboardMovementAction>& defaultControlScheme() const override {
+        using Window::Input::Key;
+        static ControlScheme<KeyboardMovementAction> scheme = {
+            { Control(Key::W),          KeyboardMovementAction::Forward },
+            { Control(Key::A),          KeyboardMovementAction::Left },
+            { Control(Key::S),          KeyboardMovementAction::Backward },
+            { Control(Key::D),          KeyboardMovementAction::Right },
+            { Control(Key::LeftShift),  KeyboardMovementAction::Sprint }
+        };
+
+        return scheme;
+    }
 };
 
-std::string to_string(const KeyboardMovementAction action);
+inline std::string_view to_string(const KeyboardMovementAction action) {
+    static const std::array<std::pair<KeyboardMovementAction, std::string_view>, 5> enumNames = {{
+        { KeyboardMovementAction::Forward,   "Forward"  },
+        { KeyboardMovementAction::Backward,  "Backward" },
+        { KeyboardMovementAction::Left,      "Left"     },
+        { KeyboardMovementAction::Right,     "Right"    },
+        { KeyboardMovementAction::Sprint,    "Sprint"   },
+    }};
 
-} // namespace renderboi
+    using tools::pred::first_member;
+    using tools::pred::equals;
 
-#endif//RENDERBOI__TOOLBOX__RUNNABLES__KEYBOARD_MOVEMENT_SCRIPT_HPP
+    auto it = std::ranges::find_if(enumNames, first_member(equals(action)));
+    return (it != enumNames.end())
+        ? it->second
+        : "Unknown";
+}
+
+} // namespace rb
+
+#endif//RENDERBOI_TOOLBOX_RUNNABLES_KEYBOARD_MOVEMENT_SCRIPT_HPP

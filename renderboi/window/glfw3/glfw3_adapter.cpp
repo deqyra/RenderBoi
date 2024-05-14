@@ -6,10 +6,10 @@
 
 #include "../enums.hpp"
 
-namespace renderboi::Window::GLFW3Adapter
-{
+namespace rb::Window::GLFW3Adapter {
 
-    namespace EnumMaps
+namespace EnumMaps {
+    const std::unordered_map<unsigned int, Window::OpenGLProfile>& GlProfileEnums()
     {
         static std::unordered_map<unsigned int, Window::OpenGLProfile> map = {
             {GLFW_OPENGL_ANY_PROFILE,       Window::OpenGLProfile::Any},
@@ -51,7 +51,7 @@ namespace renderboi::Window::GLFW3Adapter
         static std::unordered_map<unsigned int, Window::Input::Action> map = {
             {GLFW_RELEASE,  Window::Input::Action::Release},
             {GLFW_PRESS,    Window::Input::Action::Press},
-            // {GLFW_REPEAT,    Window::Input::Action::Repeat},        // FIX ME IF REPEAT KEYS MUST BE HANDLED
+            // {GLFW_REPEAT,    Window::Input::Action::Repeat},        // UNCOMMENT IF REPEAT KEYS MUST BE HANDLED
         };
 
         return map;
@@ -278,7 +278,8 @@ namespace renderboi::Window::GLFW3Adapter
     }
 } // namespace EnumMaps
 
-    namespace ValueMaps
+namespace ValueMaps {
+    const std::unordered_map<Window::OpenGLProfile, unsigned int>& GlProfileValues()
     {
         static std::unordered_map<Window::OpenGLProfile, unsigned int> map = {
             {Window::OpenGLProfile::Any,            GLFW_OPENGL_ANY_PROFILE},
@@ -320,7 +321,7 @@ namespace renderboi::Window::GLFW3Adapter
         static std::unordered_map<Window::Input::Action, unsigned int> map = {
             {Window::Input::Action::Release,    GLFW_RELEASE},
             {Window::Input::Action::Press,      GLFW_PRESS},
-            // {Window::Input::Action::Repeat,  GLFW_REPEAT},        // FIX ME IF REPEAT KEYS MUST BE HANDLED
+            // {Window::Input::Action::Repeat,  GLFW_REPEAT},        // UNCOMMENT IF REPEAT KEYS MUST BE HANDLED
         };
 
         return map;
@@ -551,127 +552,113 @@ namespace renderboi::Window::GLFW3Adapter
         return EnumMaps::InputModeTargetEnums().at(constant);
     }
 
-    template<>
-    Input::Mode::Value getEnum(int constant)
-    {
-        return EnumMaps::InputModeValueEnums().at(constant);
-    }
+template<>
+Input::Mode::Target getEnum(int constant) {
+    return EnumMaps::InputModeTargetEnums().at(constant);
+}
 
-    template<>
-    Input::Action getEnum(int constant)
-    {
-        return EnumMaps::ActionEnums().at(constant);
-    }
+template<>
+Input::Mode::Value getEnum(int constant) {
+    return EnumMaps::InputModeValueEnums().at(constant);
+}
 
-    template<>
-    Input::Key getEnum(int constant)
-    {
-        return EnumMaps::KeyEnums().at(constant);
-    }
+template<>
+Input::Action getEnum(int constant) {
+    return EnumMaps::ActionEnums().at(constant);
+}
 
-    template<>
-    Input::Modifier getEnum(int constant)
-    {
-        return EnumMaps::KeyModifierEnums().at(constant);
-    }
+template<>
+Input::Key getEnum(int constant) {
+    return EnumMaps::KeyEnums().at(constant);
+}
 
-    template<>
-    Input::MouseButton getEnum(int constant)
-    {
-        return EnumMaps::MouseButtonEnums().at(constant);
-    }
+template<>
+Input::Modifier getEnum(int constant) {
+    return EnumMaps::KeyModifierEnums().at(constant);
+}
 
-    template<>
-    Input::Joystick getEnum(int constant)
-    {
-        return EnumMaps::JoystickEnums().at(constant);
-    }
+template<>
+Input::MouseButton getEnum(int constant) {
+    return EnumMaps::MouseButtonEnums().at(constant);
+}
 
-    template<>
-    Input::Gamepad::Button getEnum(int constant)
-    {
-        return EnumMaps::GamepadButtonEnums().at(constant);
-    }
+template<>
+Input::Joystick getEnum(int constant) {
+    return EnumMaps::JoystickEnums().at(constant);
+}
 
-    template<>
-    Input::Gamepad::Axis getEnum(int constant)
-    {
-        return EnumMaps::GamepadAxisEnums().at(constant);
-    }
+template<>
+Input::Gamepad::Button getEnum(int constant) {
+    return EnumMaps::GamepadButtonEnums().at(constant);
+}
 
-    template<>
-    OpenGLProfile getEnum(int constant)
-    {
-        return EnumMaps::GlProfileEnums().at(constant);
-    }
+template<>
+Input::Gamepad::Axis getEnum(int constant) {
+    return EnumMaps::GamepadAxisEnums().at(constant);
+}
 
-    template<>
-    int getValue(Input::Mode::Target literal)
-    {
-        return ValueMaps::InputModeTargetValues().at(literal);
-    }
+template<>
+OpenGLProfile getEnum(int constant) {
+    return EnumMaps::GlProfileEnums().at(constant);
+}
+
+template<>
+int getValue(Input::Mode::Target literal) {
+    return ValueMaps::InputModeTargetValues().at(literal);
+}
 
 
-    template<>
-    int getValue(Input::Mode::Value literal)
-    {
-        return ValueMaps::InputModeValueValues().at(literal);
-    }
+template<>
+int getValue(Input::Mode::Value literal) {
+    return ValueMaps::InputModeValueValues().at(literal);
+}
 
 
-    template<>
-    int getValue(Input::Action literal)
-    {
-        return ValueMaps::ActionValues().at(literal);
-    }
+template<>
+int getValue(Input::Action literal) {
+    return ValueMaps::ActionValues().at(literal);
+}
 
 
-    template<>
-    int getValue(Input::Key literal)
-    {
-        return ValueMaps::KeyValues().at(literal);
-    }
+template<>
+int getValue(Input::Key literal) {
+    return ValueMaps::KeyValues().at(literal);
+}
 
 
-    template<>
-    int getValue(Input::Modifier literal)
-    {
-        return ValueMaps::KeyModifierValues().at(literal);
-    }
+template<>
+int getValue(Input::Modifier literal) {
+    return ValueMaps::KeyModifierValues().at(literal);
+}
 
 
-    template<>
-    int getValue(Input::MouseButton literal)
-    {
-        return ValueMaps::MouseButtonValues().at(literal);
-    }
+template<>
+int getValue(Input::MouseButton literal) {
+    return ValueMaps::MouseButtonValues().at(literal);
+}
 
 
-    template<>
-    int getValue(Input::Joystick literal)
-    {
-        return ValueMaps::JoystickValues().at(literal);
-    }
+template<>
+int getValue(Input::Joystick literal) {
+    return ValueMaps::JoystickValues().at(literal);
+}
 
 
-    template<>
-    int getValue(Input::Gamepad::Button literal)
-    {
-        return ValueMaps::GamepadButtonValues().at(literal);
-    }
+template<>
+int getValue(Input::Gamepad::Button literal) {
+    return ValueMaps::GamepadButtonValues().at(literal);
+}
 
 
-    template<>
-    int getValue(Input::Gamepad::Axis literal)
-    {
-        return ValueMaps::GamepadAxisValues().at(literal);
-    }
+template<>
+int getValue(Input::Gamepad::Axis literal) {
+    return ValueMaps::GamepadAxisValues().at(literal);
+}
 
 
-    template<>
-    int getValue(OpenGLProfile literal)
-    {
-        return ValueMaps::GlProfileValues().at(literal);
-    }
+template<>
+int getValue(OpenGLProfile literal) {
+    return ValueMaps::GlProfileValues().at(literal);
+}
 
-} // namespace renderboi::Window::GLFW3Adapter
+} // namespace rb::Window::GLFW3Adapter

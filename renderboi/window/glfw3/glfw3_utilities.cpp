@@ -10,58 +10,48 @@
 #include "../gl_window.hpp"
 #include "../gamepad/gamepad_manager.hpp"
 #include "glfw3_adapter.hpp"
-#include "glfw3_window.hpp"
 #include "glfw3_gamepad_manager.hpp"
 
-namespace renderboi::Window::GLFW3Utilities
-{
+namespace rb::Window::GLFW3Utilities {
 
-void globalGlfwFramebufferResizeCallback(GLFWwindow* const window, const int width, const int height)
-{
+void globalGlfwFramebufferResizeCallback(GLFWwindow* const window, const int width, const int height) {
     static_cast<GLWindow*>(glfwGetWindowUserPointer(window))->processFramebufferResize(width, height);
 }
 
-void globalGlfwKeyboardCallback(GLFWwindow* const window, const int key, const int scancode, const int action, const int mods)
-{
-    if (action == GLFW_REPEAT) return;      // FIX ME IF REPEAT KEYS MUST BE HANDLED
+void globalGlfwKeyboardCallback(GLFWwindow* const window, const int key, const int scancode, const int action, const int mods) {
+    if (action == GLFW_REPEAT) return;      // UNCOMMENT IF REPEAT KEYS MUST BE HANDLED
 
     Window::Input::Key realKey = Window::GLFW3Adapter::getEnum<Window::Input::Key>(key);
     Window::Input::Action realAction = Window::GLFW3Adapter::getEnum<Window::Input::Action>(action);
     static_cast<GLWindow*>(glfwGetWindowUserPointer(window))->processKeyboard(realKey, scancode, realAction, mods);
 }
 
-void globalGlfwMouseButtonCallback(GLFWwindow* const window, const int button, const int action, const int mods)
-{
-    if (action == GLFW_REPEAT) return;      // FIX ME IF REPEAT KEYS MUST BE HANDLED
+void globalGlfwMouseButtonCallback(GLFWwindow* const window, const int button, const int action, const int mods) {
+    if (action == GLFW_REPEAT) return;      // UNCOMMENT IF REPEAT KEYS MUST BE HANDLED
 
     Window::Input::MouseButton realButton = Window::GLFW3Adapter::getEnum<Window::Input::MouseButton>(button);
     Window::Input::Action realAction = Window::GLFW3Adapter::getEnum<Window::Input::Action>(action);
     static_cast<GLWindow*>(glfwGetWindowUserPointer(window))->processMouseButton(realButton, realAction, mods);
 }
 
-void globalGlfwMouseCursorCallback(GLFWwindow* const window, const double xpos, const double ypos)
-{
+void globalGlfwMouseCursorCallback(GLFWwindow* const window, const double xpos, const double ypos) {
     static_cast<GLWindow*>(glfwGetWindowUserPointer(window))->processMouseCursor(xpos, ypos);
 }
 
-void globalGlfwErrorCallback(const int error, const char* description)
-{
+void globalGlfwErrorCallback(const int error, const char* description) {
     std::cerr << "GLFW error: 0x" << std::hex << error << ", \"" << description << "\"" << std::endl;
 }
 
-void subscribeToGlfwJoystickStatus(GLWindow* const window)
-{
+void subscribeToGlfwJoystickStatus(GLWindow* const window) {
     GamepadManager& manager = window->getGamepadManager();
     GLFW3GamepadManager::_GamepadManagers.insert({manager.id, manager});
 }
 
-void unsubscribeFromGlfwJoystickStatus(GLWindow* const window)
-{
+void unsubscribeFromGlfwJoystickStatus(GLWindow* const window) {
     GLFW3GamepadManager::_GamepadManagers.erase(window->getGamepadManager().id);
 }
 
-void globalGlfwJoystickCallback(int jid, int event)
-{
+void globalGlfwJoystickCallback(int jid, int event) {
     if (event == GLFW_CONNECTED)
     {
         GLFW3GamepadManager::_PresentJoysticks[jid] = true;
@@ -86,8 +76,7 @@ void globalGlfwJoystickCallback(int jid, int event)
     }
 }
 
-void initGamepadStatuses()
-{
+void initGamepadStatuses() {
     for (int i = GLFW_JOYSTICK_1; i < GLFW_JOYSTICK_LAST + 1; i++)
     {
         GLFW3GamepadManager::_PresentJoysticks[i] = glfwJoystickPresent(i);
@@ -95,4 +84,4 @@ void initGamepadStatuses()
     }
 }
 
-} // namespace renderboi::GLFW3Utilities
+} // namespace rb::GLFW3Utilities

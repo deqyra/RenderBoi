@@ -2,8 +2,7 @@
 
 #include <glad/gl.h>
 
-namespace renderboi
-{
+namespace rb {
 
 const std::unordered_map<Framebuffer::Mode, unsigned int> Framebuffer::_targetMap = {
     {Mode::ReadWrite,   GL_FRAMEBUFFER},
@@ -17,19 +16,16 @@ Framebuffer::Framebuffer() :
     glGenFramebuffers(1, &_location);
 }
 
-Framebuffer::~Framebuffer()
-{
+Framebuffer::~Framebuffer() {
     glDeleteFramebuffers(1, &_location);
 }
 
-void Framebuffer::bind(Framebuffer::Mode mode)
-{
+void Framebuffer::bind(Framebuffer::Mode mode) {
     glBindFramebuffer(_targetMap.at(mode), _location);
 }
 
-void Framebuffer::Unbind(Framebuffer::Mode mode)
-{
+void Framebuffer::Unbind(Framebuffer::Mode mode) {
     glBindFramebuffer(_targetMap.at(mode), 0);
 }
 
-} // namespace renderboi
+} // namespace rb

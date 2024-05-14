@@ -1,53 +1,49 @@
-#ifndef RENDERBOI__TOOLBOX__RENDER__TRAITS__RENDER_TRAIT_CONFIG_HPP
-#define RENDERBOI__TOOLBOX__RENDER__TRAITS__RENDER_TRAIT_CONFIG_HPP
+#ifndef RENDERBOI_TOOLBOX_RENDER_TRAITS_RENDER_TRAIT_CONFIG_HPP
+#define RENDERBOI_TOOLBOX_RENDER_TRAITS_RENDER_TRAIT_CONFIG_HPP
 
 #include <memory>
 
 #include "render_trait.hpp"
+#include "../../scene/object.hpp"
 
-namespace renderboi
-{
-
-class SceneObject;
-using SceneObjectPtr = std::unique_ptr<SceneObject>;
+namespace rb {
 
 class RenderTraitConfigMap;
 
-/// @brief Abstract configuration class for a render trait. To be inherited from
-/// when specializing config for specific render traits.
-class RenderTraitConfig
-{
+/// @brief Abstract configuration class for a render trait To be inherited from
+/// when specializing config for specific render traits
+class RenderTraitConfig {
 friend RenderTraitConfigMap;
 
 private:
-    /// @brief Reference to the parent scene object of the trait config.
-    SceneObject& _sceneObject;
+    /// @brief Reference to the parent scene object of the trait config
+    Object& _Object;
 
 public:
-    /// @param parentSceneObject Reference to the parent scene object.
-    RenderTraitConfig(SceneObject& parentSceneObject);
+    /// @param parentObject Reference to the parent scene object
+    RenderTraitConfig(Object& parentObject);
 
     virtual ~RenderTraitConfig();
 
-    /// @brief Get a reference to the parent scene object of this instance.
+    /// @brief Get a reference to the parent scene object of this instance
     ///
-    /// @return A reference to the parent scene object of this instance.
-    SceneObject& sceneObject();
+    /// @return A reference to the parent scene object of this instance
+    Object& Object();
 
     /// @brief Get a raw pointer to a new render trait config instance cloned 
-    /// from this one. Ownership and responsibility for the allocated 
-    /// resources are fully transferred to the caller.
+    /// from this one Ownership and responsibility for the allocated 
+    /// resources are fully transferred to the caller
     ///
     /// @param newParent Reference to the scene object which will be parent to
-    /// the cloned render trait config instance.
+    /// the cloned render trait config instance
     ///
     /// @return A raw pointer to the render trait config instance cloned from 
-    /// this one.
-    virtual RenderTraitConfig* clone(SceneObject& newParent) const = 0;
+    /// this one
+    virtual RenderTraitConfig* clone(Object& newParent) const = 0;
 };
 
 using RenderTraitConfigPtr = std::unique_ptr<RenderTraitConfig>;
 
-} // namespace renderboi
+} // namespace rb
 
-#endif//RENDERBOI__TOOLBOX__RENDER__TRAITS__RENDER_TRAIT_CONFIG_HPP
+#endif//RENDERBOI_TOOLBOX_RENDER_TRAITS_RENDER_TRAIT_CONFIG_HPP

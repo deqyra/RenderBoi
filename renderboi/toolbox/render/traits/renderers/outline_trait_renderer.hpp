@@ -1,15 +1,13 @@
-#ifndef RENDERBOI__TOOLBOX__RENDER__TRAITS__RENDERERS__OUTLINE_TRAIT_RENDERER_HPP
-#define RENDERBOI__TOOLBOX__RENDER__TRAITS__RENDERERS__OUTLINE_TRAIT_RENDERER_HPP
+#ifndef RENDERBOI_TOOLBOX_RENDER_TRAITS_RENDERERS_OUTLINE_TRAIT_RENDERER_HPP
+#define RENDERBOI_TOOLBOX_RENDER_TRAITS_RENDERERS_OUTLINE_TRAIT_RENDERER_HPP
 
 #include "../trait_renderer.hpp"
 #include "../config/outline_render_trait_config.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
-/// @brief Concrete trait renderer for outlines.
-class OutlineTraitRenderer : public TraitRenderer
-{
+/// @brief Concrete trait renderer for outlines
+class OutlineTraitRenderer : public TraitRenderer {
 public:
     /////////////////////////////////////////////
     ///                                       ///
@@ -21,13 +19,12 @@ public:
     virtual void render(const RenderTraitConfig& config) const override;
 };
 
-struct RenderTraitMeta<RenderTrait::Outline>::Renderer
-{
+struct RenderTraitMeta<RenderTrait::Outline>::Renderer {
     using type = OutlineTraitRenderer;
 };
 
 using OutlineTraitRendererPtr = std::unique_ptr<OutlineTraitRenderer>;
 
-} // namespace renderboi
+} // namespace rb
 
-#endif//RENDERBOI__TOOLBOX__RENDER__TRAITS__RENDERERS__OUTLINE_TRAIT_RENDERER_HPP
+#endif//RENDERBOI_TOOLBOX_RENDER_TRAITS_RENDERERS_OUTLINE_TRAIT_RENDERER_HPP

@@ -5,11 +5,9 @@
 
 #include "shader_stage.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
-const std::unordered_map<ShaderFeature, ShaderStage>& FeatureStages()
-{
+const std::unordered_map<ShaderFeature, ShaderStage>& FeatureStages() {
     static std::unordered_map<ShaderFeature, ShaderStage> map = {
         {ShaderFeature::VertexMVP,                      ShaderStage::Vertex},
         {ShaderFeature::VertexNormalsToColor,           ShaderStage::Vertex},
@@ -33,8 +31,7 @@ const std::unordered_map<ShaderFeature, ShaderStage>& FeatureStages()
     return map;
 }
 
-std::string to_string(const ShaderFeature v)
-{
+std::string to_string(const ShaderFeature v) {
     static std::unordered_map<ShaderFeature, std::string> featureNames = {
         {ShaderFeature::VertexMVP,                      "VertexMVP"},
         {ShaderFeature::VertexNormalsToColor,           "VertexNormalsToColor"},
@@ -61,4 +58,4 @@ std::string to_string(const ShaderFeature v)
         : "Unknown shader feature";
 }
 
-} // namespace renderboi
+} // namespace rb

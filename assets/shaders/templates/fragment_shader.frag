@@ -41,8 +41,7 @@ out vec4 fragColor;
 	#include </functional_blocks/gamma_correction>
 #endif//FRAGMENT_GAMMA_CORRECTION
 
-void main()
-{
+void main() {
 	vec4 color = vec4(0.f, 0.f, 0.f, 0.f);
 #ifdef FRAGMENT_FULL_LIGHT
 	color = vec4(1.f);

@@ -1,94 +1,43 @@
-#ifndef RENDERBOI__TOOLBOX__MESH_GENERATORS__TORUS_GENERATOR_HPP
-#define RENDERBOI__TOOLBOX__MESH_GENERATORS__TORUS_GENERATOR_HPP
+#ifndef RENDERBOI_TOOLBOX_MESH_GENERATORS_TORUS_GENERATOR_HPP
+#define RENDERBOI_TOOLBOX_MESH_GENERATORS_TORUS_GENERATOR_HPP
 
-#include <renderboi/core/mesh.hpp>
+#include <renderboi/core/3d/mesh.hpp>
 
 #include "mesh_generator.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
-/// @brief Generates the vertex data for a torus.
-class TorusGenerator : public MeshGenerator
-{
+/// @brief Generates the vertex data for a torus
+class TorusGenerator {
 public:
-    /// @brief Default toroidal ("large") radius of the torus.
-    static constexpr float DefaultToroidalRadius = 2.f;
+    /// @brief Struct packing together the parameters of the vertex generation
+    struct Parameters {
+        /// @brief Toroidal / "large" radius of the torus
+        float toroidalRadius = 2.f;
 
-    /// @brief Default poloidal ("small") radius of the torus.
-    static constexpr float DefaultPoloidalRadius = 0.5f;
+        /// @brief Poloidal / "small" radius of the torus
+        float poloidalRadius = 0.5f;
 
-    /// @brief How many vertices to use by default along the toroidal 
-    /// ("large") circumference of the torus.
-    static constexpr unsigned int DefaultToroidalVertexResolution = 36;
+        /// @brief How many vertices to use along the toroidal circumference of the torus
+        unsigned int toroidalVertexRes = 36;
 
-    /// @brief How many vertices to use by default along the poloidal 
-    /// ("small") circumference of the torus.
-    static constexpr unsigned int DefaultPoloidalVertexResolution = 12;
-
-    /// @brief Struct packing together the parameters of the vertex
-    /// generation.
-    struct Parameters
-    {
-        /// @brief Toroidal ("large") radius of the torus.
-        float toroidalRadius;
-
-        /// @brief Poloidal ("small") radius of the torus.
-        float poloidalRadius;
-
-        /// @brief How many vertices to use along the toroidal ("large") 
-        /// circumference of the torus.
-        unsigned int toroidalVertexRes;
-
-        /// @brief How many vertices to use along the poloidal ("small") 
-        /// circumference of the torus.
-        unsigned int poloidalVertexRes;
+        /// @brief How many vertices to use along the poloidal circumference of the torus
+        unsigned int poloidalVertexRes = 12;
     };
 
-    TorusGenerator();
+    TorusGenerator() = default;
+    TorusGenerator(const Parameters& parameters);
 
-    /// @param toroidalRadius Default toroidal ("large") radius of the 
-    /// torus.
-    /// @param poloidalRadius Default poloidal ("small") radius of the 
-    /// torus.
-    /// @param toroidalVertexRes How many vertices to use by default along 
-    /// the toroidal ("large") circumference of the torus.
-    /// @param poloidalVertexRes How many vertices to use by default along 
-    /// the poloidal ("small") circumference of the torus.
-    TorusGenerator(
-        const float toroidalRadius,
-        const float poloidalRadius,
-        const unsigned int toroidalVertexRes = DefaultToroidalVertexResolution,
-        const unsigned int poloidalVertexRes = DefaultPoloidalVertexResolution);
-
-    /// @param parameters Parameters of the vertex generation.
-    TorusGenerator(const Parameters parameters);
-
-    /// @brief Parameters of the vertex generation.
+    /// @brief Parameters of the vertex generation
     Parameters parameters;
 
-    /////////////////////////////////////////////
-    ///                                       ///
-    /// Methods overridden from MeshGenerator ///
-    ///                                       ///
-    /////////////////////////////////////////////
-
-    /// @brief Generate the vertex data, put it in a new mesh object and 
-    /// return it.
-    ///
-    /// @return A pointer to the mesh containing the generated vertices.
-    MeshPtr generateMesh() const override;
+    /// @brief Generate the vertex data, put it in a new mesh object and return it
+    /// @return A pointer to the mesh containing the generated vertices
+    std::unique_ptr<Mesh> generate() const;
 };
 
-template<>
-struct MeshTypeMeta<MeshType::Torus>
-{
-    struct Generator
-    {
-        using type = TorusGenerator;
-    };
-};
+static_assert(MeshGenerator<TorusGenerator>);
 
-} // namespace renderboi
+} // namespace rb
 
-#endif//RENDERBOI__TOOLBOX__MESH_GENERATORS__TORUS_GENERATOR_HPP
+#endif//RENDERBOI_TOOLBOX_MESH_GENERATORS_TORUS_GENERATOR_HPP

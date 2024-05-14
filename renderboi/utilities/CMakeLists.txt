@@ -9,5 +9,5 @@ target_include_directories( renderboi_utilities PUBLIC ${RENDERBOI_MAIN_INCLUDE_
 target_link_libraries( renderboi_utilities PUBLIC
     ${CMAKE_DL_LIBS}
     glad
-    cpptools::cpptools
+    cpptools::cpptools_static
 )

@@ -1,7 +1,6 @@
 #include "shadow_map.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
 ShadowMap::ShadowMap(unsigned int width, unsigned int height) :
     width(width),
@@ -10,9 +9,8 @@ ShadowMap::ShadowMap(unsigned int width, unsigned int height) :
 
 }
 
-void ShadowMap::_GenerateShadowMap()
-{
+void ShadowMap::_GenerateShadowMap() {
 
 }
 
-} // namespace renderboi
+} // namespace rb

@@ -4,24 +4,21 @@
 #include <stdexcept>
 #include <string>
 
-#include <cpptools/utility/string_tools.hpp>
+#include <cpptools/utility/string.hpp>
 
-namespace renderboi
-{
+namespace rb {
 
 ShaderConfig::ShaderConfig() :
     _requestedFeatures(),
     _problems(),
-    _configVectorOutdated(false)
-{
+    _configVectorOutdated(false) {
 
 }
 
 ShaderConfig::ShaderConfig(std::initializer_list<ShaderFeature> list) :
     _requestedFeatures(),
     _problems(),
-    _configVectorOutdated(false)
-{
+    _configVectorOutdated(false) {
     for (auto feature : list)
     {
         addFeature(feature);
@@ -29,8 +26,7 @@ ShaderConfig::ShaderConfig(std::initializer_list<ShaderFeature> list) :
 }
 
 
-const ShaderConfig& ShaderConfig::MinimalConfig()
-{
+const ShaderConfig& ShaderConfig::MinimalConfig() {
     static ShaderConfig config = {
         ShaderFeature::VertexMVP,
         ShaderFeature::FragmentFullLight
@@ -87,15 +83,15 @@ bool ShaderConfig::_checkRequirementsAreMet(const ShaderFeature newFeature) cons
     return _problems.empty();
 }
 
-void ShaderConfig::addFeature(const ShaderFeature newFeature)
-{
+void ShaderConfig::addFeature(const ShaderFeature newFeature) {
     if (_requestedFeatures.find(newFeature) != _requestedFeatures.end()) return;
 
     // Check that the new feature would not be incompatible with any already present
     if (_checkForConflicts(newFeature))
     {
+        //! @todo: REVAMP THIS BS
         const std::string s = "ShaderConfig: cannot request new feature " + to_string(newFeature) + " as it conflicts "
-            "with the following already present features: " + cpptools::String::iterableToString(_problems, ",") + ".";
+            "with the following already present features: " + /* tools::iterableToString(_problems, ",") + */ ".";
 
         throw std::runtime_error(s.c_str());
     }
@@ -103,9 +99,10 @@ void ShaderConfig::addFeature(const ShaderFeature newFeature)
     // Check that the requirements for the new feature are all met
     if (!_checkRequirementsAreMet(newFeature))
     {
+        //! @todo: REVAMP THIS BS
         const std::string s = "ShaderConfig: cannot request new feature " + to_string(newFeature)
             + " as it requires the following features, which are currently absent from the config: "
-            + cpptools::String::iterableToString(_problems, ",") + ". Consider using addFeatureWithRequirements.";
+            + /* tools::iterableToString(_problems, ",") + */ ". Consider using addFeatureWithRequirements.";
 
         throw std::runtime_error(s.c_str());
     }
@@ -115,15 +112,15 @@ void ShaderConfig::addFeature(const ShaderFeature newFeature)
     _configVectorOutdated = true;
 }
 
-void ShaderConfig::addFeatureWithRequirements(const ShaderFeature newFeature)
-{
+void ShaderConfig::addFeatureWithRequirements(const ShaderFeature newFeature) {
     if (_requestedFeatures.find(newFeature) != _requestedFeatures.end()) return;
 
     // Check that the new feature would not be incompatible with any already present
     if (_checkForConflicts(newFeature))
     {
+        //! @todo: REVAMP THIS BS
         const std::string s = "ShaderConfig: cannot request new feature " + to_string(newFeature) + " as it conflicts "
-            "with the following already present features: " + cpptools::String::iterableToString(_problems, ",") + ".";
+            "with the following already present features: " + /* tools::iterableToString(_problems, ",") + */ ".";
 
         throw std::runtime_error(s.c_str());
     }
@@ -141,8 +138,7 @@ void ShaderConfig::addFeatureWithRequirements(const ShaderFeature newFeature)
     _configVectorOutdated = true;
 }
 
-void ShaderConfig::removeFeature(const ShaderFeature feature)
-{
+void ShaderConfig::removeFeature(const ShaderFeature feature) {
     auto it = _requestedFeatures.find(feature);
     if (it != _requestedFeatures.end())
     {
@@ -170,8 +166,7 @@ const std::vector<ShaderFeature>& ShaderConfig::getRequestedFeatures() const
     return result;
 }
 
-const std::unordered_map<ShaderFeature, std::vector<ShaderFeature>>& ShaderConfig::FeatureRequirements()
-{
+const std::unordered_map<ShaderFeature, std::vector<ShaderFeature>>& ShaderConfig::FeatureRequirements() {
     static std::unordered_map<ShaderFeature, std::vector<ShaderFeature>> map = {
         {ShaderFeature::VertexMVP,                       {}},
         {ShaderFeature::VertexNormalsToColor,            {
@@ -201,8 +196,7 @@ const std::unordered_map<ShaderFeature, std::vector<ShaderFeature>>& ShaderConfi
     return map;
 }
 
-const std::unordered_map<ShaderFeature, std::vector<ShaderFeature>>& ShaderConfig::IncompatibleFeatures()
-{
+const std::unordered_map<ShaderFeature, std::vector<ShaderFeature>>& ShaderConfig::IncompatibleFeatures() {
     static std::unordered_map<ShaderFeature, std::vector<ShaderFeature>> map = {
         {ShaderFeature::VertexMVP,                       {}},
         {ShaderFeature::VertexNormalsToColor,            {}},
@@ -257,4 +251,4 @@ const std::unordered_map<ShaderFeature, std::vector<ShaderFeature>>& ShaderConfi
     return map;
 }
 
-} // namespace renderboi
+} // namespace rb

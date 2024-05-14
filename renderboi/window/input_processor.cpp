@@ -1,7 +1,6 @@
 #include "input_processor.hpp"
 
-namespace renderboi::Window
-{
+namespace rb::Window {
 
 // Initialize static stuff
 unsigned int InputProcessor::_count = 0;
@@ -14,8 +13,7 @@ InputProcessor::InputProcessor() :
 
 // Default callbacks do nothing
 
-void InputProcessor::processFramebufferResize(GLWindow& window, const unsigned int width, const unsigned int height)
-{
+void InputProcessor::processFramebufferResize(GLWindow& window, const unsigned int width, const unsigned int height) {
 
 }
 
@@ -40,9 +38,8 @@ void InputProcessor::processMouseButton(
 
 }
 
-void InputProcessor::processMouseCursor(GLWindow& window, const double xpos, const double ypos)
-{
+void InputProcessor::processMouseCursor(GLWindow& window, const double xpos, const double ypos) {
 
 }
 
-} // namespace renderboi::Window
+} // namespace rb::Window

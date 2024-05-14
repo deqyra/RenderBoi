@@ -2,14 +2,12 @@
 
 #include <filesystem>
 
-namespace renderboi
-{
+namespace rb {
 
 std::unordered_map<ResourceType, std::filesystem::path>
 ResourceLocator::_resourceLocationPrefixes = std::unordered_map<ResourceType, std::filesystem::path>();
 
-void ResourceLocator::setPrefixFor(const ResourceType what, const std::string& prefix)
-{
+void ResourceLocator::setPrefixFor(const ResourceType what, const std::string& prefix) {
     if (prefix == "")
     {
         _resourceLocationPrefixes.erase(what);
@@ -19,8 +17,7 @@ void ResourceLocator::setPrefixFor(const ResourceType what, const std::string& p
     _resourceLocationPrefixes[what] = std::filesystem::absolute(prefix);
 }
 
-void ResourceLocator::setPrefixFor(const ResourceType what, const std::filesystem::path& prefix)
-{
+void ResourceLocator::setPrefixFor(const ResourceType what, const std::filesystem::path& prefix) {
     if (prefix.empty())
     {
         _resourceLocationPrefixes.erase(what);
@@ -30,8 +27,7 @@ void ResourceLocator::setPrefixFor(const ResourceType what, const std::filesyste
     _resourceLocationPrefixes[what] = std::filesystem::absolute(prefix);
 }
 
-std::string ResourceLocator::locate(const ResourceType type, const std::string& filename)
-{
+std::string ResourceLocator::locate(const ResourceType type, const std::string& filename) {
     auto it = _resourceLocationPrefixes.find(type);
     if (it == _resourceLocationPrefixes.end())
         return filename;
@@ -47,4 +43,4 @@ std::string ResourceLocator::locate(const ResourceType type, const std::string& 
 }
 
 
-} // namespace renderboi
+} // namespace rb

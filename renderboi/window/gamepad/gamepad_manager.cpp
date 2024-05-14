@@ -1,7 +1,6 @@
 #include "gamepad_manager.hpp"
 
-namespace renderboi::Window
-{
+namespace rb::Window {
 
 unsigned int GamepadManager::_count = 0;
 
@@ -11,19 +10,16 @@ GamepadManager::GamepadManager() :
 
 }
 
-void GamepadManager::setGamepadState(Gamepad& gamepad, GamepadState state)
-{
+void GamepadManager::setGamepadState(Gamepad& gamepad, GamepadState state) {
     gamepad._setNewState(state);
 }
 
-void GamepadManager::setGamepadConnected(Gamepad& gamepad)
-{
+void GamepadManager::setGamepadConnected(Gamepad& gamepad) {
     gamepad._processConnected();
 }
 
-void GamepadManager::setGamepadDisconnected(Gamepad& gamepad)
-{
+void GamepadManager::setGamepadDisconnected(Gamepad& gamepad) {
     gamepad._processDisconnected();
 }
 
-} // namespace renderboi::Window
+} // namespace rb::Window

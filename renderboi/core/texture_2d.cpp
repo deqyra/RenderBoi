@@ -4,92 +4,19 @@
 
 #include <glad/gl.h>
 
-#include <stb_image/stb_image.hpp>
+#include <stb/stb_image.h>
 
-#include <cpptools/exceptions/index_out_of_bounds_error.hpp>
 
 #include <renderboi/utilities/resource_locator.hpp>
 
 #include "pixel_space.hpp"
 
-namespace renderboi
-{
+namespace {
 
-using ReLoc = ResourceLocator;
-using ReType = ResourceType;
+using ReLoc  = rb::ResourceLocator;
+using ReType = rb::ResourceType;
 
-std::unordered_map<unsigned int, unsigned int> Texture2D::_LocationRefCounts = std::unordered_map<unsigned int, unsigned int>();
-std::unordered_map<std::string , unsigned int> Texture2D::_pathsToIds  = std::unordered_map<std::string, unsigned int>();
-
-Texture2D::Texture2D(const std::string& filename, const PixelSpace space) :
-    _path(filename)
-{
-    auto it = _pathsToIds.find(filename);
-    // If the image is already handled by a Texture2D instance...
-    if (it != _pathsToIds.end())
-    {
-        // Just copy the location and increase the refcount
-        _location = it->second;
-        _LocationRefCounts[_location]++;
-    }
-    // If the image is not being handled by a Texture2D instance...
-    else
-    {
-        // Load the image
-        _location = _LoadTextureFromFile(ReLoc::locate(ReType::Texture, filename), space);
-        // Map the new texture location to image filename and set a refcount
-        _pathsToIds[filename] = _location;
-        _LocationRefCounts[_location] = 1;
-    }
-}
-
-Texture2D::Texture2D(const Texture2D& other) :
-    _location(other._location),
-    _path(other._path)
-{
-    // The same texture is being handled by one more resource: increase the refcount
-    _LocationRefCounts[_location]++;
-}
-
-Texture2D& Texture2D::operator=(const Texture2D& other)
-{
-    // Let go of the content currently in place
-    _cleanup();
-
-    // Copy the filename, location, and increase the ref count
-    _location = other._location;
-    _path = other._path;
-    _LocationRefCounts[_location]++;
-
-    return *this;
-}
-
-Texture2D::~Texture2D()
-{
-    // Let go of the content currently in place
-    _cleanup();
-}
-
-void Texture2D::_cleanup()
-{
-    // Decrease the ref count
-    unsigned int count = --_LocationRefCounts[_location];
-    // If the resource is not used anymore...
-    if (!count)
-    {
-        // Remove ID map
-        _pathsToIds.erase(_path);
-        // Free the resource on the GPU
-        glDeleteTextures(1, &_location);
-    };
-}
-
-unsigned int Texture2D::_LoadTextureFromFile(const std::string& filename, const PixelSpace space)
-{
-    // Create a texture resource on the GPU
-    unsigned int location;
-    glGenTextures(1, &location);
-
+unsigned int loadAndSendTexture(const std::string& filename, const rb::PixelSpace space) {
     // Load the image from disk
     int width, height, nChannels;
     unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nChannels, 0);
@@ -103,12 +30,16 @@ unsigned int Texture2D::_LoadTextureFromFile(const std::string& filename, const 
             format = GL_RGBA;
 
         GLenum internalFormat = GL_RGB;
-        if (space == PixelSpace::sRGB)
+        if (space == rb::PixelSpace::sRGB)
         {
             internalFormat = GL_SRGB;
             if (format == GL_RGBA)
                 internalFormat = GL_SRGB_ALPHA;
         }
+
+        // Create a texture resource on the GPU
+        unsigned int location;
+        glGenTextures(1, &location);
 
         // Send the texture to the GPU
         glBindTexture(GL_TEXTURE_2D, location);
@@ -122,38 +53,83 @@ unsigned int Texture2D::_LoadTextureFromFile(const std::string& filename, const 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         stbi_image_free(data);
-    }
-    else
-    {
-        stbi_image_free(data);
-        std::string s = "Texture2D: failed to load image located at \"" + filename + "\".";
-        throw std::runtime_error(s.c_str());
+        return location;
     }
 
-    return location;
+    std::string s = "Texture2D: failed to load image located at \"" + filename + "\".";
+    throw std::runtime_error(s.c_str());
+}
+
+}
+
+namespace rb {
+
+std::unordered_map<unsigned int, unsigned int> Texture2D::_locationRefCounts = std::unordered_map<unsigned int, unsigned int>();
+std::unordered_map<std::string , unsigned int> Texture2D::_objectLocations  = std::unordered_map<std::string, unsigned int>();
+
+Texture2D::Texture2D(const std::string& filename, const PixelSpace space)  :
+    _tex()
+{
+    _tex = _getOrCreateTextureLocation(filename, space);
+    ++_locationRefCounts[_tex];
+}
+
+Texture2D::Texture2D(const Texture2D& other) :
+    _tex(other._tex)
+{
+    _locationRefCounts[_tex]++;
+}
+
+Texture2D& Texture2D::operator=(const Texture2D& other) {
+    _cleanup();
+
+    _tex = other._tex;
+    _locationRefCounts[_tex]++;
+
+    return *this;
+}
+
+Texture2D::~Texture2D() {
+    _cleanup();
+}
+
+void Texture2D::_cleanup() {
+    unsigned int count = --_locationRefCounts[_tex];
+    if (!count)
+    {
+        glDeleteTextures(1, &_tex);
+    };
+}
+
+unsigned int Texture2D::_getOrCreateTextureLocation(const std::string& filename, const PixelSpace space) {
+    auto it = _objectLocations.find(filename);
+
+    if (it == _objectLocations.end() || _locationRefCounts.find(it->second)->second == 0) {
+        return _objectLocations[filename] = loadAndSendTexture(filename, space);
+    } else {
+        return it->second;
+    }
 }
 
 unsigned int Texture2D::location() const
 {
-    return _location;
+    return _tex;
 }
 
 void Texture2D::bind() const
 {
-    glBindTexture(GL_TEXTURE_2D, _location);
+    glBindTexture(GL_TEXTURE_2D, _tex);
 }
 
 void Texture2D::bind(unsigned int unit) const
 {
+    // static constexpr std::size_t MaxTextureUnit = GL_TEXTURE31;
+    // static constexpr std::size_t MaxTextureUnitIndex = MaxTextureUnit - GL_TEXTURE0;
+
     unsigned int realUnit = GL_TEXTURE0 + unit;
-    if (realUnit > MaxTextureUnit)
-    {
-        std::string s = "Texture2D: cannot bind to texture unit " + std::to_string(realUnit) + ".";
-        throw IndexOutOfBoundsError(s);
-    }
 
     glActiveTexture(realUnit);
-    glBindTexture(GL_TEXTURE_2D, _location);
+    glBindTexture(GL_TEXTURE_2D, _tex);
 }
 
-} // namespace renderboi
+} // namespace rb

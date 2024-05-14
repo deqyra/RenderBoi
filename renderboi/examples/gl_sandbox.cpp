@@ -4,8 +4,7 @@
 
 #include <renderboi/utilities/gl_utilities.hpp>
 
-namespace renderboi
-{
+namespace rb {
 
 GLSandbox::GLSandbox(GLWindow& window, const GLSandboxParameters params) :
     _window(window),
@@ -14,14 +13,11 @@ GLSandbox::GLSandbox(GLWindow& window, const GLSandboxParameters params) :
 
 }
 
-void GLSandbox::_initContext()
-{
+void GLSandbox::_initContext() {
     _window.makeContextCurrent();
 
-    if (_parameters.debug)
-    {
-        if (!_window.extensionSupported("GL_ARB_debug_output"))
-        {
+    if (_parameters.debug) {
+        if (!_window.extensionSupported("GL_ARB_debug_output")) {
             throw std::runtime_error("A debug context was requested but GL_ARB_debug_output is not available.");
         }
 
@@ -31,8 +27,7 @@ void GLSandbox::_initContext()
     }
 }
 
-void GLSandbox::_terminateContext()
-{
+void GLSandbox::_terminateContext() {
     _window.releaseContext();
 }
 

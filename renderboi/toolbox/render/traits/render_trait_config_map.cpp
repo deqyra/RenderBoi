@@ -1,29 +1,25 @@
 #include "render_trait_config.hpp"
 #include "render_trait_config_map.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
-RenderTraitConfigMap::RenderTraitConfigMap(SceneObject& sceneObject) :
-    _sceneObject(sceneObject),
-    _map()
-{
+RenderTraitConfigMap::RenderTraitConfigMap(Object& Object) :
+    _Object(Object),
+    _map() {
 
 }
 
-RenderTraitConfigMap::RenderTraitConfigMap(SceneObject& sceneObject, const RenderTraitConfigMap& other) :
-    _sceneObject(sceneObject),
-    _map()
-{
+RenderTraitConfigMap::RenderTraitConfigMap(Object& Object, const RenderTraitConfigMap& other) :
+    _Object(Object),
+    _map() {
     for (const auto& [trait, config] : other._map)
     {
-        _map[trait] = RenderTraitConfigPtr(config->clone(_sceneObject));
+        _map[trait] = RenderTraitConfigPtr(config->clone(_Object));
     }
 }
 
-SceneObject& RenderTraitConfigMap::sceneObject()
-{
-    return _sceneObject;
+Object& RenderTraitConfigMap::Object() {
+    return _Object;
 }
 
 RenderTraitConfig& RenderTraitConfigMap::getConfigForTrait(const RenderTrait trait) const
@@ -36,13 +32,11 @@ bool RenderTraitConfigMap::hasConfigForTrait(const RenderTrait trait) const
     return _map.contains(trait);
 }
 
-void RenderTraitConfigMap::clearConfigForTrait(const RenderTrait trait)
-{
+void RenderTraitConfigMap::clearConfigForTrait(const RenderTrait trait) {
     _map.erase(trait);
 }
 
-void RenderTraitConfigMap::clear()
-{
+void RenderTraitConfigMap::clear() {
     _map.clear();
 }
 

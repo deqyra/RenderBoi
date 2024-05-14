@@ -1,43 +1,42 @@
-#ifndef RENDERBOI__TOOLBOX__RUNNABLES__GAMEPAD_CAMERA_MANAGER_HPP
-#define RENDERBOI__TOOLBOX__RUNNABLES__GAMEPAD_CAMERA_MANAGER_HPP
+#ifndef RENDERBOI_TOOLBOX_RUNNABLES_GAMEPAD_CAMERA_MANAGER_HPP
+#define RENDERBOI_TOOLBOX_RUNNABLES_GAMEPAD_CAMERA_MANAGER_HPP
 
-#include <glm/vec2.hpp>
-
-#include <renderboi/core/camera.hpp>
+#include <renderboi/core/numeric.hpp>
+#include <renderboi/core/3d/camera.hpp>
 
 #include <renderboi/window/gamepad/gamepad_input_processor.hpp>
 #include <renderboi/window/gamepad/gamepad.hpp>
 
 #include "../script.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
-/// @brief Provides event callbacks to manage a camera as in a FPS game. This 
+/// @brief Provides event callbacks to manage a camera as in a FPS game This 
 /// script must be attached to an object which has a camera component, otherwise
-/// an std::runtime_error will be thrown upon attaching.
-class GamepadCameraManager : public GamepadInputProcessor, public Script
-{
+/// an std::runtime_error will be thrown upon attaching
+class GamepadCameraManager : public GamepadInputProcessor, public Script {
 private:
-    GamepadCameraManager(const GamepadCameraManager& other) = delete;
-    GamepadCameraManager& operator=(const GamepadCameraManager& other) = delete;
+    GamepadCameraManager(const GamepadCameraManager&) = default;
+    GamepadCameraManager(GamepadCameraManager&&) = default;
+    GamepadCameraManager& operator=(const GamepadCameraManager&) = delete;
+    GamepadCameraManager& operator=(GamepadCameraManager&&) = delete;
 
-    /// @brief Reference to the camera controlled by the script.
+    /// @brief Reference to the camera controlled by the script
     Camera& _camera;
 
-    /// @brief Camera sensitivity (right thumbstick).
+    /// @brief Camera sensitivity (right thumbstick)
     float _lookSensitivity;
 
-    /// @brief Direction in which the camera look is requested to move in.
-    glm::vec2 _direction;
+    /// @brief Direction in which the camera look is requested to move in
+    num::Vec2 _direction;
 
 public:
-    /// @brief The default thumbstick sensitivity.
+    /// @brief The default thumbstick sensitivity
     static constexpr float DefaultLookSensitivity = 0.1f;
 
-    /// @param camera Reference to the camera whose orientation to manage.
+    /// @param camera Reference to the camera whose orientation to manage
     /// @param sensitivity The amplitude of the rotation induced by the right 
-    /// thumbstick.
+    /// thumbstick
     GamepadCameraManager(Camera& camera, const float sensitivity = DefaultLookSensitivity);
 
     //////////////////////////////////////
@@ -46,28 +45,11 @@ public:
     ///                                ///
     //////////////////////////////////////
 
-    /// @brief Make the script run and do its things.
+    /// @brief Make the script run and do its things
     ///
     /// @param timeElapsed How much time passed (in seconds) since the last
-    /// update.
+    /// update
     void update(const float timeElapsed) override;
-
-    /// @brief Set the scene object which the camera script is attached to.
-    /// Will also attempt to retrieve a camera from the scene object.
-    ///
-    /// @param sceneObject Reference to the scene object the script should be
-    /// attached to.
-    ///
-    /// @exception If the provided pointer is null, this function will throw
-    /// a std::runtime_error.
-    void setSceneObject(SceneObject* const sceneObject) override;
-
-    /// @brief Get a raw pointer to a new keyboard script instance cloned 
-    /// from this one. Ownership and responsibility for the allocated 
-    /// resources are fully transferred to the caller.
-    ///
-    /// @return A raw pointer to the script instance cloned from this one.
-    GamepadCameraManager* clone() const override;
 
     /////////////////////////////////////////////////////
     ///                                               ///
@@ -75,13 +57,13 @@ public:
     ///                                               ///
     /////////////////////////////////////////////////////
 
-    /// @brief Callback for a gamepad axis event.
+    /// @brief Callback for a gamepad axis event
     ///
-    /// @param axis Literal describing which axis triggered the event.
-    /// @param value Value at which the axis was polled.
+    /// @param axis Literal describing which axis triggered the event
+    /// @param value Value at which the axis was polled
     virtual void processAxis(const Gamepad& gamepad, const Window::Input::Gamepad::Axis axis, const float value) override;
 };
 
-} // namespace renderboi
+} // namespace rb
 
-#endif//RENDERBOI__TOOLBOX__RUNNABLES__GAMEPAD_CAMERA_MANAGER_HPP
+#endif//RENDERBOI_TOOLBOX_RUNNABLES_GAMEPAD_CAMERA_MANAGER_HPP

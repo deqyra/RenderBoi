@@ -5,8 +5,10 @@ FetchContent_Declare(
     glfw3
     DOWNLOAD_EXTRACT_TIMESTAMP ON
     URL https://github.com/glfw/glfw/archive/refs/tags/3.4.zip
+    FIND_PACKAGE_ARGS 3.4
 )
 
+set( GLFW_BUILD_DOCS OFF )
 set( GLFW_BUILD_EXAMPLES OFF )
 set( GLFW_BUILD_TESTS OFF )
 
@@ -37,15 +39,15 @@ FetchContent_MakeAvailable( glfw3 )
 # file ./config/env_info.config.hpp.
 
 # Default policy is native mode policy
-set( GLFW3_BORDERLESS_POLICY_NATIVE_MODE_VAL 1 )
-set( GLFW3_BORDERLESS_POLICY_MAX_MODE_VAL 0 )
+set( GLFW3_BORDERLESS_POLICY_NATIVE_MODE_VAL 1 PARENT_SCOPE )
+set( GLFW3_BORDERLESS_POLICY_MAX_MODE_VAL    0 PARENT_SCOPE )
 
 # If told otherwise...
 if( GLFW3_BORDERLESS_POLICY_MAX_MODE AND NOT GLFW3_BORDERLESS_POLICY_NATIVE_MODE )
     # Set options accordingly
-    set( GLFW3_BORDERLESS_POLICY_NATIVE_MODE OFF )
-    set( GLFW3_BORDERLESS_POLICY_NATIVE_MODE_VAL 0 )
-    set( GLFW3_BORDERLESS_POLICY_MAX_MODE_VAL 1 )
+    set( GLFW3_BORDERLESS_POLICY_NATIVE_MODE     OFF PARENT_SCOPE )
+    set( GLFW3_BORDERLESS_POLICY_NATIVE_MODE_VAL 0   PARENT_SCOPE )
+    set( GLFW3_BORDERLESS_POLICY_MAX_MODE_VAL    1   PARENT_SCOPE )
 endif( )
 
 add_library( renderboi_glfw3_adapter
@@ -63,7 +65,14 @@ add_library( renderboi_glfw3_adapter
     glfw3_window.hpp
 )
 
+target_include_directories( renderboi_glfw3_adapter PUBLIC
+    ${glfw3_SOURCE_DIR}/include
+    ${RENDERBOI_MAIN_INCLUDE_PATH}
+)
+
 target_link_libraries( renderboi_glfw3_adapter PRIVATE
-    glfw3
+    glfw
     glad
+    cpptools::cpptools_static
+    renderboi_utilities
 )

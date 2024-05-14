@@ -1,7 +1,6 @@
 #include "camera_aspect_ratio_manager.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
 CameraAspectRatioManager::CameraAspectRatioManager(Camera& camera) :
     _camera(camera)
@@ -9,12 +8,10 @@ CameraAspectRatioManager::CameraAspectRatioManager(Camera& camera) :
 
 }
 
-void CameraAspectRatioManager::processFramebufferResize(GLWindow& window, const unsigned int width, const unsigned int height)
-{
-    if (height != 0.f)
-    {
-        _camera.setAspectRatio((float)width / (float)height);
+void CameraAspectRatioManager::processFramebufferResize(GLWindow& window, const unsigned int width, const unsigned int height) {
+    if (height != 0.f) {
+        _camera.aspectRatio = (float)width / (float)height;
     }
 }
 
-} // namespace renderboi
+} // namespace rb

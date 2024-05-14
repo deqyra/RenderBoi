@@ -4,46 +4,70 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-namespace renderboi
-{
+namespace rb {
 
-MatrixUBO::MatrixUBO()
-{
+MatrixUBO::MatrixUBO() {
     // Generate the buffer and allocate space
-    glGenBuffers(1, &_location);
-    glBindBuffer(GL_UNIFORM_BUFFER, _location);
-    glBufferData(GL_UNIFORM_BUFFER, Size, NULL, GL_STATIC_DRAW);
+    glGenBuffers(1, &_ubo);
+    glBindBuffer(GL_UNIFORM_BUFFER, _ubo);
+    glBufferData(GL_UNIFORM_BUFFER, storage_t::Size, NULL, GL_STATIC_DRAW);
 
     // Bind to binding point
-    glBindBufferBase(GL_UNIFORM_BUFFER, BindingPoint, _location); 
+    glBindBufferBase(GL_UNIFORM_BUFFER, BindingPoint, _ubo); 
 }
 
-void MatrixUBO::setModel(const glm::mat4& model)
-{
-    // Send the matrix on the GPU memory, with an appropriate offset
-    glBindBuffer(GL_UNIFORM_BUFFER, _location);
-    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(model));
+void MatrixUBO::setView(const num::Mat4& view) {
+    _elements.view = view;
 }
 
-void MatrixUBO::setView(const glm::mat4& view)
-{
-    // Send the matrix on the GPU memory, with an appropriate offset
-    glBindBuffer(GL_UNIFORM_BUFFER, _location);
-    glBufferSubData(GL_UNIFORM_BUFFER, 64, sizeof(glm::mat4), glm::value_ptr(view));
+void MatrixUBO::setProjection(const num::Mat4& projection) {
+    _elements.projection = projection;
 }
 
-void MatrixUBO::setProjection(const glm::mat4& projection)
-{
-    // Send the matrix on the GPU memory, with an appropriate offset
-    glBindBuffer(GL_UNIFORM_BUFFER, _location);
-    glBufferSubData(GL_UNIFORM_BUFFER, 128, sizeof(glm::mat4), glm::value_ptr(projection));
+void MatrixUBO::setModel(const num::Mat4& model) {
+    _elements.model = model;
 }
 
-void MatrixUBO::setNormal(const glm::mat4& normal)
-{
-    // Send the matrix on the GPU memory, with an appropriate offset
-    glBindBuffer(GL_UNIFORM_BUFFER, _location);
-    glBufferSubData(GL_UNIFORM_BUFFER, 192, 3*sizeof(glm::vec4), glm::value_ptr(normal));
+void MatrixUBO::setNormal(const num::Mat3& normal) {
+    _elements.normal = normal;
 }
 
-} // namespace renderboi
+void MatrixUBO::commitView() {
+    _commitDataToGPU(Layout.view.offset, Layout.view.size);
+}
+
+void MatrixUBO::commitProjection() {
+    _commitDataToGPU(Layout.projection.offset, Layout.projection.size);
+}
+
+void MatrixUBO::commitViewProjection() {
+    _commitDataToGPU(Layout.view.offset, Layout.view.size + Layout.projection.size);
+}
+
+void MatrixUBO::commitModel() {
+    _commitDataToGPU(Layout.model.offset, Layout.model.size);
+}
+
+void MatrixUBO::commitNormal() {
+    _commitDataToGPU(Layout.normal.offset, Layout.normal.size);
+}
+
+void MatrixUBO::commitModelNormal() {
+    _commitDataToGPU(Layout.model.offset, Layout.model.size + Layout.normal.size);
+}
+
+void MatrixUBO::commit() {
+    _commitDataToGPU(0, storage_t::Size);
+}
+
+void MatrixUBO::_commitDataToGPU(std::size_t offset, std::size_t byteCount) const {
+    glBindBuffer(GL_UNIFORM_BUFFER, _ubo);
+    glBufferSubData(
+        GL_UNIFORM_BUFFER,
+        offset,
+        byteCount,
+        _storage->data() + offset
+    );
+}
+
+} // namespace rb

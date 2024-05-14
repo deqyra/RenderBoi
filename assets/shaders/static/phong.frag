@@ -20,8 +20,7 @@ vec3 processSpotLight(int i);
 vec3 processDirectionalLight(int i);
 vec3 calculatePhong(vec3 lightDirection, vec3 ambientLight, vec3 diffuseLight, vec3 specularLight);
 
-void main()
-{
+void main() {
 	// Process all point lights
 	vec3 lightTotal = vec3(0.f);
 	for (int i = 0; i < lights.pointCount; i++)
@@ -43,8 +42,7 @@ void main()
 	// fragColor = color;
 }
 
-vec3 processPointLight(int i)
-{
+vec3 processPointLight(int i) {
 	vec3 positionDiff = vertOut.fragPos - lights.point[i].position;
 	vec3 lightDirection = normalize(positionDiff);
 	float dist = length(positionDiff);
@@ -59,8 +57,7 @@ vec3 processPointLight(int i)
 										lights.point[i].specular);
 }
 
-vec3 processSpotLight(int i)
-{
+vec3 processSpotLight(int i) {
 	vec3 positionDiff = vertOut.fragPos - lights.spot[i].position;
 	vec3 lightDirection = normalize(positionDiff);
 
@@ -82,16 +79,14 @@ vec3 processSpotLight(int i)
 													lights.spot[i].specular);
 }
 
-vec3 processDirectionalLight(int i)
-{
+vec3 processDirectionalLight(int i) {
 	return calculatePhong(lights.direct[i].direction,
 						  lights.direct[i].ambient,
 						  lights.direct[i].diffuse,
 						  lights.direct[i].specular);
 }
 
-vec3 calculatePhong(vec3 lightDirection, vec3 ambientLight, vec3 diffuseLight, vec3 specularLight)
-{
+vec3 calculatePhong(vec3 lightDirection, vec3 ambientLight, vec3 diffuseLight, vec3 specularLight) {
 	vec3 normal = vertOut.normal;
 	vec3 viewDir = normalize(vertOut.fragPos);
 	vec3 reflectDir = reflect(lightDirection, normal);

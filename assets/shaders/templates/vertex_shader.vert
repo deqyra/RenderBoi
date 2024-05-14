@@ -5,8 +5,7 @@ out VertexOut vertOut;
 
 #include </uniform_blocks/matrices>
 
-void main()
-{
+void main() {
 #ifdef VERTEX_MVP
 	vec4 mvPos = matrices.view * matrices.model * vec4(inPosition, 1.0f);
     gl_Position = matrices.projection * mvPos;

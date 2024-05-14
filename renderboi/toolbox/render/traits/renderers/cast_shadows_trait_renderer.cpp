@@ -1,11 +1,9 @@
 #include "cast_shadows_trait_renderer.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
-void CastShadowsTraitRenderer::render(const RenderTraitConfig& config) const
-{
+void CastShadowsTraitRenderer::render(const RenderTraitConfig& config) const {
     
 }
 
-} // namespace renderboi
+} // namespace rb

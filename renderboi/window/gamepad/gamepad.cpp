@@ -7,8 +7,7 @@
 #include <unordered_map>
 #include <utility>
 
-namespace renderboi::Window
-{
+namespace rb::Window {
 
 using Axis = Window::Input::Gamepad::Axis;
 using Button = Window::Input::Gamepad::Button;
@@ -33,8 +32,7 @@ Gamepad::Gamepad(GamepadManager& manager, const Window::Input::Joystick slot, co
     _axisWasInDeadZone[Axis::RightTrigger]  = true;
 }
 
-void Gamepad::enable()
-{
+void Gamepad::enable() {
     if (!_enabled)
     {
         _manager.startGamepadPolling(slot);
@@ -43,8 +41,7 @@ void Gamepad::enable()
     }
 }
 
-void Gamepad::disable()
-{
+void Gamepad::disable() {
     if (_enabled)
     {
         _manager.stopGamepadPolling(slot);
@@ -53,53 +50,43 @@ void Gamepad::disable()
     }
 }
 
-void Gamepad::setEnabled(const bool enabled)
-{
+void Gamepad::setEnabled(const bool enabled) {
     enabled ? enable() : disable();
 }
 
-const GamepadState& Gamepad::getState() const
-{
+const GamepadState& Gamepad::getState() const {
     return _state;
 }
 
-bool Gamepad::isPressed(const Button button) const
-{
+bool Gamepad::isPressed(const Button button) const {
     return _state[button];
 }
 
-float Gamepad::getValue(const Axis axis) const
-{
+float Gamepad::getValue(const Axis axis) const {
     return _state[axis];
 }
 
-GamepadInputProcessor& Gamepad::getInputProcessor() const
-{
+GamepadInputProcessor& Gamepad::getInputProcessor() const {
     return *_inputProcessor;
 }
 
-void Gamepad::registerInputProcessor(GamepadInputProcessor& inputProcessor)
-{
+void Gamepad::registerInputProcessor(GamepadInputProcessor& inputProcessor) {
     _inputProcessor = &inputProcessor;
 }
 
-void Gamepad::detachInputProcessor()
-{
+void Gamepad::detachInputProcessor() {
     _inputProcessor = _DefaultInputProcessor.get();
 }
 
-const std::pair<float, float>& Gamepad::getAxisDeadZone(const Axis axis) const
-{
+const std::pair<float, float>& Gamepad::getAxisDeadZone(const Axis axis) const {
     return _axisDeadZones.at(axis);
 }
 
-void Gamepad::setAxisDeadZone(const Axis axis, std::pair<float, float> deadZone)
-{
+void Gamepad::setAxisDeadZone(const Axis axis, std::pair<float, float> deadZone) {
     _axisDeadZones[axis] = deadZone;
 }
 
-const std::unordered_map<Axis, std::pair<float, float>>& Gamepad::DefaultAxisDeadZones()
-{
+const std::unordered_map<Axis, std::pair<float, float>>& Gamepad::DefaultAxisDeadZones() {
     static std::unordered_map<Axis, std::pair<float, float>> defaultDeadZones = {
         { Axis::LeftX,        {-.1f, .1f} },
         { Axis::LeftY,        {-.1f, .1f} },
@@ -112,8 +99,7 @@ const std::unordered_map<Axis, std::pair<float, float>>& Gamepad::DefaultAxisDea
     return defaultDeadZones;
 }
 
-const std::unordered_map<Axis, float>& Gamepad::AxisRestValues()
-{
+const std::unordered_map<Axis, float>& Gamepad::AxisRestValues() {
     static std::unordered_map<Axis, float> axisRestValues = {
         { Axis::LeftX,          0.f },
         { Axis::LeftY,          0.f },
@@ -126,24 +112,20 @@ const std::unordered_map<Axis, float>& Gamepad::AxisRestValues()
     return axisRestValues;
 }
 
-void Gamepad::_processConnected()
-{
+void Gamepad::_processConnected() {
     _inputProcessor->processConnected(*this);
 }
 
-void Gamepad::_processDisconnected()
-{
+void Gamepad::_processDisconnected() {
     _inputProcessor->processDisconnected(*this);
 }
 
-void Gamepad::_setNewState(const GamepadState newState)
-{
+void Gamepad::_setNewState(const GamepadState newState) {
     _compareAndFireEvents(_state, newState);
     _state = newState;
 }
 
-void Gamepad::_compareAndFireEvents(const GamepadState& before, const GamepadState& after)
-{
+void Gamepad::_compareAndFireEvents(const GamepadState& before, const GamepadState& after) {
     using Window::Input::Action;
 
     if (before.A != after.A)
@@ -326,9 +308,8 @@ void Gamepad::_compareAndFireEvents(const GamepadState& before, const GamepadSta
     }
 }
 
-bool Gamepad::_valueIsInAxisDeadZone(const float value, const Axis axis) const
-{
+bool Gamepad::_valueIsInAxisDeadZone(const float value, const Axis axis) const {
     return (value >= _axisDeadZones.at(axis).first) && (value <= _axisDeadZones.at(axis).second);
 }
 
-} // namespace renderboi::Window
+} // namespace rb::Window

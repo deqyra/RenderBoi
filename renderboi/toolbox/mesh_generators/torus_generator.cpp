@@ -1,144 +1,96 @@
 #include "torus_generator.hpp"
 
 #include <vector>
-#include <cmath>
 #include <memory>
-#include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
 
-#include <renderboi/core/mesh.hpp>
-#include <renderboi/core/vertex.hpp>
+#include <renderboi/core/color.hpp>
+#include <renderboi/core/numeric.hpp>
+#include <renderboi/core/3d/mesh.hpp>
+#include <renderboi/core/3d/vertex.hpp>
 
-#include "../common.hpp"
+#include <glad/gl.h>
 
-namespace renderboi
-{
+namespace rb {
 
-constexpr double Pi = glm::pi<double>();
-
-TorusGenerator::TorusGenerator() :
-    TorusGenerator(
-        DefaultToroidalRadius,
-        DefaultPoloidalRadius,
-        DefaultToroidalVertexResolution,
-        DefaultPoloidalVertexResolution
-    )
-{
-
-}
-
-TorusGenerator::TorusGenerator(
-    const float toroidalRadius,
-    const float poloidalRadius,
-    const unsigned int toroidalVertexRes,
-    const unsigned int poloidalVertexRes
-) :
-    parameters{
-        toroidalRadius,
-        poloidalRadius,
-        toroidalVertexRes,
-        poloidalVertexRes
-    }
-{
-
-}
-
-TorusGenerator::TorusGenerator(const Parameters parameters) :
+TorusGenerator::TorusGenerator(const Parameters& parameters) :
     parameters(parameters)
 {
 
 }
 
-MeshPtr TorusGenerator::generateMesh() const
+std::unique_ptr<Mesh> TorusGenerator::generate() const
 {
-    using namespace common;
-
     const Parameters& p = parameters;
 
-    unsigned int nVertex = (unsigned int)(p.toroidalVertexRes * p.poloidalVertexRes);
-    std::vector<Vertex> vertices = std::vector<Vertex>(nVertex);
+    unsigned int nVertices = static_cast<unsigned int>(p.toroidalVertexRes * p.poloidalVertexRes);
+    std::vector<Vertex> vertices = std::vector<Vertex>(nVertices);
 
     unsigned int singleStripLength = (p.toroidalVertexRes * 2) + 2;
     unsigned int stripTotalLength = p.poloidalVertexRes * singleStripLength;
     std::vector<unsigned int> indices = std::vector<unsigned int>(stripTotalLength);
 
-    float toroidalAngleStep = (float)(2 * Pi) / (float)(p.toroidalVertexRes);
-    float poloidalAngleStep = (float)(2 * Pi) / (float)(p.poloidalVertexRes);
+    float toroidalAngleStep = (2 * num::Pi) / p.toroidalVertexRes;
+    float poloidalAngleStep = (2 * num::Pi) / p.poloidalVertexRes;
 
     // Generate vertex position, colors and normals
-    for (unsigned int i = 0; i < p.poloidalVertexRes; i++)
-    {
+    for (unsigned int i = 0; i < p.poloidalVertexRes; ++i) {
         float pAngle = i * poloidalAngleStep;
-        float projectedGap = (1 - cos(pAngle)) * p.poloidalRadius;
+        float projectedGap = (1 - num::cos(pAngle)) * p.poloidalRadius;
         float innerPeripheralRadius = p.toroidalRadius - p.poloidalRadius;
         float ringRadius = innerPeripheralRadius + projectedGap;
-        float ringHeight = sin(pAngle) * p.poloidalRadius;
+        float ringHeight = num::sin(pAngle) * p.poloidalRadius;
 
-        for (unsigned int j = 0; j < p.toroidalVertexRes; j++)
-        {
+        for (unsigned int j = 0; j < p.toroidalVertexRes; ++j) {
             float tAngle = j * toroidalAngleStep;
 
-            float vertexX = cos(tAngle) * ringRadius;
+            float vertexX = num::cos(tAngle) * ringRadius;
             float vertexY = ringHeight;
             float vertexZ = sin(tAngle) * ringRadius;
 
-            float normalX = -cos(pAngle) * cos(tAngle);
-            float normalY = sin(pAngle);
-            float normalZ = -cos(pAngle) * sin(tAngle);
-
-            glm::vec3 position = glm::vec3(vertexX, vertexY, vertexZ);
-            glm::vec3 color    = vec(White);
-            glm::vec3 normal   = glm::vec3(normalX, normalY, normalZ);
-            glm::vec2 texCoord = glm::vec2(0.f);
+            float normalX = -num::cos(pAngle) * num::cos(tAngle);
+            float normalY =  num::sin(pAngle);
+            float normalZ = -num::cos(pAngle) * num::sin(tAngle);
 
             unsigned int index = (i * p.toroidalVertexRes) + j;
-            // Positions
-            vertices[index].position = position;
-            vertices[index].color    = color;
-            vertices[index].normal   = normal;
-            vertices[index].texCoord = texCoord;
+
+            vertices[index].position = num::Vec3(vertexX, vertexY, vertexZ);
+            vertices[index].color    = color::White;
+            vertices[index].normal   = num::Vec3(normalX, normalY, normalZ);
+            vertices[index].texCoord = num::Origin2;
         }
     }
 
     // Generate index sequences for triangle strips
     unsigned int stripSize = (p.toroidalVertexRes * 2) + 2;
-    for (unsigned int i = 0; i < p.poloidalVertexRes; i++)
-    {
-        for (unsigned int j = 0; j < p.toroidalVertexRes; j++)
-        {
+    for (unsigned int i = 0; i < p.poloidalVertexRes; ++i) {
+        for (unsigned int j = 0; j < p.toroidalVertexRes; ++j) {
             unsigned int currentVertex = (i * p.toroidalVertexRes) + j;
             unsigned int nextVertex;
-            if (i == p.poloidalVertexRes - 1)
-            {
+            if (i == p.poloidalVertexRes - 1) {
                 nextVertex = j;
-            }
-            else
-            {
+            } else {
                 nextVertex = ((i + 1) * p.toroidalVertexRes) + j;
             }
 
             unsigned int index  = (i * stripSize) + (j * 2);
-            indices[index]     = currentVertex;
-            indices[index + 1] = nextVertex;
+            indices[index]      = currentVertex;
+            indices[index + 1]  = nextVertex;
         }
 
         unsigned int currentVertex = i * p.toroidalVertexRes;
         unsigned int nextVertex;
-        if (i == p.poloidalVertexRes - 1)
-        {
+        if (i == p.poloidalVertexRes - 1) {
             nextVertex = 0;
-        }
-        else
-        {
+        } else {
             nextVertex = (i + 1) * p.toroidalVertexRes;
         }
 
         unsigned int index  = (i * stripSize) + (p.toroidalVertexRes * 2);
-        indices[index]     = currentVertex;
-        indices[index + 1] = nextVertex;
+        indices[index]      = currentVertex;
+        indices[index + 1]  = nextVertex;
     }
 
     return std::make_unique<Mesh>(GL_TRIANGLE_STRIP, vertices, indices);
 }
 
-} // namespace renderboi
+} // namespace rb

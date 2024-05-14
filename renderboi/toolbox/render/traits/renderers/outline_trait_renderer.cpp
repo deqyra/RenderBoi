@@ -1,11 +1,9 @@
 #include "outline_trait_renderer.hpp"
 
-namespace renderboi
-{
+namespace rb {
 
-void OutlineTraitRenderer::render(const RenderTraitConfig& config) const
-{
+void OutlineTraitRenderer::render(const RenderTraitConfig& config) const {
     
 }
 
-} // namespace renderboi
+} // namespace rb

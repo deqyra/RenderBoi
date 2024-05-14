@@ -1,6 +1,5 @@
 #include "glfw3_window.hpp"
 
-#include <iostream>
 #include <string>
 
 #include <glad/gl.h>
@@ -9,14 +8,12 @@
 #undef GLFW_INCLUDE_NONE
 
 #include "../enums.hpp"
-#include "../env_info.hpp"
 #include "glfw3_adapter.hpp"
 #include "glfw3_gamepad_manager.hpp"
 #include "glfw3_monitor.hpp"
 #include "glfw3_window_factory.hpp"
 
-namespace renderboi::Window
-{
+namespace rb::Window {
 
 using GLFW3WindowFactory = WindowFactory<WindowBackend::GLFW3>;
 
@@ -29,13 +26,11 @@ GLFW3Window::GLFW3Window(GLFWwindow* window, std::string title) :
     _fullscreenMonitor = glfwGetWindowMonitor(_w);
 }
 
-GLFW3Window::~GLFW3Window()
-{
+GLFW3Window::~GLFW3Window() {
 
 }
 
-void GLFW3Window::setTitle(std::string title)
-{
+void GLFW3Window::setTitle(std::string title) {
     _title = title;
     glfwSetWindowTitle(_w, _title.c_str());
 }
@@ -43,75 +38,61 @@ void GLFW3Window::setTitle(std::string title)
 void GLFW3Window::setInputMode(
     const Window::Input::Mode::Target target,
     const Window::Input::Mode::Value value
-)
-{
+) {
     unsigned int glfw3Target = Window::GLFW3Adapter::getValue(target);
     unsigned int glfw3Value = Window::GLFW3Adapter::getValue(value);
     glfwSetInputMode(_w, glfw3Target, glfw3Value);
 }
 
-void GLFW3Window::hide()
-{
+void GLFW3Window::hide() {
     glfwHideWindow(_w);
 }
 
-void GLFW3Window::show()
-{
+void GLFW3Window::show() {
     glfwShowWindow(_w);
 }
 
-bool GLFW3Window::isVisible() const
-{
+bool GLFW3Window::isVisible() const {
     return glfwGetWindowAttrib(_w, GLFW_VISIBLE);
 }
 
-void GLFW3Window::focus()
-{
+void GLFW3Window::focus() {
     glfwFocusWindow(_w);
 }
 
-bool GLFW3Window::isFocused() const
-{
+bool GLFW3Window::isFocused() const {
     return glfwGetWindowAttrib(_w, GLFW_FOCUSED);
 }
 
-void GLFW3Window::maximize()
-{
+void GLFW3Window::maximize() {
     glfwMaximizeWindow(_w);
 }
 
-bool GLFW3Window::isMaximized() const
-{
+bool GLFW3Window::isMaximized() const {
     return glfwGetWindowAttrib(_w, GLFW_MAXIMIZED);
 }
 
-void GLFW3Window::minimize()
-{
+void GLFW3Window::minimize() {
     glfwIconifyWindow(_w);
 }
 
-bool GLFW3Window::isMinimized() const
-{
+bool GLFW3Window::isMinimized() const {
     return glfwGetWindowAttrib(_w, GLFW_ICONIFIED);
 }
 
-void GLFW3Window::getSize(int& width, int& height) const
-{
+void GLFW3Window::getSize(int& width, int& height) const {
     glfwGetWindowSize(_w, &width, &height);
 }
 
-void GLFW3Window::getFramebufferSize(int& width, int& height) const
-{
+void GLFW3Window::getFramebufferSize(int& width, int& height) const {
     glfwGetFramebufferSize(_w, &width, &height);
 }
 
-void GLFW3Window::goFullscreen(const bool borderless)
-{
+void GLFW3Window::goFullscreen(const bool borderless) {
     goFullscreen(GLFW3WindowFactory::GetPrimaryMonitor(), borderless);
 }
 
-void GLFW3Window::goFullscreen(Monitor& monitor, const bool borderless)
-{
+void GLFW3Window::goFullscreen(Monitor& monitor, const bool borderless) {
     GLFW3Monitor& glfwMonitor = static_cast<GLFW3Monitor&>(monitor);
 
     glfwGetWindowSize(_w, &_widthBeforeFullscreen, &_heightBeforeFullscreen);
@@ -156,26 +137,22 @@ void GLFW3Window::goFullscreen(Monitor& monitor, const bool borderless)
     _fullscreenMonitor = glfwMonitor.getGlfwMonitorPointer();
 }
 
-void GLFW3Window::goFullscreen(const int width, const int height, const int refreshRate)
-{
+void GLFW3Window::goFullscreen(const int width, const int height, const int refreshRate) {
     goFullscreen(GLFW3WindowFactory::GetPrimaryMonitor(), width, height, refreshRate);
 }
 
-void GLFW3Window::goFullscreen(Monitor& monitor, const int width, const int height, const int refreshRate)
-{
+void GLFW3Window::goFullscreen(Monitor& monitor, const int width, const int height, const int refreshRate) {
     GLFW3Monitor& glfwMonitor = static_cast<GLFW3Monitor&>(monitor);
 
     glfwSetWindowMonitor(_w, glfwMonitor.getGlfwMonitorPointer(), 0, 0, width, height, refreshRate);
     _fullscreenMonitor = glfwMonitor.getGlfwMonitorPointer();
 }
 
-bool GLFW3Window::isFullscreen() const
-{
+bool GLFW3Window::isFullscreen() const {
     return _fullscreenMonitor != nullptr;
 }
 
-void GLFW3Window::exitFullscreen()
-{
+void GLFW3Window::exitFullscreen() {
     glfwSetWindowMonitor(
         _w,
         nullptr,
@@ -188,8 +165,7 @@ void GLFW3Window::exitFullscreen()
     _fullscreenMonitor = nullptr;
 }
 
-void GLFW3Window::setRefreshRate(const int rate)
-{
+void GLFW3Window::setRefreshRate(const int rate) {
     if (!isFullscreen()) return;
 
     int width, height;
@@ -197,42 +173,35 @@ void GLFW3Window::setRefreshRate(const int rate)
     glfwSetWindowMonitor(_w, _fullscreenMonitor, 0, 0, width, height, rate);
 }
 
-bool GLFW3Window::shouldClose() const
-{
+bool GLFW3Window::shouldClose() const {
     return glfwWindowShouldClose(_w);
 }
 
-void GLFW3Window::setShouldClose(const bool value)
-{
+void GLFW3Window::setShouldClose(const bool value) {
     _exitSignaled = value;
     glfwSetWindowShouldClose(_w, value);
 }
 
-void GLFW3Window::swapBuffers()
-{
+void GLFW3Window::swapBuffers() {
     glfwSwapBuffers(_w);
 }
 
-void GLFW3Window::pollEvents() const
-{
+void GLFW3Window::pollEvents() const {
     glfwPollEvents();
 }
 
-float GLFW3Window::getAspectRatio() const
-{
+float GLFW3Window::getAspectRatio() const {
     int width, height;
     glfwGetFramebufferSize(_w, &width, &height);
 
     return (float)width / (float)height;
 }
 
-void GLFW3Window::getCursorPos(double& x, double& y) const
-{
+void GLFW3Window::getCursorPos(double& x, double& y) const {
     glfwGetCursorPos(_w, &x, &y);
 }
 
-void GLFW3Window::makeContextCurrent()
-{
+void GLFW3Window::makeContextCurrent() {
     glfwMakeContextCurrent(_w);
 	// Load GL pointers
 	if (!gladLoadGL())
@@ -241,14 +210,12 @@ void GLFW3Window::makeContextCurrent()
     }
 }
 
-void GLFW3Window::releaseContext()
-{
+void GLFW3Window::releaseContext() {
     glfwMakeContextCurrent(nullptr);
 }
 
-bool GLFW3Window::extensionSupported(const std::string extName)
-{
+bool GLFW3Window::extensionSupported(const std::string extName) {
     return (bool)glfwExtensionSupported(extName.c_str());
 }
 
-} // namespace renderboi::Window
+} // namespace rb::Window

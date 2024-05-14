@@ -1,5 +1,5 @@
-#ifndef RENDERBOI__WINDOW__WINDOW_CREATION_PARAMETERS_HPP
-#define RENDERBOI__WINDOW__WINDOW_CREATION_PARAMETERS_HPP
+#ifndef RENDERBOI_WINDOW_WINDOW_CREATION_PARAMETERS_HPP
+#define RENDERBOI_WINDOW_WINDOW_CREATION_PARAMETERS_HPP
 
 #include <string>
 
@@ -7,83 +7,81 @@
 #include "gl_window.hpp"
 #include "monitor.hpp"
 
-namespace renderboi::Window
-{
+namespace rb::Window {
 
-struct WindowCreationParameters
-{
-    /// @brief Title of the window.
+struct WindowCreationParameters {
+    /// @brief Title of the window
     std::string title;
 
-    /// @brief Width of the window in screen coordinates.
+    /// @brief Width of the window in screen coordinates
     int width;
 
-    /// @brief Height of the window in screen coordinates.
+    /// @brief Height of the window in screen coordinates
     int height;
 
-    /// @brief Whether or not the window is resizable.
+    /// @brief Whether or not the window is resizable
     bool resizable;
 
-    /// @brief Version major of the OpenGL context to create. Will be ignored if
-    /// requesting a context shared from another window.
+    /// @brief Version major of the OpenGL context to create Will be ignored if
+    /// requesting a context shared from another window
     int glVersionMajor;
 
-    /// @brief Version major of the OpenGL context to create. Will be ignored if
-    /// requesting a context shared from another window.
+    /// @brief Version major of the OpenGL context to create Will be ignored if
+    /// requesting a context shared from another window
     int glVersionMinor;
 
-    /// @brief Profile of the OpenGL context to use. May be ignored on certain
-    /// platforms. Will be ignored if requesting a context shared from another 
-    /// window.
+    /// @brief Profile of the OpenGL context to use May be ignored on certain
+    /// platforms Will be ignored if requesting a context shared from another 
+    /// window
     Window::OpenGLProfile glProfile;
 
-    /// @brief Pointer to the window whose context to share. Pass nullptr to 
-    /// instantiate a new context.
+    /// @brief Pointer to the window whose context to share Pass nullptr to 
+    /// instantiate a new context
     const GLWindow* shareContext;
 
-    /// @brief Monitor on which the window should go fullscreen. Pass nullptr to
-    /// stay in windowed mode.
+    /// @brief Monitor on which the window should go fullscreen Pass nullptr to
+    /// stay in windowed mode
     const Monitor* monitor;
 
     /// @brief If the window is requested to go fullscreen on a monitor and this
     /// is enabled, the window will fit exactly the current video mode of the 
-    /// monitor it is on.
+    /// monitor it is on
     bool borderlessFullscreen;
 
     /// @brief Whether or not the window should be automatically minimized when
-    /// losing input focus while in full screen mode. Disabling this is useful
-    /// when using several displays in fullscreen.
+    /// losing input focus while in full screen mode Disabling this is useful
+    /// when using several displays in fullscreen
     bool autoMinimize;
 
     /// @brief Whether or not the window should be decorated with system widgets
-    /// like a border, a window title bar with buttons and such.
+    /// like a border, a window title bar with buttons and such
     bool decorated;
 
     /// @brief Whether the window should have a transparent framebuffer, which
     /// will let the desktop compositor blend the window contents with its
-    /// background.
+    /// background
     bool transparentFramebuffer;
 
-    /// @brief Whether or not the window should be visible.
+    /// @brief Whether or not the window should be visible
     bool visible;
 
-    /// @brief Whether or not the window should be maximized when created.
+    /// @brief Whether or not the window should be maximized when created
     bool maximized;
 
-    /// @brief Whether or not the window should stay above other windows.
+    /// @brief Whether or not the window should stay above other windows
     bool alwaysOnTop;
 
-    /// @brief Whether or not the window should get the input focus when created.
+    /// @brief Whether or not the window should get the input focus when created
     bool focused;
 
-    /// @brief Whether or not the window should get the input focus when shown.
+    /// @brief Whether or not the window should get the input focus when shown
     bool focusOnShow;
 
     /// @brief Whether or not to scale the window's content area by the scaling
-    /// factor used by the monitor.
+    /// factor used by the monitor
     bool scaleToMonitor;
 
-    /// @brief Whether or not to request a debug context.
+    /// @brief Whether or not to request a debug context
     bool debug;
 };
 
@@ -109,6 +107,6 @@ const WindowCreationParameters DefaultWindowCreationParameters = {
     .debug                      = false
 };
 
-} // namespace renderboi::Window
+} // namespace rb::Window
 
-#endif//RENDERBOI__WINDOW__WINDOW_CREATION_PARAMETERS_HPP
+#endif//RENDERBOI_WINDOW_WINDOW_CREATION_PARAMETERS_HPP
