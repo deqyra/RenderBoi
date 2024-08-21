@@ -72,7 +72,7 @@ include( ExternalProject )
 FetchContent_Declare(
     cpptools
     DOWNLOAD_EXTRACT_TIMESTAMP ON
-    URL https://github.com/deqyra/CppTools/archive/refs/tags/v1.0.zip
+    URL https://github.com/deqyra/CppTools/archive/refs/tags/v1.1.zip
     FIND_PACKAGE_ARGS 1.1
 )
 

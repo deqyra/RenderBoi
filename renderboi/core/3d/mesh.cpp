@@ -119,20 +119,17 @@ Mesh::~Mesh() {
 void Mesh::_cleanup() {
     // Update all refcounts and delete resources on the GPU if appropriate
     unsigned int count = --_arrayRefCount[_vao];
-    if (!count)
-    {
+    if (!count) {
         glDeleteVertexArrays(1, &_vao);
     }
     
     count = --_bufferRefCount[_vbo];
-    if (!count)
-    {
+    if (!count) {
         glDeleteBuffers(1, &_vbo);
     }
     
     count = --_bufferRefCount[_ebo];
-    if (!count)
-    {
+    if (!count) {
         glDeleteBuffers(1, &_ebo);
     }
 }

@@ -3,7 +3,6 @@
 
 #include <numbers>
 
-#include <glm/common.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>

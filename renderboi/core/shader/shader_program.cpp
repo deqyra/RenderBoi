@@ -173,8 +173,7 @@ void ShaderProgram::setMaterial(const std::string& name, const Material& value) 
 
     unsigned int count = value.diffuseMaps.size();
     // Diffuse maps are bound in texture units 0 through 7
-    for (unsigned int i = 0; i < count; i++)
-    {
+    for (unsigned int i = 0; i < count; i++)     {
         std::string samplerName = name + ".diffuseMaps[" + std::to_string(i) + "]";
         setInt(samplerName, (int)i);
     }
@@ -182,8 +181,7 @@ void ShaderProgram::setMaterial(const std::string& name, const Material& value) 
 
     count = value.specularMaps.size();
     // Specular maps are bound in texture units 8 through 15
-    for (unsigned int i = 0; i < count; i++)
-    {
+    for (unsigned int i = 0; i < count; i++)     {
         std::string samplerName = name + ".specularMaps[" + std::to_string(i) + "]";
         setInt(samplerName, Material::SpecularMapMaxCount + (int)i);
     }

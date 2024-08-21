@@ -3,7 +3,6 @@
 
 #include "../numeric.hpp"
 #include "basis.hpp"
-#include "basis_provider.hpp"
 
 namespace rb {
 
@@ -58,83 +57,6 @@ RawTransform operator*(const RawTransform& left, const RawTransform& right);
 /// @param transform The transform to make a model matrix out of
 /// @return The model matrix
 num::Mat4 toModelMatrix(const RawTransform& t);
-
-/// @brief Represents the 3D-space properties of an object: position, orientation
-/// and scale. Also provides basis vectors and a model matrix
-class Transform final : public BasisProvider {
-public:
-    Transform();
-
-    /// @param position Position to be represented by the transform
-    /// @param rotation Orientation to be represented by the transform
-    /// @param scale Scale to be represented by the transform
-    Transform(num::Vec3 position, num::Quat rotation, num::Vec3 scale);
-
-    /// @brief Get the position of the object
-    /// @return The position of the object
-    const num::Vec3& getPosition() const;
-
-    /// @brief Set the position of the object
-    /// @param position The new position the object should have
-    /// @return The new position of the object relative to its parent
-    void setPosition(num::Vec3 position);
-
-    /// @brief Get the rotation of the object
-    /// @return The rotation of the object
-    const num::Quat& getRotation() const;
-
-    /// @brief Set the rotation of the object
-    /// @param rotation The new rotation the object should have
-    /// @return The new rotation of the object relative to its parent
-    void setRotation(num::Quat rotation);
-
-    /// @brief Get the scale of the object
-    /// @return The scale of the object
-    const num::Vec3& getScale() const;
-
-    /// @brief Set the scale of the object
-    /// @param scale The new scale the object should have
-    /// @return The new scale of the object relative to its parent
-    void setScale(num::Vec3 scale);
-
-    /// @brief Get the matrix which applies the parameters of the transform
-    /// to any point which it multiplies
-    /// @return The model matrix corresponding to the transform
-    num::Mat4 getModelMatrix() const;
-
-    /////////////////////////////////////////////
-    /// Methods overridden from BasisProvider ///
-    /////////////////////////////////////////////
-
-    /// @copydoc BasisProvider::getBasis
-    Basis basis() const override;
-
-private:
-    /// @brief Model matrix of the object
-    mutable num::Mat4 _modelMatrix;
-
-    /// @brief 3D properties of the object
-    RawTransform _raw;
-
-    /// @brief Local vectors of the object in world coordinates
-    mutable Basis _localVectors;
-
-    /// @brief Whether the local vectors no longer reflects the transform
-    /// parameters
-    mutable bool _localVectorsOutdated;
-
-    /// @brief Whether the model matrix no longer reflects the transform
-    /// parameters
-    mutable bool _matrixOutdated;
-
-    /// @brief Update the local vectors so that they reflect the transform
-    /// parameters
-    void _updateLocalVectors() const;
-
-    /// @brief Update the model matrix of the object so that it reflects the
-    /// transform parameters
-    void _updateMatrix() const;
-};
 
 } // namespace rb
 

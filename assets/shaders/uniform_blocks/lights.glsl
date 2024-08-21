@@ -16,7 +16,7 @@ layout (std140, binding = 1) uniform Lights {               // Size    // Align 
 	SpotLight spot[SPOT_MAX_COUNT];                         // 64 * 80 //    16 //   4112
 	uint spotCount;                                         //       4 //     4 //   9232
 	
-	DirectionalLight direct[DIRECTIONAL_MAX_COUNT]          //  4 * 64 //    16 //   9248
+	DirectionalLight direct[DIRECTIONAL_MAX_COUNT];         //  4 * 64 //    16 //   9248
 	uint directionalCount;                                  //       4 //     4 //   9504
 } lights;                                                   // Size: 9508
 

@@ -56,11 +56,10 @@ private:
     unsigned int _ubo;
 
     /// @brief The raw storage, which contains the data to be sent to the GPU
-    std::unique_ptr<storage_t> _storage;
+    std::unique_ptr<storage_t> _storage = std::make_unique<storage_t>();
 
     /// @brief Convenient shorthands for element access
-    /// @note THIS MEMBER MUST REMAIN AMONG THE LAST TO BE DECLARED or the
-    /// default initializer will be SKIPPED (which should fail to compile anyway)
+    /// @note THIS MEMBER MUST IMPERATIVELY BE DECLARED AFTER _storage
     StorageProxy _elements = {
         .view       = _storage->get<0>().value(),
         .projection = _storage->get<1>().value(),

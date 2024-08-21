@@ -97,7 +97,7 @@ void LightingSandbox::run() {
     const auto smallTorusObj = scene.create(bigTorusObj, "Small torus");
     auto smallTorusMesh = TorusGenerator({ 0.75f, 0.25f, 64, 32 }).generate();
     scene.emplace<RenderedMeshComponent>(
-        bigTorusObj,
+        smallTorusObj,
         RenderedMeshComponent{
             .mesh = smallTorusMesh.get(),
             .material = &gold,
@@ -148,7 +148,7 @@ void LightingSandbox::run() {
         RenderedMeshComponent{
             .mesh = tetrahedronMesh.get(),
             .material = &def,
-            .shader = &lightingShader
+            .shader = &minimal
         }
     );
 
@@ -162,11 +162,11 @@ void LightingSandbox::run() {
 
     // Link camera to MouseCameraManager
     MouseCameraManager cameraManager(camera);
-    splitter.registerInputProcessor(static_cast<InputProcessor&>(cameraManager));
+    splitter.registerInputProcessor(cameraManager);
 
     // Link camera to CameraAspectRatioManager
     CameraAspectRatioManager cameraAspectRatioManager(camera);
-    splitter.registerInputProcessor(static_cast<InputProcessor&>(cameraAspectRatioManager));
+    splitter.registerInputProcessor(cameraAspectRatioManager);
 
     // Attach object movement script to scene
     LightingSandboxScript rotationScript(
@@ -178,23 +178,23 @@ void LightingSandbox::run() {
         light,
         LightBaseRange
     );
-    splitter.registerInputProcessor(static_cast<InputProcessor&>(rotationScript));
+    splitter.registerInputProcessor(rotationScript);
 
     // KeyboardMovementScript
     auto keyboardScriptManager = ControlledEntityManager<KeyboardMovementScript<LocalTransformProxy>>(
         scene.localTransform(cameraObj),
         camera
     );
-    splitter.registerInputProcessor(static_cast<InputProcessor&>(keyboardScriptManager.eventTranslator()));
+    splitter.registerInputProcessor(keyboardScriptManager.eventTranslator());
 
     // Window script
     auto windowManager = ControlledEntityManager<BasicWindowManager>(_window);
-    splitter.registerInputProcessor(static_cast<InputProcessor&>(windowManager.entity()));
-    splitter.registerInputProcessor(static_cast<InputProcessor&>(windowManager.eventTranslator()));
+    splitter.registerInputProcessor(windowManager.entity());
+    splitter.registerInputProcessor(windowManager.eventTranslator());
 
     // Instantiate an input logger
     InputLogger logger;
-    splitter.registerInputProcessor(static_cast<InputProcessor&>(logger));
+    splitter.registerInputProcessor(logger);
 
 
     // Move stuff around
@@ -207,7 +207,7 @@ void LightingSandbox::run() {
 
     SceneRenderer sceneRenderer;
 
-    glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
+    glClearColor(0.2f, 0.0f, 0.3f, 1.0f);
     glEnable(GL_DEPTH_TEST);
 
     using Clock = std::chrono::steady_clock;
@@ -225,7 +225,7 @@ void LightingSandbox::run() {
 
         // Update scripts
         auto now = Clock::now();
-        auto delta = std::chrono::duration_cast<std::chrono::seconds>(now - lastTimestamp).count();
+        auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastTimestamp).count() / 1000.f;
         lastTimestamp = now;
 
         keyboardScriptManager.entity().update(delta);

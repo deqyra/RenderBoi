@@ -13,6 +13,7 @@ FetchContent_Declare(
     Catch2
     DOWNLOAD_EXTRACT_TIMESTAMP ON
     URL https://github.com/catchorg/Catch2/archive/refs/tags/v3.5.1.zip
+    FIND_PACKAGE_ARGS
 )
 
 FetchContent_MakeAvailable( Catch2 )
@@ -23,7 +24,7 @@ include( Catch )
 enable_testing( )
 
 add_executable( renderboi_tests
-    main.cpp
+    core/3d/test_basis.cpp
 )
 target_include_directories( renderboi_tests PRIVATE
     ${CMAKE_SOURCE_DIR}
@@ -38,6 +39,8 @@ catch_discover_tests( renderboi_tests
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-add_test( NAME tests 
+add_test(
+    NAME run_renderboi_tests 
     COMMAND renderboi_tests
+    WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
 )
